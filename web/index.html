@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ede8f4">
+  <meta name="description" content="夜校协议：编写纸灵的行为规则，探索记忆、依赖与梦中建筑。">
+  <title>夜校协议 · Von Neumann Dreams</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <dialog id="welcome" class="welcome-dialog" aria-labelledby="welcome-title"><form method="dialog"><span class="eyebrow">夜校协议 · 第一章</span><h2 id="welcome-title">纸灵，听你的指令。</h2><p>你的目标：让它走到发光的出口。</p><div class="welcome-cards"><span>记住状态</span><span>接通星桥</span><span>往前走</span></div><p class="welcome-note">先看三张指令卡运行，再试着改变它们的顺序。</p><button id="start-demo" class="primary-button" type="submit">开始第一关</button></form></dialog>
+  <div class="app-shell">
+    <header class="masthead">
+      <a class="brand" href="#" aria-label="夜校协议首页"><span class="brand-mark">VN</span><span>VON NEUMANN<br>DREAMS</span></a>
+      <div class="edition">THE MIDNIGHT ACADEMY <span>DEMO / 01</span></div>
+      <button class="quiet-button" id="help-toggle" type="button" aria-expanded="false" aria-controls="help-panel">玩法</button>
+    </header>
+    <section id="help-panel" class="help-panel" hidden>
+      <p><strong>让纸灵走到发光的出口。</strong> 点击运行，看指令卡触发。点“修改”改变一张卡，用上移、下移调整优先级；需要更多动作时添加指令卡。</p>
+      <p>每一步从上往下执行第一张满足条件的卡。记住会保存此刻的亮或暗；跟随会读取来源的当前状态。场景中的来源均可远程取样或连接。星桥需要亮，月门需要暗。</p>
+      <button id="replay-guide" class="secondary-button" type="button">重新看引导</button>
+    </section>
+    <nav class="chapters" id="chapters" aria-label="选择章节"></nav>
+    <main class="workspace">
+      <section class="world-panel" aria-label="游戏世界">
+        <div class="world-heading"><div><p class="eyebrow" id="chapter-eyebrow">CHAPTER 01</p><h1 id="chapter-title">留下这一刻</h1></div><button id="run" class="primary-button heading-run" type="button">运行</button></div>
+        <p id="mission" class="mission"></p>
+        <div id="lesson-guide" class="lesson-guide" aria-live="polite"></div>
+        <div class="scene-wrap"><svg id="scene" viewBox="120 140 760 510" role="img" aria-labelledby="scene-title scene-description"></svg><span class="scene-coordinate">MIDNIGHT / 02:00</span><div class="memory-card"><span>记忆符印</span><strong id="memory-value">暗</strong><span class="memory-orb" id="memory-orb" aria-hidden="true"></span></div></div>
+        <div class="object-buttons" id="object-buttons" role="group" aria-label="查看世界对象"></div>
+        <div class="object-inspector" id="object-inspector" aria-live="polite"></div>
+        <div class="execution-bar"><div class="execution-state"><span id="status-dot" class="status-dot"></span><strong id="run-status">等待协议</strong><span id="step-count">00 步</span></div><span id="actor-state"></span></div>
+        <div class="transport"><button id="step" class="secondary-button" type="button">看一步</button><button id="reset" class="secondary-button" type="button">重新开始</button><button id="lens-toggle" class="lens-toggle" type="button" aria-pressed="false">查看连接</button><label class="speed-label">速度<select id="speed" aria-label="执行速度"><option value="1050">慢速</option><option value="700" selected>正常</option><option value="380">快速</option></select></label></div>
+        <div id="event-message" class="event-message" role="status" aria-live="polite">先运行一次，观察纸灵的选择。</div>
+        <section id="completion" class="completion" hidden><div><span class="eyebrow">PROTOCOL ACCEPTED</span><h2>契约重新生效。</h2><p id="insight"></p></div><button id="next-level" class="primary-button" type="button">下一章</button></section>
+        <details class="trace-panel"><summary>执行记录 <span id="trace-count">0</span></summary><ol id="trace-list"></ol></details>
+      </section>
+      <aside class="program-panel" aria-label="纸灵编程编辑器">
+        <div class="program-header"><div><span class="eyebrow">PAPER SPIRIT / PROGRAM</span><h2>纸灵的指令卡</h2></div><span id="rule-count" class="rule-count">3 张卡</span></div>
+        <div class="priority-label"><span>上面的动作优先</span><button id="advanced-toggle" class="quiet-button" type="button" aria-pressed="false">展开全部条件</button></div>
+        <div id="rule-list" class="rule-list"></div>
+        <button id="add-rule" class="add-rule" type="button">添加指令卡</button>
+        <div class="program-tools"><button id="hint" class="quiet-button" type="button">提示</button><button id="reference" class="quiet-button" type="button">参考协议</button><button id="starter" class="quiet-button" type="button">重置指令卡</button></div>
+        <p id="hint-text" class="hint-text" hidden></p>
+        <div id="reference-tools" class="reference-tools" hidden><button id="reference-main" class="secondary-button" type="button">载入参考协议</button><button id="reference-alt" class="secondary-button" type="button" hidden>载入另一种解法</button><button id="restore-draft" class="quiet-button" type="button" hidden>恢复我的协议</button></div>
+        <div class="program-footnote"><span class="paper-fold" aria-hidden="true"></span><p>改变顺序。<br>看见不同的世界。</p></div>
+      </aside>
+    </main>
+    <footer class="footer"><span>夜校协议</span><span>规则相同，发现不同。</span><span>FIRST PLAYABLE / v0.1</span></footer>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

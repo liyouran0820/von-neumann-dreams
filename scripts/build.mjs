@@ -1,0 +1,11 @@
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
+const source = new URL('../web/', import.meta.url);
+const [html, css, engine, levels, app] = await Promise.all(['index.html', 'style.css', 'engine.js', 'levels.js', 'app.js'].map(file => readFile(new URL(file, source), 'utf8')));
+const engineExports = [...engine.matchAll(/export (?:function|const) (\w+)/g)].map(m => m[1]);
+const clean = text => text.replace(/^import .*?;\s*$/gm, '').replace(/\bexport (?=(?:const|function)\b)/g, '');
+const js = `const Game=(()=>{${clean(engine)}\nreturn {${engineExports.join(',')}};})();\nconst Levels=(()=>{${clean(levels)}\nreturn {LEVELS};})();\n(()=>{${clean(app)}})();`;
+const output = html.replace(/<link rel="stylesheet" href="\.\/style.css">/, () => `<style>${css}</style>`).replace(/<script type="module" src="\.\/app.js"><\/script>/, () => `<script>${js.replace(/<\/script/gi, '<\\/script')}</script>`);
+const dist = new URL('../dist/', import.meta.url);
+await mkdir(dist, { recursive: true });
+await writeFile(new URL('index.html', dist), output);
+console.log('已生成 dist/index.html，可直接离线打开。');
