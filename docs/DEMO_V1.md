@@ -2,7 +2,7 @@
 
 本文件负责实际首版的实现范围、操作和验证结果。续写时以源码和实际检查为依据；规则规格进入 `FINAL_GAME_PLAN.md`，变更经过进入 `../log.md`。未经过新玩家试玩的判断不写成体验结论。
 
-状态：第一版历史记录。源码描述对应提交 `eb63a22`；当前 `web/` 已替换为 [刻轨映射 Demo](MAPPING_DEMO.md)。指令交换试验历史见 [DEMO_V2.md](DEMO_V2.md)。
+状态：第一版历史记录。源码描述对应提交 `eb63a22`；当前 `web/` 已替换为 [夜白五关 Demo](NIGHT_WHITE_DEMO.md)。刻轨历史见 [MAPPING_DEMO.md](MAPPING_DEMO.md)，指令交换历史见 [DEMO_V2.md](DEMO_V2.md)。
 
 ## 实际范围
 

@@ -1,52 +1,8 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#152d34">
-  <title>午夜学院 · 映射实验</title>
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-  <header class="header">
-    <a class="brand" href="./" aria-label="午夜学院首页"><span class="brand-mark">◇</span><span>午夜学院<span class="brand-en">THE MIDNIGHT ACADEMY</span></span></a>
-    <nav class="header-actions" aria-label="游戏导航">
-      <span id="progress" class="progress">0 / 5 学馆</span>
-      <button id="back-home" type="button" hidden>学院</button>
-      <button id="help-button" type="button">怎么玩</button>
-    </nav>
-  </header>
-  <main>
-    <section id="hub" class="hub">
-      <div class="hub-intro">
-        <p class="eyebrow">午夜课程 / 映射实验</p>
-        <h1>换一种关系，<br>发现另一条路。</h1>
-        <p class="intro-rule">连接两个纹章，它们就会沿各自刻轨<br>一起前进、一起后退。</p>
-        <button id="start" type="button" class="primary start-button">从实验台开始 <span aria-hidden="true">↗</span></button>
-        <div class="three-actions"><span>① 点地面走路</span><span>② 点手印推拉</span><span>③ 连纹章映射</span></div>
-      </div>
-      <div class="courtyard-wrap"><svg id="courtyard" viewBox="30 60 820 490" role="group" aria-label="学院庭院，七个入口都可自由进入"></svg><span class="courtyard-caption">中央庭院 · 学馆自由开放</span></div>
-      <div id="portal-list" class="portal-list" aria-label="选择实验台或学馆"></div>
-    </section>
-    <section id="game" class="game" hidden>
-      <div class="level-heading"><div><p id="level-place" class="eyebrow"></p><h1 id="level-title" tabindex="-1"></h1><p id="goal" class="goal"></p></div><div class="tools"><button id="undo" type="button">撤回</button><button id="reset" type="button">重来</button></div></div>
-      <div class="game-layout">
-        <div id="stage" class="stage"><div class="stage-top"><span id="mode-message"></span><span class="paused-badge">世界暂停</span></div><svg id="scene" role="group" aria-label="学院场景"></svg><div class="scene-legend"><span><i class="legend-player"></i>你</span><span><i class="legend-hand"></i>推拉处</span><span><i class="legend-seal"></i>映射纹章</span></div></div>
-        <aside class="controls" aria-label="操控台">
-          <div class="mapping-panel"><button id="mapping" type="button" class="mapping-button" aria-pressed="false">连接纹章</button><div id="objects" class="object-list" aria-label="可映射纹章"></div><div id="connections" class="connections" aria-label="当前连线" hidden></div></div>
-          <div class="hands-panel"><p id="held-name" class="held-name"></p><button id="grab" type="button" class="grab-button">抓住</button><div id="push-controls" class="push-controls" hidden><button id="backward" type="button">反向拉</button><button id="forward" type="button" class="primary">沿箭头推</button></div><div id="grip-targets" class="grip-targets" aria-label="走近推拉处"></div></div>
-          <div class="walk-panel"><span>走路 / 推拉</span><div class="dpad"><button type="button" data-direction="0,-1" aria-label="向上" class="up"></button><button type="button" data-direction="-1,0" aria-label="向左" class="left"></button><button type="button" data-direction="0,1" aria-label="向下" class="down"></button><button type="button" data-direction="1,0" aria-label="向右" class="right"></button></div><span class="keyboard-note">方向键 · E 抓 / 放 · M 连线 · Z 撤回</span></div>
-          <p id="event-message" class="event-message" role="status" aria-live="polite"></p>
-          <div id="failure" class="result failure" hidden><strong>这次实验需要撤回</strong><div><button id="failure-undo" type="button" class="primary">撤回这一步</button><button id="failure-reset" type="button">重置实验</button></div></div>
-          <div id="completion" class="result completion" hidden><strong>你抵达了。</strong><p id="insight"></p><button id="next-room" type="button" class="primary">继续探索</button><button id="complete-home" type="button">回学院</button></div>
-          <button id="lab-next" type="button" class="lab-next" hidden>下一实验台</button>
-          <div class="hint-panel"><button id="hint-button" type="button">给我一点提示</button><p id="hint" hidden></p></div>
-        </aside>
-      </div>
-    </section>
-  </main>
-  <footer><span>映射实验 · 可玩原型 03</span><span>关系改变，位置保留。</span></footer>
-  <dialog id="help"><div class="help-content"><p class="eyebrow">入学须知</p><h2>先走近，再试一次。</h2><ol><li><strong>点地面</strong>，纸灵会沿可走的路过去。</li><li><strong>点金色手印</strong>走近并抓住，按箭头推或反向拉；再次点击可松手。</li><li><strong>点两个青色纹章</strong>连接，点击“结束映射”后再移动。已连接的一起沿各自刻轨移动。</li><li><strong>点现有连线</strong>进入编辑并断开；位置保留。回位装置在结束编辑、松手后自行运动。</li></ol><p>轨道尽头会让整组停住。每一步都能撤回。</p><p class="help-keys">键盘：方向键 / WASD 走路和推拉 · E 抓 / 放 · M 映射 · Z 撤回</p><button id="close-help" class="primary" type="button">开始实验</button><button id="clear-progress" type="button">清除通关标记</button></div></dialog>
-  <script type="module" src="./app.js"></script>
-</body>
-</html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>夜白映射 · 午夜学院</title><link rel="stylesheet" href="./style.css"></head><body>
+<header><a class="brand" href="#">午夜学院 <span>夜白映射</span></a><nav id="levels" aria-label="学院导览"></nav></header>
+<main><section class="heading"><div><span id="chapter" class="eyebrow"></span><h1 id="title"></h1><p id="goal"></p></div><button id="help">操作 / 提示</button></section>
+<section id="intro" class="intro"><strong>同一个推动，两边各自回应。</strong><span>点真实物件预览 → 激活映射 → 左右推动。WASD / 点地面走路。V观察，F穿门。</span><button id="begin">进入庭院</button></section>
+<div class="workspace"><section class="scene"><div class="scene-top"><div id="status"></div><button id="view">切换观察 V</button><button id="body-view">返回身体视角</button></div><div id="board"></div><div id="message" role="status" aria-live="polite"></div><div class="legend"><span>实面：齐平桥</span><span>虚线：预览，不承重</span><span>斜纹：替换后消失</span><span>玻璃 / 墙：不可穿过</span></div><div class="movement"><span>走路</span><button data-move="0,-1" aria-label="向上走">↑</button><button data-move="-1,0" aria-label="向左走">←</button><button data-move="0,1" aria-label="向下走">↓</button><button data-move="1,0" aria-label="向右走">→</button><button id="teleport">穿门 F</button></div></section>
+<aside><section class="panel"><h2>另一端 <span id="other-title"></span></h2><div id="mini"></div><div id="feedback"></div></section><section class="panel"><h2 id="mapping"></h2><div id="objects"></div><p id="preview-status"></p><div class="actions"><button id="activate">激活映射 E</button><button id="cancel-preview">取消预览</button><button id="unlink">解除 Q</button></div><div class="push"><button data-push="left">← 推动</button><button data-push="right">推动 →</button></div></section><section class="panel"><h2>公开目标</h2><ul id="goals"></ul></section></aside></div>
+<footer><button id="undo">撤销 Z</button><button id="recover">恢复安全点</button><button id="reset">整关重置</button><button id="hint">查看提示 H1</button><button id="clear-progress">清除记录并重玩</button></footer><section id="help-panel" class="panel" hidden><p>WASD 走路；方向键推动映射箱。点地面自动寻路，点真实箱 / 桥预览。V 只切观察；在 P1 / P2 上按 F 才改变身体世界。E 激活，Q 解除，Z 撤销。另一世界观察期间可远程映射与推动。</p><p id="hint-text"></p></section><section id="completion" class="completion" hidden><strong id="complete-title"></strong><button id="next">前往下一处</button><button id="replay">重新试玩</button></section></main><script type="module" src="./app.js"></script></body></html>

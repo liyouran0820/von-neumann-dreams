@@ -2,6 +2,8 @@
 
 本文件负责本次 Demo 的实际范围、操作、代码职责、验证与限制。续写以当前源码和实际检查为依据；规则规格进入 [FINAL_GAME_PLAN.md](FINAL_GAME_PLAN.md)，流水事实进入 `../log.md`，不把体验推断写成验证结果。
 
+历史状态：此刻轨原型完整保存于 `f4705f7`、分支 `codex/correspondence-demo`。下文对应这一版本。用户随后采用双世界五关稿，新版制作说明见 [NIGHT_WHITE_DEMO.md](NIGHT_WHITE_DEMO.md)，当前源码不再作为刻轨版本的复现入口。
+
 ## 范围
 
 当前分支 `codex/correspondence-demo`，版本 `0.3.0`。按照朋友映射稿实现中央庭院、两个入门实验台及全部五道谜题。直接操控替换旧编程界面。忽略用户后续明确弃用的 `夜白映射_PRD.md`。
