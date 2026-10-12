@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+
+# Dependencies and local environments
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Build, preview and test outputs
+dist/
+build/
+out/
+coverage/
+.vite/
+playwright-report/
+test-results/
+tmp/
+*.log
+
+# Installation packages and archives
+*.dmg
+*.pkg
+*.zip
+*.tar.gz
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
