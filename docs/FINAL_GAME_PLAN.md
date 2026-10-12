@@ -4,6 +4,8 @@
 
 状态：2026-10-12 的统一推荐规格。用户已授权制作第一版 Demo；实际实现、操作和验证结果见 [DEMO_V1.md](DEMO_V1.md)。以下保留完整设计目标，不能将未实现部分当作原型功能。
 
+最新反馈：用户认为首版缺少《Recursed》的机制探索感，核心机制正在重新评估。问题分析与“交换程序和地面指令”候选见 [MECHANIC_EXPLORATION.md](MECHANIC_EXPLORATION.md) 第 10 节；该候选完成有限逻辑推演，尚未采用或实现为新游戏版本。
+
 ## 1. 定位
 
 - 选题：The Midnight Academy。
