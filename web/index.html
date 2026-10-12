@@ -1,105 +1,52 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ede8f4">
-  <meta name="description" content="夜校协议：把地面符文与程序交换，让世界改写纸灵的下一步。">
-  <title>夜校协议 · 指令交换</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#152d34">
+  <title>午夜学院 · 映射实验</title>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <!-- Lucide Icons, ISC License, Copyright (c) 2026 Lucide Icons and Contributors.
-  Permission to use, copy, modify, and/or distribute this software for any purpose with
-  or without fee is hereby granted, provided that the above copyright notice and this
-  permission notice appear in all copies.
-  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.
-  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
-  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
-  PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
-  ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-  arrow-up is derived from Feather. The MIT License (MIT).
-  Copyright (c) 2013-present Cole Bemis.
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this
-  software and associated documentation files (the "Software"), to deal in the Software
-  without restriction, including without limitation the rights to use, copy, modify,
-  merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-  permit persons to whom the Software is furnished to do so, subject to the following
-  conditions: The above copyright notice and this permission notice shall be included
-  in all copies or substantial portions of the Software.
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
-  OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. -->
-  <svg class="icon-defs" width="0" height="0" aria-hidden="true">
-    <defs>
-      <symbol id="icon-F" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol>
-      <symbol id="icon-T" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></symbol>
-      <symbol id="icon-S" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></symbol>
-    </defs>
-  </svg>
-  <dialog id="welcome" class="welcome-dialog" aria-labelledby="welcome-title">
-    <span class="eyebrow">午夜学院 · 第二版</span>
-    <h2 id="welcome-title">把地面的指令，<br>换进程序。</h2>
-    <p>让纸灵走到发光的出口。</p>
-    <div class="welcome-symbols" id="welcome-symbols"></div>
-    <p class="welcome-rule">交换：脚下符文 ↔ 下一格程序。</p>
-    <p class="welcome-note">点程序格选择指令，再点运行。<br>地面符文换进程序后，才会执行。</p>
-    <button id="start-demo" class="primary-button" type="button">进入庭院</button>
-  </dialog>
-  <div class="app-shell">
-    <header class="masthead">
-      <a class="brand" href="#" aria-label="夜校协议首页"><span class="brand-mark">VN</span><span>VON NEUMANN<br>DREAMS</span></a>
-      <span class="edition">THE MIDNIGHT ACADEMY <b>DEMO / 02</b></span>
-      <button id="help-toggle" class="quiet-button" type="button" aria-expanded="false" aria-controls="help-panel">怎么玩</button>
-    </header>
-    <section id="help-panel" class="help-panel" hidden>
-      <p><strong>目标：走到发光出口。</strong> 程序从左到右执行，第三格之后回到第一格。</p>
-      <p>交换只对调脚下符文与下一格程序。地面不会自行执行，换进程序才会生效；被换出去的指令留在地面，仍可再次取回。</p>
-      <p>点击程序格会先回到起点，再编辑起始程序。“重来”保留起始程序，“撤回”恢复上一步的整个世界。</p>
-      <button id="replay-guide" class="secondary-button" type="button">重新看引导</button>
-    </section>
-    <nav id="chapters" class="chapters" aria-label="选择关卡"></nav>
-    <main>
-      <div class="world-heading">
-        <div><p class="eyebrow" id="chapter-eyebrow"></p><h1 id="chapter-title"></h1></div>
-        <span class="goal-label">走到发光出口</span>
+  <header class="header">
+    <a class="brand" href="./" aria-label="午夜学院首页"><span class="brand-mark">◇</span><span>午夜学院<span class="brand-en">THE MIDNIGHT ACADEMY</span></span></a>
+    <nav class="header-actions" aria-label="游戏导航">
+      <span id="progress" class="progress">0 / 5 学馆</span>
+      <button id="back-home" type="button" hidden>学院</button>
+      <button id="help-button" type="button">怎么玩</button>
+    </nav>
+  </header>
+  <main>
+    <section id="hub" class="hub">
+      <div class="hub-intro">
+        <p class="eyebrow">午夜课程 / 映射实验</p>
+        <h1>换一种关系，<br>发现另一条路。</h1>
+        <p class="intro-rule">连接两个纹章，它们就会沿各自刻轨<br>一起前进、一起后退。</p>
+        <button id="start" type="button" class="primary start-button">从实验台开始 <span aria-hidden="true">↗</span></button>
+        <div class="three-actions"><span>① 点地面走路</span><span>② 点手印推拉</span><span>③ 连纹章映射</span></div>
       </div>
-      <div class="workspace">
-        <section class="world-panel" aria-label="符文庭院">
-          <div class="scene-wrap">
-            <svg id="scene" role="group" aria-label="游戏地面"></svg>
-            <div class="scene-caption"><span id="actor-state"></span><span id="step-count"></span></div>
-          </div>
-          <p id="tile-inspector" class="tile-inspector" hidden></p>
-        </section>
-        <aside class="program-panel" aria-label="纸灵编程">
-          <div class="program-heading"><div><span class="eyebrow">PAPER SPIRIT / PROGRAM</span><h2>三格程序</h2></div><span id="next-slot" class="next-slot"></span></div>
-          <div id="program" class="program" role="group" aria-label="编辑程序"></div>
-          <div class="program-loop">1 → 2 → 3 → 1</div>
-          <div id="palette" class="palette" hidden><p id="palette-title"></p><div id="palette-options"></div></div>
-          <p id="draft" class="draft" hidden></p>
-          <div class="transport">
-            <button id="run" class="primary-button" type="button">运行</button>
-            <button id="step" class="secondary-button" type="button">一步</button>
-            <button id="undo" class="quiet-button" type="button">撤回</button>
-            <button id="reset" class="quiet-button" type="button">重来</button>
-          </div>
-          <div id="exchange-preview" class="exchange-preview" aria-label="交换预览"></div>
+      <div class="courtyard-wrap"><svg id="courtyard" viewBox="30 60 820 490" role="group" aria-label="学院庭院，七个入口都可自由进入"></svg><span class="courtyard-caption">中央庭院 · 学馆自由开放</span></div>
+      <div id="portal-list" class="portal-list" aria-label="选择实验台或学馆"></div>
+    </section>
+    <section id="game" class="game" hidden>
+      <div class="level-heading"><div><p id="level-place" class="eyebrow"></p><h1 id="level-title" tabindex="-1"></h1><p id="goal" class="goal"></p></div><div class="tools"><button id="undo" type="button">撤回</button><button id="reset" type="button">重来</button></div></div>
+      <div class="game-layout">
+        <div id="stage" class="stage"><div class="stage-top"><span id="mode-message"></span><span class="paused-badge">世界暂停</span></div><svg id="scene" role="group" aria-label="学院场景"></svg><div class="scene-legend"><span><i class="legend-player"></i>你</span><span><i class="legend-hand"></i>推拉处</span><span><i class="legend-seal"></i>映射纹章</span></div></div>
+        <aside class="controls" aria-label="操控台">
+          <div class="mapping-panel"><button id="mapping" type="button" class="mapping-button" aria-pressed="false">连接纹章</button><div id="objects" class="object-list" aria-label="可映射纹章"></div><div id="connections" class="connections" aria-label="当前连线" hidden></div></div>
+          <div class="hands-panel"><p id="held-name" class="held-name"></p><button id="grab" type="button" class="grab-button">抓住</button><div id="push-controls" class="push-controls" hidden><button id="backward" type="button">反向拉</button><button id="forward" type="button" class="primary">沿箭头推</button></div><div id="grip-targets" class="grip-targets" aria-label="走近推拉处"></div></div>
+          <div class="walk-panel"><span>走路 / 推拉</span><div class="dpad"><button type="button" data-direction="0,-1" aria-label="向上" class="up"></button><button type="button" data-direction="-1,0" aria-label="向左" class="left"></button><button type="button" data-direction="0,1" aria-label="向下" class="down"></button><button type="button" data-direction="1,0" aria-label="向右" class="right"></button></div><span class="keyboard-note">方向键 · E 抓 / 放 · M 连线 · Z 撤回</span></div>
           <p id="event-message" class="event-message" role="status" aria-live="polite"></p>
-          <section id="completion" class="completion" hidden><span class="eyebrow">PROTOCOL ACCEPTED</span><h3>纸灵找到了出口。</h3><p id="insight"></p><button id="next-level" class="primary-button" type="button">下一关</button></section>
-          <div class="program-tools"><button id="hint" class="quiet-button" type="button">一点提示</button><button id="starter" class="quiet-button" type="button">清空改动</button></div>
-          <p id="hint-text" class="hint-text" hidden></p>
-          <details class="trace-panel"><summary>发生了什么 <span id="trace-count"></span></summary><ol id="trace-list"></ol></details>
+          <div id="failure" class="result failure" hidden><strong>这次实验需要撤回</strong><div><button id="failure-undo" type="button" class="primary">撤回这一步</button><button id="failure-reset" type="button">重置实验</button></div></div>
+          <div id="completion" class="result completion" hidden><strong>你抵达了。</strong><p id="insight"></p><button id="next-room" type="button" class="primary">继续探索</button><button id="complete-home" type="button">回学院</button></div>
+          <button id="lab-next" type="button" class="lab-next" hidden>下一实验台</button>
+          <div class="hint-panel"><button id="hint-button" type="button">给我一点提示</button><p id="hint" hidden></p></div>
         </aside>
       </div>
-    </main>
-    <footer class="footer"><span>夜校协议</span><span>世界写进程序，程序留在世界。</span><span>FIRST EXPERIMENT / v0.2</span></footer>
-  </div>
+    </section>
+  </main>
+  <footer><span>映射实验 · 可玩原型 03</span><span>关系改变，位置保留。</span></footer>
+  <dialog id="help"><div class="help-content"><p class="eyebrow">入学须知</p><h2>先走近，再试一次。</h2><ol><li><strong>点地面</strong>，纸灵会沿可走的路过去。</li><li><strong>点金色手印</strong>走近并抓住，按箭头推或反向拉；再次点击可松手。</li><li><strong>点两个青色纹章</strong>连接，点击“结束映射”后再移动。已连接的一起沿各自刻轨移动。</li><li><strong>点现有连线</strong>进入编辑并断开；位置保留。回位装置在结束编辑、松手后自行运动。</li></ol><p>轨道尽头会让整组停住。每一步都能撤回。</p><p class="help-keys">键盘：方向键 / WASD 走路和推拉 · E 抓 / 放 · M 映射 · Z 撤回</p><button id="close-help" class="primary" type="button">开始实验</button><button id="clear-progress" type="button">清除通关标记</button></div></dialog>
   <script type="module" src="./app.js"></script>
 </body>
 </html>

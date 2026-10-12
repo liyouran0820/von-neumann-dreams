@@ -18,6 +18,6 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(404); res.end('Not found');
   }
 });
-server.listen(Number(process.env.DEMO_PORT || 5173), '127.0.0.1', () => console.log(`夜校协议 Demo: http://127.0.0.1:${server.address().port}/`));
+server.listen(Number(process.env.DEMO_PORT || 5173), '127.0.0.1', () => console.log(`午夜学院映射 Demo: http://127.0.0.1:${server.address().port}/`));
 process.on('SIGINT', () => server.close(() => process.exit(0)));
 process.on('SIGTERM', () => server.close(() => process.exit(0)));

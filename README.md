@@ -1,59 +1,61 @@
 # von-neumann-dreams 🧠☕
 
-本文件负责项目入口和文档导航。续写时更新入口、运行方式和当前阶段，详细玩法写入设计方案，变更经过写入 `log.md`。
+本文件负责项目入口、文档导航和运行方式。续写保持当前状态准确；完整规则放入设计方案，实际检查放入 Demo 文档，变更写入 `log.md`。
 
 > 仓库名冯·诺依曼的梦😁，队员成分不明、身份不明，最终以比赛结束时的发量和穿搭为准（bushi
 
-## 午夜学院 · 夜校协议
+## 午夜学院 · 映射实验
 
-当前阶段：第二版指令交换 Demo 已实现。三个动作、三格循环程序；纸灵把地面符文与下一条指令交换，让程序和世界互相改变。
+当前为可玩的刻轨映射 Demo：**走路、推拉、连接两个纹章，让物件沿各自刻轨一起变化。** 保留朋友稿的中央庭院、两个实验台和全部五道谜题。先用直接操控验证机制，旧编程玩法保存于 Git。
 
-当前方向：The Midnight Academy 选题下的编程解谜小游戏。保留编程操控，探索指令作为数据、程序改写自身和地面保留先前操作的后果。通关只检查纸灵抵达出口。
+从“从实验台开始”进入，学馆全部开放。点地面走路，点金色手印或同名按钮走近并抓住，沿箭头推 / 反向拉；点两个青色纹章连接，结束映射后继续移动。点击现有连线可以断开。撤回恢复完整状态，重来恢复当前场景。
 
-## 运行
+键盘：方向键 / WASD 走路和推拉，E 抓 / 放，M 编辑映射，Z 撤回。提示按需打开。
 
-需要 Node.js 20 或更新版本，无需安装第三方依赖。
+## 运行与检查
+
+需要 Node.js 20 或更新版本，无第三方运行依赖。
 
 ```bash
 npm run dev
 ```
 
-打开 [本地 Demo](http://127.0.0.1:5173/)。按 `Ctrl+C` 停止预览。服务只监听本机；端口占用时可用 `DEMO_PORT=5174 npm run dev`。
+打开 [本地 Demo](http://127.0.0.1:5173/)。按 `Ctrl+C` 停止服务。服务只监听本机；端口占用可用 `DEMO_PORT=5174 npm run dev`。
 
 ```bash
 npm test
+npm run verify:puzzles
 npm run build
-node scripts/analyze-levels.mjs
 ```
 
-构建生成 `dist/index.html`，内联全部脚本和样式，不请求外部资源。构建产物由 `.gitignore` 排除。当前实际浏览器验收使用本地 HTTP 预览；离线文件打开和断网验收尚未完成。
+40 项规则检查通过，五题参考与部分替代路线成立；五题也通过本地浏览器的实际操作验收。此结果不代表独立玩家趣味测试。
 
-点击程序格选择“前进、右转、交换”，然后运行。程序按 1 → 2 → 3 → 1 循环；交换脚下符文与下一格程序。运行中同时查看变化后的指令和地面；可以暂停、一步、撤回或重来。点击程序格会回到起点后编辑，起始程序保存在当前浏览器。
+构建生成 `dist/index.html`，脚本、样式、图标和许可全部内联，不请求外部资源。构建产物由 `.gitignore` 排除。当前浏览器检查使用本地 HTTP，离线打开与断网验收未完成。
+
+这是二维浅立体白盒原型。导环与桥支撑使用简化约束，完整三维碰撞与最终美术仍待制作。完整边界见 Demo 文档。
 
 ## 文档
 
-- [docs/FINAL_GAME_PLAN.md](docs/FINAL_GAME_PLAN.md)：当前最终推荐方案，统一核心机制、执行规则、关卡目标和首版范围。
-- [docs/DEMO_V2.md](docs/DEMO_V2.md)：当前第二版范围、操作、机制枚举、验证与限制。
-- [docs/DEMO_V1.md](docs/DEMO_V1.md)：第一版历史实现与验证结果。
-- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：Lucide 图标来源与分发许可。
-- [PROJECT_INTRODUCTION.md](PROJECT_INTRODUCTION.md)：项目目标、来源、讨论基础和范围。
-- [docs/NIGHT_SCHOOL_PROTOCOL_DESIGN.md](docs/NIGHT_SCHOOL_PROTOCOL_DESIGN.md)：两份构思合并后的完整设计草案，含玩法、规则、关卡、原型范围和验证目标。
-- [docs/MECHANIC_EXPLORATION.md](docs/MECHANIC_EXPLORATION.md)：机制设计流程、首个候选的规则推演、边界与验证目标。
-- [AGENTS.md](AGENTS.md)：项目协作与文档维护规则。
-- [log.md](log.md)：已发生的变更与检查记录。
+- [docs/FINAL_GAME_PLAN.md](docs/FINAL_GAME_PLAN.md)：当前玩法契约、五题与参赛表达。
+- [docs/MAPPING_DEMO.md](docs/MAPPING_DEMO.md)：实际范围、操作、检查与白盒简化。
+- [docs/sources/The-Midnight-Academy-Correspondence-Design.md](docs/sources/The-Midnight-Academy-Correspondence-Design.md)：批准的朋友稿完整来源快照。
+- [docs/sources/夜白映射_五关关卡设计.md](docs/sources/夜白映射_五关关卡设计.md)：用户明确只留作参考的双世界五关稿，不属于当前规则。
+- [PROJECT_INTRODUCTION.md](PROJECT_INTRODUCTION.md)：项目背景、来源和范围。
+- [docs/MECHANIC_EXPLORATION.md](docs/MECHANIC_EXPLORATION.md)：机制候选、后果与淘汰经过。
+- [docs/DEMO_V1.md](docs/DEMO_V1.md)：首版亮暗符印原型历史。
+- [docs/DEMO_V2.md](docs/DEMO_V2.md)：已弃用的指令交换试验历史。
+- [docs/NIGHT_SCHOOL_PROTOCOL_DESIGN.md](docs/NIGHT_SCHOOL_PROTOCOL_DESIGN.md)：早期合并构思历史草案。
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：Lucide 图标来源与许可。
+- [AGENTS.md](AGENTS.md)：协作方式、文档职责和续写约定。
+- [log.md](log.md)：实际修改与检查记录。
 
-当前设计以最终推荐方案为入口。地图、美术参数和实现细节可根据原型证据调整；建议规格与已实现、已验证的状态分别记录。
+用户明确要求忽略后续 `夜白映射_PRD.md`，本版继续采用单世界刻轨映射稿。
 
 ## Git
 
-远程仓库：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。
+远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前分支 `codex/correspondence-demo`；首版 `eb63a22`、旧交换试验 `480d261` 均保留。`main` 跟踪 `origin/main`；设计历史在 `codex/design-history`，原整合分支为 `codex/integrate-design-plan`。
 
-- `main` 跟踪 `origin/main`，作为远程主分支的本地基线。
-- `codex/integrate-design-plan` 整合远程 README 与本地设计文档。
-- `codex/first-playable-demo` 保留第一版可玩原型及机制反馈。
-- `codex/instruction-exchange-demo` 开发当前第二版。
-- `codex/design-history` 保留连接远程前的本地设计提交历史。
-- 后续工作使用 `codex/` 前缀分支，阶段改动经审查后提交；构建产物、安装包和本地配置通过 `.gitignore` 管理。
+本轮远程更新因连接超时未取得新状态，未推送。后续合并前需重新获取远程。阶段改动审查后本地提交，使用 `codex/` 分支前缀。
 
 ## 欢迎来到我们的编程马拉松仓库喵
 

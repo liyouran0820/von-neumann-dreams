@@ -1,20 +1,28 @@
 # 第三方素材与许可
 
-本文件负责实际使用的第三方素材来源与许可证。续写时保留必要许可；原创角色、庭院与规则说明进入设计文档。单文件构建也保留所需许可。
+本文件负责当前实际使用的第三方素材来源与许可证。续写时按源码中的实际使用增删来源、记录核验版本并保留必要许可；原创角色、庭院与规则说明进入设计文档。单文件构建须保留下列许可。
 
-## Lucide 指令图标
+## Lucide 交互图标
 
-采用 Lucide 的 arrow-up、rotate-cw 和 arrow-left-right SVG 路径，内联到 `web/index.html`。不依赖外部图标脚本或网络请求。
+采用官方 Lucide SVG，路径内联于 `web/icons.js`，无需图标依赖或网络请求。`unlink` 的四个直线元素等价转换为 SVG 路径；其余路径保持来源数据。界面统一使用 24×24 视框、无填充、圆端点和圆连接。
 
-| 图标 | 原始文件 | 本轮核验的 Git blob |
-| --- | --- | --- |
-| arrow-up | [Lucide 源文件](https://github.com/lucide-icons/lucide/blob/main/icons/arrow-up.svg) | `50a81cb370d77bccdab4e91c1aeff36b763cdfbf` |
-| rotate-cw | [Lucide 源文件](https://github.com/lucide-icons/lucide/blob/main/icons/rotate-cw.svg) | `6795f15767d8ae1b56f669aa7a3fe2e99adae6f1` |
-| arrow-left-right | [Lucide 源文件](https://github.com/lucide-icons/lucide/blob/main/icons/arrow-left-right.svg) | `acf2cb39ac824a91ac20dffb0367e37ddf1954b2` |
+2026-10-13 通过官方 GitHub API 核验，HTTPS 请求保留 TLS 证书验证。
 
-[Lucide 许可证](https://github.com/lucide-icons/lucide/blob/main/LICENSE)适用 ISC；arrow-up 属于列明的 Feather 衍生图标，另保留 MIT 许可。以下必要声明亦包含在 HTML 中，随单文件构建分发。
+| 图标 | 导出键 | 原始文件 | 核验的 Git blob |
+| --- | --- | --- | --- |
+| link | link | [Lucide 源文件](https://github.com/lucide-icons/lucide/blob/main/icons/link.svg) | `645e746a888689bb7b37e35b39873037d6b9f6be` |
+| unlink | unlink | [Lucide 源文件](https://github.com/lucide-icons/lucide/blob/main/icons/unlink.svg) | `a89aa2f1c051b74508d2b5c7c324dbfdae2e50bf` |
+| hand | hand | [Lucide 源文件](https://github.com/lucide-icons/lucide/blob/main/icons/hand.svg) | `30af9046926e671bb2d3a2e8bc9c15da06e900b0` |
+| arrow-up | arrowUp | [Lucide 源文件](https://github.com/lucide-icons/lucide/blob/main/icons/arrow-up.svg) | `50a81cb370d77bccdab4e91c1aeff36b763cdfbf` |
+| undo-2 | undo | [Lucide 源文件](https://github.com/lucide-icons/lucide/blob/main/icons/undo-2.svg) | `3e93594c0a400186e7f6e8f1d3981dc82cffe7e8` |
+| house | home | [Lucide 源文件](https://github.com/lucide-icons/lucide/blob/main/icons/house.svg) | `10e4097e290fdb2f1f919b264bf4e3095348de7c` |
 
-## ISC License
+[Lucide 官方许可证](https://github.com/lucide-icons/lucide/blob/main/LICENSE)核验的 blob 为 `718bb3f0e44153809972abed31839375804bf652`。六个图标适用 ISC；所用的 `link` 与 `arrow-up` 列在 Feather 衍生图标清单，另保留 MIT。以下保存本轮官方完整许可证，`web/icons.js` 顶部也保存同一声明，构建时必须保留该注释。
+
+## 官方许可证原文
+
+```text
+ISC License
 
 Copyright (c) 2026 Lucide Icons and Contributors
 
@@ -30,7 +38,13 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-## The MIT License (MIT)
+---
+
+The following Lucide icons are derived from the Feather project:
+
+airplay, alert-circle, alert-octagon, alert-triangle, aperture, arrow-down-circle, arrow-down-left, arrow-down-right, arrow-down, arrow-left-circle, arrow-left, arrow-right-circle, arrow-right, arrow-up-circle, arrow-up-left, arrow-up-right, arrow-up, at-sign, calendar, cast, check, chevron-down, chevron-left, chevron-right, chevron-up, chevrons-down, chevrons-left, chevrons-right, chevrons-up, circle, clipboard, clock, code, columns, command, compass, corner-down-left, corner-down-right, corner-left-down, corner-left-up, corner-right-down, corner-right-up, corner-up-left, corner-up-right, crosshair, database, divide-circle, divide-square, dollar-sign, download, external-link, feather, frown, hash, headphones, help-circle, info, italic, key, layout, life-buoy, link-2, link, loader, lock, log-in, log-out, maximize, meh, minimize, minimize-2, minus-circle, minus-square, minus, monitor, moon, more-horizontal, more-vertical, move, music, navigation-2, navigation, octagon, pause-circle, percent, plus-circle, plus-square, plus, power, radio, rss, search, server, share, shopping-bag, sidebar, smartphone, smile, square, table-2, tablet, target, terminal, trash-2, trash, triangle, tv, type, upload, x-circle, x-octagon, x-square, x, zoom-in, zoom-out
+
+The MIT License (MIT) (for the icons listed above)
 
 Copyright (c) 2013-present Cole Bemis
 
@@ -51,3 +65,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
