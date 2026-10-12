@@ -1,120 +1,170 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createState, stepProgram, signalsFor, runProgram, fingerprint } from '../web/engine.js';
+import * as G from '../web/engine.js';
 import { LEVELS } from '../web/levels.js';
 
-for (const level of LEVELS) {
-  test(`${level.name}：参考协议通过正常执行器完成`, () => {
-    const result = runProgram(level, level.solution);
+for (const [i, level] of LEVELS.entries()) {
+  test(level.name + '：实际执行抵达出口', () => {
+    const result = G.runProgram(level, level.solution);
     assert.equal(result.state.status, 'success');
-    assert.equal(result.state.node, level.goal);
-    assert.ok(result.state.steps > 3);
+    assert.equal(result.state.cell, level.goal);
+    assert.equal(result.state.steps, [8, 16, 28][i]);
   });
-  test(`${level.name}：初始协议保留可观察的失败`, () => {
-    const result = runProgram(level, level.initialProgram);
+  test(level.name + '：一直前进会在边界停止', () => {
+    const result = G.runProgram(level, level.initialProgram);
     assert.equal(result.state.status, 'blocked');
-    assert.notEqual(result.state.node, level.goal);
+    assert.match(result.state.reason, /地面/);
+    assert.notEqual(result.state.cell, level.goal);
+  });
+  test(level.name + '：枚举程序的每一步保持符号数量与地面范围', () => {
+    for (const a of G.CODES) for (const b of G.CODES) for (const c of G.CODES) {
+      let session = G.createSession(level, [a, b, c]);
+      const counts = G.symbolCounts(session.state), keys = Object.keys(session.state.floor).sort();
+      while (session.state.status === 'ready') {
+        session = G.stepSession(level, session);
+        assert.deepEqual(G.symbolCounts(session.state), counts);
+        assert.deepEqual(Object.keys(session.state.floor).sort(), keys);
+        assert.ok(Object.hasOwn(session.state.floor, session.state.cell));
+      }
+    }
   });
 }
 
-test('第一匹配优先级：先前进会错过取样', () => {
+test('第三槽交换第一槽，取用地面右转并留下前进', () => {
   const level = LEVELS[0];
-  const result = stepProgram(level, createState(level), level.initialProgram);
-  assert.equal(result.state.node, 'landing');
-  assert.equal(result.state.memory, 0);
-  assert.equal(result.event.ruleIndex, 0);
-  assert.equal(signalsFor(level, result.state).pad, 0);
-  assert.equal(signalsFor(level, result.state).bridge, 0);
+  let session = G.createSession(level, ['F', 'F', 'S']);
+  for (let i = 0; i < 3; i++) session = G.stepSession(level, session);
+  assert.deepEqual(session.state.program, ['T', 'F', 'S']);
+  assert.equal(session.state.floor['2,0'], 'F');
+  assert.equal(session.state.cell, '2,0');
+  assert.equal(session.state.pc, 0);
+  const next = G.stepSession(level, session);
+  assert.equal(next.events.at(-1).action, 'T');
+  assert.equal(next.state.facing, 2);
 });
 
-test('快照在离开来源后保留，重试恢复初值', () => {
-  const level = LEVELS[0];
-  const result = runProgram(level, level.solution);
-  const signals = signalsFor(level, result.state);
-  assert.equal(signals.pad, 0);
-  assert.equal(signals.memory, 1);
-  assert.equal(signals.bridge, 1);
-  assert.equal(createState(level).memory, 0);
-  assert.equal(createState(level).bindings.bridge, 'pad');
-});
-
-test('共享符印覆盖：星桥关闭，月门开启', () => {
-  const level = LEVELS[2];
-  const state = { ...createState(level), node: 'checkpoint', memory: 1, bindings: { bridge: 'memory', moon: 'memory' } };
-  assert.equal(signalsFor(level, state).bridge, 1);
-  assert.equal(signalsFor(level, state).moon, 0);
-  const result = stepProgram(level, state, [{ condition: 'overwrite', action: 'sample:pad' }]);
-  assert.equal(result.state.memory, 0);
-  assert.equal(signalsFor(level, result.state).bridge, 0);
-  assert.equal(signalsFor(level, result.state).moon, 1);
-  assert.ok(result.event.changes.some(c => c.id === 'bridge'));
-  assert.ok(result.event.changes.some(c => c.id === 'moon'));
-});
-
-test('第三关认可两种有意义的解法', () => {
-  const level = LEVELS[2];
-  const a = runProgram(level, level.solution).state;
-  const b = runProgram(level, level.alternative).state;
-  assert.equal(a.status, 'success');
-  assert.equal(b.status, 'success');
-  assert.equal(a.memory, 0);
-  assert.equal(b.memory, 1);
-  assert.equal(a.bindings.moon, 'memory');
-  assert.equal(b.bindings.moon, 'pad');
-});
-
-test('第二关：错误来源使纸灵停在月门前', () => {
+test('换入的交换真的在下一拍执行', () => {
   const level = LEVELS[1];
-  const rules = level.solution.map(r => ({ ...r }));
-  rules[2] = { condition: 'moon-not-memory', action: 'link:moon:memory', enabled: true };
-  const result = runProgram(level, rules);
-  assert.equal(result.state.status, 'blocked');
-  assert.equal(result.state.node, 'court');
-  assert.equal(signalsFor(level, result.state).moon, 0);
-  assert.doesNotMatch(result.state.reason, /循环/);
+  const session = G.runProgram(level, level.solution);
+  const incoming = session.events.findIndex(event => event.swap?.incoming === 'S');
+  assert.ok(incoming >= 0);
+  assert.equal(session.events[incoming + 1].action, 'S');
+  assert.equal(session.events[incoming + 1].slot, session.events[incoming].swap.slot);
+  assert.equal(session.events[incoming + 1].kind, 'swap');
 });
 
-test('第二关认可参考协议以外的解法：取样关闭的月门会开门', () => {
-  const level = LEVELS[1];
-  const rules = level.initialProgram.map(r => ({ ...r }));
-  rules[2].action = 'sample:moon';
-  const result = runProgram(level, rules);
+test('第三关必须物理返回，才能取回之前留下的交换符文', () => {
+  const session = G.runProgram(LEVELS[2], LEVELS[2].solution);
+  const deposited = {};
+  let recovered = false;
+  for (const event of session.events) {
+    if (event.kind === 'move') for (const [cell, record] of Object.entries(deposited)) if (cell !== event.to) record.left = true;
+    if (event.swap) {
+      const swap = event.swap, old = deposited[swap.cell];
+      if (old?.left && old.code === swap.incoming && swap.incoming === 'S' && swap.incoming !== swap.outgoing) recovered = true;
+      deposited[swap.cell] = { code: swap.outgoing, left: false };
+    }
+  }
+  assert.ok(recovered);
+});
+
+test('前一关程序不能原样完成后一关', () => {
+  assert.equal(G.runProgram(LEVELS[1], LEVELS[0].solution).state.status, 'blocked');
+  assert.equal(G.runProgram(LEVELS[2], LEVELS[0].solution).state.status, 'blocked');
+  assert.equal(G.runProgram(LEVELS[2], LEVELS[1].solution).state.status, 'blocked');
+});
+
+test('初始程序中没有右转，也可取得右转并完成', () => {
+  const level = LEVELS[0], program = ['F', 'F', 'S'];
+  assert.ok(!program.includes('T'));
+  const result = G.runProgram(level, program);
   assert.equal(result.state.status, 'success');
-  assert.equal(result.state.memory, 0);
-  assert.equal(result.state.bindings.moon, 'memory');
-  assert.equal(signalsFor(level, result.state).moon, 1);
-  assert.equal(signalsFor(level, result.state).bridge, 0);
+  assert.ok(result.events.some(event => event.action === 'T'));
 });
 
-test('循环连接拒绝执行，原世界不变', () => {
-  const level = LEVELS[1];
-  const first = stepProgram(level, createState(level), [{ condition: 'always', action: 'link:bridge:moon' }]);
-  const oldBindings = { ...first.state.bindings };
-  const next = stepProgram(level, first.state, [{ condition: 'always', action: 'link:moon:bridge' }]);
-  assert.equal(next.state.status, 'blocked');
-  assert.match(next.state.reason, /循环/);
-  assert.deepEqual(next.state.bindings, oldBindings);
-  assert.equal(next.state.steps, first.state.steps);
+test('第一关接受参考程序以外的完整合法解', () => {
+  const result = G.runProgram(LEVELS[0], LEVELS[0].alternative);
+  assert.equal(result.state.status, 'success');
+  assert.equal(result.state.steps, 9);
 });
 
-test('关闭的道路不可穿越', () => {
+test('相同符文交换仍推进执行槽位，不能提前判为循环', () => {
+  let session = G.createSession(LEVELS[0], ['S', 'F', 'F']);
+  session = G.stepSession(LEVELS[0], session);
+  assert.equal(session.state.status, 'ready');
+  assert.equal(session.state.pc, 1);
+  assert.equal(session.state.cell, '0,0');
+  assert.deepEqual(session.state.program, ['S', 'F', 'F']);
+});
+
+test('完整状态循环包含朝向与执行槽位，右转循环在12拍停止', () => {
+  const result = G.runProgram(LEVELS[0], ['T', 'T', 'T']);
+  assert.equal(result.state.status, 'blocked');
+  assert.match(result.state.reason, /重复/);
+  assert.equal(result.state.steps, 12);
+});
+
+test('循环指纹区分地面、程序与下一执行槽位', () => {
+  const state = G.createState(LEVELS[0]);
+  assert.notEqual(G.fingerprint(state), G.fingerprint({ ...state, pc: 1 }));
+  assert.notEqual(G.fingerprint(state), G.fingerprint({ ...state, program: ['S', 'F', 'F'] }));
+  assert.notEqual(G.fingerprint(state), G.fingerprint({ ...state, floor: { ...state.floor, '1,0': 'S' } }));
+});
+
+test('撤回交换恢复全部程序、地面与执行槽位，再做得到同一结果', () => {
+  let session = G.createSession(LEVELS[0], ['F', 'F', 'S']);
+  session = G.stepSession(LEVELS[0], G.stepSession(LEVELS[0], session));
+  const before = G.cloneState(session.state);
+  const after = G.stepSession(LEVELS[0], session);
+  const undone = G.undoSession(after);
+  assert.deepEqual(undone.state, before);
+  assert.deepEqual(G.stepSession(LEVELS[0], undone).state, after.state);
+  assert.equal(undone.events.length, 2);
+});
+
+test('撤回边界失败可恢复可继续执行的状态', () => {
+  const result = G.runProgram(LEVELS[0], ['F', 'F', 'F']);
+  const undone = G.undoSession(result);
+  assert.equal(undone.state.status, 'ready');
+  assert.equal(undone.state.cell, '2,0');
+  assert.equal(undone.state.pc, 2);
+});
+
+test('碰壁不改变位置、程序、地面、朝向或执行槽位', () => {
   const level = LEVELS[0];
-  const state = { ...createState(level), node: 'landing' };
-  const result = stepProgram(level, state, [{ condition: 'always', action: 'move' }]);
-  assert.equal(result.state.status, 'blocked');
-  assert.equal(result.state.node, 'landing');
-  assert.equal(result.state.steps, 0);
+  const before = { ...G.createState(level), cell: '2,0' };
+  const result = G.stepProgram(level, before);
+  assert.equal(G.fingerprint(result.state), G.fingerprint(before));
+  assert.equal(result.state.steps, before.steps);
 });
 
-test('无效果的重复操作通过完整状态检测停止', () => {
-  const result = runProgram(LEVELS[0], [{ condition: 'always', action: 'sample:pad' }]);
-  assert.equal(result.state.status, 'blocked');
-  assert.match(result.state.reason, /循环/);
+test('运行预算停止，抵达出口后不再执行', () => {
+  const limited = G.runProgram(LEVELS[0], ['T', 'T', 'T'], 4);
+  assert.equal(limited.state.steps, 4);
+  assert.match(limited.state.reason, /4 步/);
+  const completed = G.runProgram(LEVELS[0], LEVELS[0].solution);
+  assert.equal(G.stepSession(LEVELS[0], completed), completed);
 });
 
-test('暂停再单步与连续执行得到同一结果', () => {
-  const level = LEVELS[1];
-  let state = createState(level);
-  for (let i = 0; i < 40 && state.status !== 'success'; i++) state = stepProgram(level, state, level.solution).state;
-  assert.equal(fingerprint(state), fingerprint(runProgram(level, level.solution).state));
+test('每轮起点使用独立地面，运行不污染关卡与起始程序', () => {
+  const level = LEVELS[0], original = structuredClone(level);
+  const program = [...level.solution], originalProgram = [...program];
+  G.runProgram(level, program);
+  assert.deepEqual(level, original);
+  assert.deepEqual(program, originalProgram);
+  const a = G.createState(level), b = G.createState(level);
+  a.floor['0,0'] = 'S';
+  assert.equal(b.floor['0,0'], 'F');
+});
+
+test('非法程序在运行前拒绝', () => {
+  assert.throws(() => G.createState(LEVELS[0], ['F']), /程序/);
+  assert.throws(() => G.createState(LEVELS[0], ['F', 'T', '未知']), /程序/);
+});
+
+test('逐拍运行与连续运行结果相同', () => {
+  const level = LEVELS[2];
+  let session = G.createSession(level, level.solution);
+  while (session.state.status === 'ready') session = G.stepSession(level, session);
+  assert.equal(G.fingerprint(session.state), G.fingerprint(G.runProgram(level, level.solution).state));
 });

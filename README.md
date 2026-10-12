@@ -6,9 +6,9 @@
 
 ## 午夜学院 · 夜校协议
 
-当前阶段：第一版网页 Demo 已实现。三个短关卡验证记忆、实时依赖与共享状态；第一关先看三张卡运行，后续逐卡编辑、试验并调试。
+当前阶段：第二版指令交换 Demo 已实现。三个动作、三格循环程序；纸灵把地面符文与下一条指令交换，让程序和世界互相改变。
 
-当前方向：The Midnight Academy 选题下的编程解谜小游戏。玩家编排纸灵的条件行动规则，由程序完成移动、取样和连接，让程序与建筑相互影响。只按世界结果判定通关，接受有效的不同程序。
+当前方向：The Midnight Academy 选题下的编程解谜小游戏。保留编程操控，探索指令作为数据、程序改写自身和地面保留先前操作的后果。通关只检查纸灵抵达出口。
 
 ## 运行
 
@@ -23,16 +23,19 @@ npm run dev
 ```bash
 npm test
 npm run build
+node scripts/analyze-levels.mjs
 ```
 
 构建生成 `dist/index.html`，内联全部脚本和样式，不请求外部资源。构建产物由 `.gitignore` 排除。当前实际浏览器验收使用本地 HTTP 预览；离线文件打开和断网验收尚未完成。
 
-第一关点击“开始第一关”观察运行。之后点击指令卡上的“修改”选择条件与动作，或用上移、下移调整优先级；“添加指令卡”扩展程序。“看一步”逐步执行，“查看连接”显示依赖。编辑后世界从起点重置，规则自动保存在当前浏览器。
+点击程序格选择“前进、右转、交换”，然后运行。程序按 1 → 2 → 3 → 1 循环；交换脚下符文与下一格程序。运行中同时查看变化后的指令和地面；可以暂停、一步、撤回或重来。点击程序格会回到起点后编辑，起始程序保存在当前浏览器。
 
 ## 文档
 
 - [docs/FINAL_GAME_PLAN.md](docs/FINAL_GAME_PLAN.md)：当前最终推荐方案，统一核心机制、执行规则、关卡目标和首版范围。
-- [docs/DEMO_V1.md](docs/DEMO_V1.md)：实际首版范围、操作方式、实现结构、验证结果与限制。
+- [docs/DEMO_V2.md](docs/DEMO_V2.md)：当前第二版范围、操作、机制枚举、验证与限制。
+- [docs/DEMO_V1.md](docs/DEMO_V1.md)：第一版历史实现与验证结果。
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：Lucide 图标来源与分发许可。
 - [PROJECT_INTRODUCTION.md](PROJECT_INTRODUCTION.md)：项目目标、来源、讨论基础和范围。
 - [docs/NIGHT_SCHOOL_PROTOCOL_DESIGN.md](docs/NIGHT_SCHOOL_PROTOCOL_DESIGN.md)：两份构思合并后的完整设计草案，含玩法、规则、关卡、原型范围和验证目标。
 - [docs/MECHANIC_EXPLORATION.md](docs/MECHANIC_EXPLORATION.md)：机制设计流程、首个候选的规则推演、边界与验证目标。
@@ -47,7 +50,8 @@ npm run build
 
 - `main` 跟踪 `origin/main`，作为远程主分支的本地基线。
 - `codex/integrate-design-plan` 整合远程 README 与本地设计文档。
-- `codex/first-playable-demo` 开发第一版可玩原型。
+- `codex/first-playable-demo` 保留第一版可玩原型及机制反馈。
+- `codex/instruction-exchange-demo` 开发当前第二版。
 - `codex/design-history` 保留连接远程前的本地设计提交历史。
 - 后续工作使用 `codex/` 前缀分支，阶段改动经审查后提交；构建产物、安装包和本地配置通过 `.gitignore` 管理。
 

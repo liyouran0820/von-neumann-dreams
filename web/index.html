@@ -4,50 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ede8f4">
-  <meta name="description" content="夜校协议：编写纸灵的行为规则，探索记忆、依赖与梦中建筑。">
-  <title>夜校协议 · Von Neumann Dreams</title>
+  <meta name="description" content="夜校协议：把地面符文与程序交换，让世界改写纸灵的下一步。">
+  <title>夜校协议 · 指令交换</title>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <dialog id="welcome" class="welcome-dialog" aria-labelledby="welcome-title"><form method="dialog"><span class="eyebrow">夜校协议 · 第一章</span><h2 id="welcome-title">纸灵，听你的指令。</h2><p>你的目标：让它走到发光的出口。</p><div class="welcome-cards"><span>记住状态</span><span>接通星桥</span><span>往前走</span></div><p class="welcome-note">先看三张指令卡运行，再试着改变它们的顺序。</p><button id="start-demo" class="primary-button" type="submit">开始第一关</button></form></dialog>
+  <!-- Lucide Icons, ISC License, Copyright (c) 2026 Lucide Icons and Contributors.
+  Permission to use, copy, modify, and/or distribute this software for any purpose with
+  or without fee is hereby granted, provided that the above copyright notice and this
+  permission notice appear in all copies.
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.
+  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+  PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+  ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+  arrow-up is derived from Feather. The MIT License (MIT).
+  Copyright (c) 2013-present Cole Bemis.
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this
+  software and associated documentation files (the "Software"), to deal in the Software
+  without restriction, including without limitation the rights to use, copy, modify,
+  merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+  permit persons to whom the Software is furnished to do so, subject to the following
+  conditions: The above copyright notice and this permission notice shall be included
+  in all copies or substantial portions of the Software.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+  CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+  OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. -->
+  <svg class="icon-defs" width="0" height="0" aria-hidden="true">
+    <defs>
+      <symbol id="icon-F" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol>
+      <symbol id="icon-T" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></symbol>
+      <symbol id="icon-S" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></symbol>
+    </defs>
+  </svg>
+  <dialog id="welcome" class="welcome-dialog" aria-labelledby="welcome-title">
+    <span class="eyebrow">午夜学院 · 第二版</span>
+    <h2 id="welcome-title">把地面的指令，<br>换进程序。</h2>
+    <p>让纸灵走到发光的出口。</p>
+    <div class="welcome-symbols" id="welcome-symbols"></div>
+    <p class="welcome-rule">交换：脚下符文 ↔ 下一格程序。</p>
+    <p class="welcome-note">点程序格选择指令，再点运行。<br>地面符文换进程序后，才会执行。</p>
+    <button id="start-demo" class="primary-button" type="button">进入庭院</button>
+  </dialog>
   <div class="app-shell">
     <header class="masthead">
       <a class="brand" href="#" aria-label="夜校协议首页"><span class="brand-mark">VN</span><span>VON NEUMANN<br>DREAMS</span></a>
-      <div class="edition">THE MIDNIGHT ACADEMY <span>DEMO / 01</span></div>
-      <button class="quiet-button" id="help-toggle" type="button" aria-expanded="false" aria-controls="help-panel">玩法</button>
+      <span class="edition">THE MIDNIGHT ACADEMY <b>DEMO / 02</b></span>
+      <button id="help-toggle" class="quiet-button" type="button" aria-expanded="false" aria-controls="help-panel">怎么玩</button>
     </header>
     <section id="help-panel" class="help-panel" hidden>
-      <p><strong>让纸灵走到发光的出口。</strong> 点击运行，看指令卡触发。点“修改”改变一张卡，用上移、下移调整优先级；需要更多动作时添加指令卡。</p>
-      <p>每一步从上往下执行第一张满足条件的卡。记住会保存此刻的亮或暗；跟随会读取来源的当前状态。场景中的来源均可远程取样或连接。星桥需要亮，月门需要暗。</p>
+      <p><strong>目标：走到发光出口。</strong> 程序从左到右执行，第三格之后回到第一格。</p>
+      <p>交换只对调脚下符文与下一格程序。地面不会自行执行，换进程序才会生效；被换出去的指令留在地面，仍可再次取回。</p>
+      <p>点击程序格会先回到起点，再编辑起始程序。“重来”保留起始程序，“撤回”恢复上一步的整个世界。</p>
       <button id="replay-guide" class="secondary-button" type="button">重新看引导</button>
     </section>
-    <nav class="chapters" id="chapters" aria-label="选择章节"></nav>
-    <main class="workspace">
-      <section class="world-panel" aria-label="游戏世界">
-        <div class="world-heading"><div><p class="eyebrow" id="chapter-eyebrow">CHAPTER 01</p><h1 id="chapter-title">留下这一刻</h1></div><button id="run" class="primary-button heading-run" type="button">运行</button></div>
-        <p id="mission" class="mission"></p>
-        <div id="lesson-guide" class="lesson-guide" aria-live="polite"></div>
-        <div class="scene-wrap"><svg id="scene" viewBox="120 140 760 510" role="img" aria-labelledby="scene-title scene-description"></svg><span class="scene-coordinate">MIDNIGHT / 02:00</span><div class="memory-card"><span>记忆符印</span><strong id="memory-value">暗</strong><span class="memory-orb" id="memory-orb" aria-hidden="true"></span></div></div>
-        <div class="object-buttons" id="object-buttons" role="group" aria-label="查看世界对象"></div>
-        <div class="object-inspector" id="object-inspector" aria-live="polite"></div>
-        <div class="execution-bar"><div class="execution-state"><span id="status-dot" class="status-dot"></span><strong id="run-status">等待协议</strong><span id="step-count">00 步</span></div><span id="actor-state"></span></div>
-        <div class="transport"><button id="step" class="secondary-button" type="button">看一步</button><button id="reset" class="secondary-button" type="button">重新开始</button><button id="lens-toggle" class="lens-toggle" type="button" aria-pressed="false">查看连接</button><label class="speed-label">速度<select id="speed" aria-label="执行速度"><option value="1050">慢速</option><option value="700" selected>正常</option><option value="380">快速</option></select></label></div>
-        <div id="event-message" class="event-message" role="status" aria-live="polite">先运行一次，观察纸灵的选择。</div>
-        <section id="completion" class="completion" hidden><div><span class="eyebrow">PROTOCOL ACCEPTED</span><h2>契约重新生效。</h2><p id="insight"></p></div><button id="next-level" class="primary-button" type="button">下一章</button></section>
-        <details class="trace-panel"><summary>执行记录 <span id="trace-count">0</span></summary><ol id="trace-list"></ol></details>
-      </section>
-      <aside class="program-panel" aria-label="纸灵编程编辑器">
-        <div class="program-header"><div><span class="eyebrow">PAPER SPIRIT / PROGRAM</span><h2>纸灵的指令卡</h2></div><span id="rule-count" class="rule-count">3 张卡</span></div>
-        <div class="priority-label"><span>上面的动作优先</span><button id="advanced-toggle" class="quiet-button" type="button" aria-pressed="false">展开全部条件</button></div>
-        <div id="rule-list" class="rule-list"></div>
-        <button id="add-rule" class="add-rule" type="button">添加指令卡</button>
-        <div class="program-tools"><button id="hint" class="quiet-button" type="button">提示</button><button id="reference" class="quiet-button" type="button">参考协议</button><button id="starter" class="quiet-button" type="button">重置指令卡</button></div>
-        <p id="hint-text" class="hint-text" hidden></p>
-        <div id="reference-tools" class="reference-tools" hidden><button id="reference-main" class="secondary-button" type="button">载入参考协议</button><button id="reference-alt" class="secondary-button" type="button" hidden>载入另一种解法</button><button id="restore-draft" class="quiet-button" type="button" hidden>恢复我的协议</button></div>
-        <div class="program-footnote"><span class="paper-fold" aria-hidden="true"></span><p>改变顺序。<br>看见不同的世界。</p></div>
-      </aside>
+    <nav id="chapters" class="chapters" aria-label="选择关卡"></nav>
+    <main>
+      <div class="world-heading">
+        <div><p class="eyebrow" id="chapter-eyebrow"></p><h1 id="chapter-title"></h1></div>
+        <span class="goal-label">走到发光出口</span>
+      </div>
+      <div class="workspace">
+        <section class="world-panel" aria-label="符文庭院">
+          <div class="scene-wrap">
+            <svg id="scene" role="group" aria-label="游戏地面"></svg>
+            <div class="scene-caption"><span id="actor-state"></span><span id="step-count"></span></div>
+          </div>
+          <p id="tile-inspector" class="tile-inspector" hidden></p>
+        </section>
+        <aside class="program-panel" aria-label="纸灵编程">
+          <div class="program-heading"><div><span class="eyebrow">PAPER SPIRIT / PROGRAM</span><h2>三格程序</h2></div><span id="next-slot" class="next-slot"></span></div>
+          <div id="program" class="program" role="group" aria-label="编辑程序"></div>
+          <div class="program-loop">1 → 2 → 3 → 1</div>
+          <div id="palette" class="palette" hidden><p id="palette-title"></p><div id="palette-options"></div></div>
+          <p id="draft" class="draft" hidden></p>
+          <div class="transport">
+            <button id="run" class="primary-button" type="button">运行</button>
+            <button id="step" class="secondary-button" type="button">一步</button>
+            <button id="undo" class="quiet-button" type="button">撤回</button>
+            <button id="reset" class="quiet-button" type="button">重来</button>
+          </div>
+          <div id="exchange-preview" class="exchange-preview" aria-label="交换预览"></div>
+          <p id="event-message" class="event-message" role="status" aria-live="polite"></p>
+          <section id="completion" class="completion" hidden><span class="eyebrow">PROTOCOL ACCEPTED</span><h3>纸灵找到了出口。</h3><p id="insight"></p><button id="next-level" class="primary-button" type="button">下一关</button></section>
+          <div class="program-tools"><button id="hint" class="quiet-button" type="button">一点提示</button><button id="starter" class="quiet-button" type="button">清空改动</button></div>
+          <p id="hint-text" class="hint-text" hidden></p>
+          <details class="trace-panel"><summary>发生了什么 <span id="trace-count"></span></summary><ol id="trace-list"></ol></details>
+        </aside>
+      </div>
     </main>
-    <footer class="footer"><span>夜校协议</span><span>规则相同，发现不同。</span><span>FIRST PLAYABLE / v0.1</span></footer>
+    <footer class="footer"><span>夜校协议</span><span>世界写进程序，程序留在世界。</span><span>FIRST EXPERIMENT / v0.2</span></footer>
   </div>
   <script type="module" src="./app.js"></script>
 </body>
