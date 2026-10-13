@@ -2,7 +2,11 @@
 
 本文件负责项目背景、目标、来源与总体范围。续写更新当前状态；具体规则写入 `docs/FINAL_GAME_PLAN.md`，实现与验证进入 `docs/NIGHT_WHITE_DEMO.md`，经过写入 `log.md`。
 
-## 当前方向
+## 当前原生路线
+
+用户新增完整开发计划 v1.2，最终产物为 Godot 4.7.2 标准版、Forward+/Metal、macOS arm64 原生包。当前已完成 P00 空工程与运行器/导出验收，尚未实现原生五关；详情见 [原生状态](docs/NATIVE_DEMO_STATUS.md)。三份原文与批准的参考图按哈希归档，见 [来源清单](docs/source_manifest.json)。原网页只作历史参考。
+
+## 原型方向沿革
 
 The Midnight Academy 主题下的空间机制解谜小游戏，当前名为《夜白映射》，仓库仍为 von-neumann-dreams。
 
@@ -30,6 +34,6 @@ The Midnight Academy 主题下的空间机制解谜小游戏，当前名为《�
 
 ## Git
 
-远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前分支 `codex/night-white-demo`。刻轨版 `f4705f7`、指令交换试验 `480d261`、首版 `eb63a22` 均可恢复。
+远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前分支 `codex/godot-plan-v1-2`。刻轨版 `f4705f7`、指令交换试验 `480d261`、首版 `eb63a22` 均可恢复。
 
-本轮远程更新连接超时，未取得更新后的远程状态，未推送；后续合并前需重新获取远程。
+本轮已成功获取远程，origin/main仍为49eebbe；没有新的远程提交待整合，未推送、合并或发布。

@@ -6,7 +6,7 @@
 
 - 全程使用中文沟通，默认环境为 Apple Silicon Mac。
 - 接手时先阅读 `PROJECT_INTRODUCTION.md`、本文件、`README.md`、`log.md` 和相关设计文档，以当前文件与 Git 状态为准。
-- 当前已进入可玩原型阶段；已实现范围与验证结果以 `docs/NIGHT_WHITE_DEMO.md`、源码和检查记录为准；旧版本由历史文档与 Git 保留。
+- 当前已进入可玩原型阶段；已实现范围与验证结果以 `docs/NATIVE_DEMO_STATUS.md`、验收登记、源码和检查记录为准；旧版本由历史文档与 Git 保留。
 - 区分来源内容、合并建议、已实现功能和验证结果。概念笔记中的示例不作为已批准的功能规格或已验证的数据。
 - 保持来源可追溯，不修改用户 Downloads 或 Desktop 中的原始设计笔记；来源快照记录路径与校验值，开发指令以用户要求为准。
 - 规范维护 Git，大体积构建产物、安装包、本地配置和临时验证文件加入 `.gitignore`。
@@ -22,7 +22,10 @@
 | `docs/DEMO_V1.md` | 第一版历史实现与验证结果 | 保留版本范围，不把当前源码视为首版 |
 | `docs/DEMO_V2.md` | 第二版指令交换历史范围与检查 | 明确历史快照，不能当作当前源码状态 |
 | `docs/MAPPING_DEMO.md` | 刻轨映射历史范围与检查 | 明确对应历史快照，不能当作当前源码状态 |
-| `docs/NIGHT_WHITE_DEMO.md` | 当前夜白五关范围、操作、验证与灰盒边界 | 只记录实际行为和检查，来源自述与玩家体验单独标注 |
+| `docs/NIGHT_WHITE_DEMO.md` | 历史网页五关范围与检查 | 明确历史版本，不能转标原生通过 |
+| `docs/NATIVE_DEMO_STATUS.md` | 当前原生阶段、运行和验证范围 | 关联实际被测提交与证据，不把未执行项算通过 |
+| `docs/acceptance/` | 阶段预期、状态和证据摘要 | 只有PASS计入完成，保留失败与修复历史 |
+| `docs/requirements_gap_analysis.md` | 新要求与现场差距 | 随实际证据更新可复用、迁移和外部条件 |
 | `docs/sources/` | 来源文档完整快照与出处 | 不改来源原文；新版本另存并记录校验值 |
 | `THIRD_PARTY_NOTICES.md` | 第三方素材来源与许可 | 按实际使用维护，分发产物保留所需许可 |
 | `docs/NIGHT_SCHOOL_PROTOCOL_DESIGN.md` | 合并玩法、候选规则、原型与验证目标 | 保持草案状态，明确新增建议与待验证项 |

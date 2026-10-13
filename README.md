@@ -6,54 +6,53 @@
 
 ## 午夜学院 · 夜白映射
 
-当前为 GPT-6 Astra 制作的五关可玩灰盒，采用用户最新五关设计：**一次推动，两端独立受阻；真实状态留下，虚影依赖唯一映射。** 原刻轨版本保存为 `f4705f7`。
+当前按用户的开发计划 v1.2 迁移到 **Godot 4.7.2 / Forward+ / Metal / macOS arm64**。P00 原生启动、测试运行器与干净导出已通过；原生五关玩法、完整视觉和真人验收尚未完成。
 
-点真实物件预览 → 激活映射 → 左右推动。点地面 / WASD 走路；V 只切观察，站在 P1/P2 上按 F 穿门才改变身体世界。E 激活、Q 解除、方向键推动、Z 撤销，均有按钮。
+当前分支 `codex/godot-plan-v1-2`。进度以 [原生状态](docs/NATIVE_DEMO_STATUS.md)、[差距审查](docs/requirements_gap_analysis.md) 和 [验收登记](docs/acceptance/registry.json) 为准，旧网页结果不转标原生通过。
 
-五关全部可选，也能顺序继续。提示主动查看；桥上误解除可以撤销或恢复完整安全点。
+## 原生运行与验证
 
-## 运行与检查
-
-需要 Node.js 20 或更新版本，无第三方运行依赖。
+锁定编辑器与同版本模板；参数、设备及实际证据见 [验收基线](docs/acceptance_baseline.md)。完整命令见 [原生状态](docs/NATIVE_DEMO_STATUS.md)。当前可运行的原生包只是 P00 空工程。
 
 ```bash
-npm run dev
+export DEMO_GODOT_BIN="/path/to/Godot.app/Contents/MacOS/Godot"
+"$DEMO_GODOT_BIN" --path .
+python3 tools/verify.py --stage P00 --engine "$DEMO_GODOT_BIN" --window-probe --report-dir artifacts/acceptance/P00
 ```
 
-打开 [本地 Demo](http://127.0.0.1:5173/)。服务只监听本机，`Ctrl+C` 停止。端口占用可用 `DEMO_PORT=5174 npm run dev`。
+没有独立导出证据时，以上阶段报告会保留未执行项。只有全部必需检查通过才能记 PASS；空套件和未来能力不伪装通过。构建从已提交的干净源码归档产生，详情见原生状态文档。
+
+## 历史网页试验
+
+网页五关保存在 `66fb648`，Three.js 双世界立体呈现试验保存在 `74ab81d`。现有 [本地网页预览](http://127.0.0.1:5173/) 可作对照，采用旧离散规则及 V 观察，不是新计划的原生交付。
 
 ```bash
+npm ci
+npm run dev
 npm test
-npm run verify:puzzles
 npm run build
 ```
 
-23 项规则检查通过，五关参考与合法替代路线成立；五关已通过本地浏览器正常操作验收。没有独立新玩家趣味测试。
+Node.js 20+；Three.js 与 esbuild 版本锁定，无运行时 CDN。构建输出保持 Git 忽略。该网页呈现版本未完成全关视觉验收；详见 [网页试验记录](docs/WEB_DIORAMA_WIP.md)。
 
-构建生成 `dist/index.html`，内联全部脚本、样式、图标与许可，不请求外部资源；产物保持 Git 忽略。当前浏览器验收用本地 HTTP，离线打开与断网验收未完成。
+## 需求与文档
 
-此版使用二维离散灰盒，优先检验完整五关、独立阻挡、支撑与恢复。完整美术、连续三维物理与音效不在本次实现内，实际边界见 Demo 文档。
+- [三份原始来源](docs/sources/native_v1.2/SOURCES.md)：PRD 定规则，五关稿定内容，开发计划定技术和验收。
+- [source_manifest.json](docs/source_manifest.json)：来源哈希、旧原图身份与用户批准的新视觉基线。
+- [NATIVE_DEMO_STATUS.md](docs/NATIVE_DEMO_STATUS.md)：当前阶段、实际运行与验证范围。
+- [requirements_gap_analysis.md](docs/requirements_gap_analysis.md)：可复用、需补齐、需迁移和外部条件。
+- [acceptance_baseline.md](docs/acceptance_baseline.md)：冻结参数、证据格式与状态语义。
+- [PROJECT_INTRODUCTION.md](PROJECT_INTRODUCTION.md)：背景、历史和当前范围。
+- [AGENTS.md](AGENTS.md)：协作与文档边界；[log.md](log.md)：实际变更和检查。
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：已用依赖与素材许可。
 
-## 文档
-
-- [docs/FINAL_GAME_PLAN.md](docs/FINAL_GAME_PLAN.md)：当前双世界规则、五关与参赛表达。
-- [docs/NIGHT_WHITE_DEMO.md](docs/NIGHT_WHITE_DEMO.md)：操作、实际验证与灰盒边界。
-- [docs/sources/夜白映射_五关关卡设计.md](docs/sources/夜白映射_五关关卡设计.md)：当前批准的五关原文快照。
-- [PROJECT_INTRODUCTION.md](PROJECT_INTRODUCTION.md)：背景、来源与当前范围。
-- [docs/MECHANIC_EXPLORATION.md](docs/MECHANIC_EXPLORATION.md)：机制候选、后果与取舍经过。
-- [docs/MAPPING_DEMO.md](docs/MAPPING_DEMO.md)：刻轨版 `f4705f7` 的历史实现与检查。
-- [docs/DEMO_V2.md](docs/DEMO_V2.md)：指令交换试验 `480d261`。
-- [docs/DEMO_V1.md](docs/DEMO_V1.md)：亮暗符印原型 `eb63a22`。
-- [docs/NIGHT_SCHOOL_PROTOCOL_DESIGN.md](docs/NIGHT_SCHOOL_PROTOCOL_DESIGN.md)：早期构思历史草案。
-- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：Lucide 图标来源与许可。
-- [AGENTS.md](AGENTS.md)：协作、文档职责与续写约定。
-- [log.md](log.md)：实际修改与检查记录。
+五关不能改图、目标、出口或启用 G5 备用简化来通过验收。真实玩家尚未安排，工程/关卡/前端/玩法理解分别报告。
 
 ## Git
 
-远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前分支 `codex/night-white-demo`。原刻轨分支 `codex/correspondence-demo` 与旧试验均保留。`main` 跟踪 `origin/main`，原设计历史在 `codex/design-history`。
+远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。本轮获取成功，远程 `main` 仍为 `49eebbe`，没有新的远程提交需要整合。只做本地阶段提交，未推送、合并或发布。
 
-本轮远程更新连接超时，未取得更新后的远程状态，未推送；合并前需重新获取远程。阶段改动审查后本地提交，采用 `codex/` 分支前缀。
+旧刻轨版本 `f4705f7`、指令交换 `480d261`、首版 `eb63a22` 和设计历史均保留。缓存、SDK、导出包和完整录像 / 日志进入 Git 忽略目录。
 
 ## 欢迎来到我们的编程马拉松仓库喵
 
