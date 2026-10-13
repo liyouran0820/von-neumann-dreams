@@ -1,0 +1,392 @@
+{
+  "date": "2026-10-14",
+  "scope": "手工录入的独立格点模型，复用网页反射/逻辑函数；不驱动游戏、不验证连续体积或十三关全量",
+  "document_sha256": "bcb1d62ab681976a87a8b11ce9e377b318a84617d774a5156c392c3a3cae4fef",
+  "model_sha256": "deadedfd3686209893db73f0e153c7ed2e12e80a11587c09dc812dfdadde2255",
+  "science_sha256": "703fb76e1d8f56ff6c1971837ebef5cd61403faf6cd73237bdf336493dd23dc2",
+  "checks": [
+    {
+      "name": "06 固定反射段、光幕遮断及人物参考回放",
+      "status": "PASS",
+      "details": {
+        "reflected_path": [
+          {
+            "from": [
+              2,
+              0
+            ],
+            "to": [
+              5,
+              0
+            ],
+            "emitter": "E"
+          },
+          {
+            "from": [
+              5,
+              0
+            ],
+            "to": [
+              5,
+              2
+            ],
+            "emitter": "E"
+          }
+        ],
+        "pushed_state": {
+          "r": 5,
+          "g": 5,
+          "body": [
+            4,
+            1
+          ]
+        },
+        "final": {
+          "r": 4,
+          "g": null,
+          "body": [
+            8,
+            3
+          ]
+        },
+        "unmap_effect": "L=1、Y=0，H失去支撑"
+      }
+    },
+    {
+      "name": "07 双侧真实反射、40种轨位及两条参考回放",
+      "status": "PASS",
+      "details": {
+        "enumerated_positions": 40,
+        "both_dark_positions_r_g": [
+          [
+            3,
+            6
+          ]
+        ],
+        "finals": [
+          {
+            "route": "body-stop",
+            "state": {
+              "r": 3,
+              "g": 6,
+              "body": [
+                8,
+                4
+              ]
+            },
+            "LN": false,
+            "LW": false
+          },
+          {
+            "route": "track-stop",
+            "state": {
+              "r": 3,
+              "g": 6,
+              "body": [
+                8,
+                4
+              ]
+            },
+            "LN": false,
+            "LW": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "12 两面镜子四种光路与NAND实算",
+      "status": "PASS",
+      "details": [
+        {
+          "M1": "/",
+          "M2": "/",
+          "a": 0,
+          "b": 0,
+          "Y": 1
+        },
+        {
+          "M1": "/",
+          "M2": "\\",
+          "a": 0,
+          "b": 1,
+          "Y": 1
+        },
+        {
+          "M1": "\\",
+          "M2": "/",
+          "a": 1,
+          "b": 0,
+          "Y": 1
+        },
+        {
+          "M1": "\\",
+          "M2": "\\",
+          "a": 1,
+          "b": 1,
+          "Y": 0
+        }
+      ]
+    },
+    {
+      "name": "13 轨靶/反射受光/压板八种组合及两级输出",
+      "status": "PASS",
+      "details": [
+        {
+          "p": 0,
+          "L": 0,
+          "a": 0,
+          "b": 0,
+          "C": 1,
+          "Y": 0
+        },
+        {
+          "p": 0,
+          "L": 0,
+          "a": 0,
+          "b": 1,
+          "C": 1,
+          "Y": 0
+        },
+        {
+          "p": 0,
+          "L": 1,
+          "a": 0,
+          "b": 0,
+          "C": 1,
+          "Y": 0
+        },
+        {
+          "p": 0,
+          "L": 1,
+          "a": 0,
+          "b": 1,
+          "C": 1,
+          "Y": 0
+        },
+        {
+          "p": 1,
+          "L": 0,
+          "a": 0,
+          "b": 0,
+          "C": 1,
+          "Y": 0
+        },
+        {
+          "p": 1,
+          "L": 0,
+          "a": 0,
+          "b": 1,
+          "C": 1,
+          "Y": 0
+        },
+        {
+          "p": 1,
+          "L": 1,
+          "a": 1,
+          "b": 0,
+          "C": 1,
+          "Y": 0
+        },
+        {
+          "p": 1,
+          "L": 1,
+          "a": 1,
+          "b": 1,
+          "C": 0,
+          "Y": 1
+        }
+      ]
+    },
+    {
+      "name": "13 完整参考回放：先校准，后转镜",
+      "status": "PASS",
+      "details": [
+        {
+          "stage": "左岸准备",
+          "state": {
+            "A": [
+              2,
+              2
+            ],
+            "K": [
+              3,
+              2
+            ],
+            "M": "/",
+            "active": "A",
+            "body": [
+              3,
+              1
+            ],
+            "failed": false
+          },
+          "signals": {
+            "p": true,
+            "L": false,
+            "a": false,
+            "b": true,
+            "C": true,
+            "Y": false
+          }
+        },
+        {
+          "stage": "中庭补齐条件",
+          "state": {
+            "A": [
+              2,
+              2
+            ],
+            "K": [
+              3,
+              2
+            ],
+            "M": "\\",
+            "active": "A",
+            "body": [
+              6,
+              3
+            ],
+            "failed": false
+          },
+          "signals": {
+            "p": true,
+            "L": true,
+            "a": true,
+            "b": true,
+            "C": false,
+            "Y": true
+          }
+        },
+        {
+          "stage": "换B并抵达出口",
+          "state": {
+            "A": [
+              2,
+              2
+            ],
+            "K": [
+              3,
+              2
+            ],
+            "M": "\\",
+            "active": "B",
+            "body": [
+              11,
+              3
+            ],
+            "failed": false
+          },
+          "signals": {
+            "p": true,
+            "L": true,
+            "a": true,
+            "b": true,
+            "C": false,
+            "Y": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 完整参考回放：先转镜，后校准",
+      "status": "PASS",
+      "details": [
+        {
+          "stage": "左岸准备",
+          "state": {
+            "A": [
+              1,
+              1
+            ],
+            "K": [
+              3,
+              2
+            ],
+            "M": "\\",
+            "active": "A",
+            "body": [
+              3,
+              1
+            ],
+            "failed": false
+          },
+          "signals": {
+            "p": false,
+            "L": true,
+            "a": false,
+            "b": true,
+            "C": true,
+            "Y": false
+          }
+        },
+        {
+          "stage": "中庭补齐条件",
+          "state": {
+            "A": [
+              2,
+              2
+            ],
+            "K": [
+              3,
+              2
+            ],
+            "M": "\\",
+            "active": "A",
+            "body": [
+              6,
+              3
+            ],
+            "failed": false
+          },
+          "signals": {
+            "p": true,
+            "L": true,
+            "a": true,
+            "b": true,
+            "C": false,
+            "Y": true
+          }
+        },
+        {
+          "stage": "换B并抵达出口",
+          "state": {
+            "A": [
+              2,
+              2
+            ],
+            "K": [
+              3,
+              2
+            ],
+            "M": "\\",
+            "active": "B",
+            "body": [
+              11,
+              3
+            ],
+            "failed": false
+          },
+          "signals": {
+            "p": true,
+            "L": true,
+            "a": true,
+            "b": true,
+            "C": false,
+            "Y": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 提前补齐受阻、桥上转走光失支撑及模型快照恢复",
+      "status": "PASS",
+      "details": {
+        "early_front_bridge": "C=0，不能跨越",
+        "rear_rotate_failure": "EXPECTED_SUPPORT_LOSS",
+        "model_snapshot_restore": "PASS",
+        "absent_track_target": "Y=0",
+        "note": "不是游戏撤销或灰盒验收"
+      }
+    }
+  ]
+}

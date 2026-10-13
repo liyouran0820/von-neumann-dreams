@@ -68,9 +68,24 @@
         "第四关融入第二关错位校准，双门采用XOR与AND",
         "移除不必要建筑和独立平台，扩大齐平活动区域",
         "第五关只有一对真实物体，两个世界各一个压板，用推力传递与独立阻挡同时接通AND，再激活白桥并映到夜侧",
-        "已学特性后续解谜不能过于简单"
+        "已学特性后续解谜不能过于简单",
+        "把当前版本的镜面反射光源设计融合进2.0关卡，不需要专门设计该机制的教学关"
       ],
       "fifth_level_cross_world_and": "本关专用的明确修订；其余物理电路仍采用本世界输入",
+      "implemented_in_game": false
+    },
+    {
+      "id": "development-plan-v2.0",
+      "date": "2026-10-14",
+      "document": "开发计划v2.0.md",
+      "level_design": "关卡设计v2.0.md",
+      "requirements": [
+        "基于原版本进行关卡更新，以关卡设计v2.0为参考制作关卡",
+        "不要删去原版本的关卡，并考虑新关卡对原有版本的影响",
+        "优先复用现有系统、脚本、组件和资源，不进行没有必要的大规模重构",
+        "新关卡、新机制的UI外观设计语言与原先版本保持一致"
+      ],
+      "implementation_basis": "以现有可玩网页作为本计划的增量基础，保留原关卡集，新增独立十三关；原生迁移另行记录",
       "implemented_in_game": false
     }
   ],
@@ -94,5 +109,6 @@
     }
   ],
   "current_web_spec": "docs/LOGIC_GATES_CURRICULUM.md",
-  "current_level_design": "关卡设计v2.0.md"
+  "current_level_design": "关卡设计v2.0.md",
+  "current_incremental_development_plan": "开发计划v2.0.md"
 }
