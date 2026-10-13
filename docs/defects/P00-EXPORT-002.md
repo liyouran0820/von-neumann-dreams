@@ -8,3 +8,7 @@
 - 依据：[Godot官方macOS导出平台说明](https://docs.godotengine.org/en/stable/classes/class_editorexportplatformmacos.html#class-editorexportplatformmacos-property-binary-format-architecture)明确支持arm64，但官方模板只带Universal二进制。
 - 修复方式：构建工具从同版本官方模板提取arm64切片，生成专用模板；原下载模板保持不变。记录来源和派生哈希，仍要求最终可执行文件只有arm64、签名有效且独立以Metal启动。不改用Universal包放宽门槛。
 - 复验：待修复提交后干净归档构建。
+
+## 结案
+
+在 `4c2fbcb39ede1c0ad4798fa9d8189040845bb414` 的干净归档导出与独立Metal运行中复验通过，原失败记录保留。阶段摘要见 `../acceptance/P00-4c2fbcb.json`。

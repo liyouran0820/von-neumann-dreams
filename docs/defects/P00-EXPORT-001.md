@@ -10,3 +10,7 @@
 - 原始报告：`artifacts/build/p00-bootstrap-macos.failed-77a2805.report.json`，含完整命令和原始输出，产物目录保持Git忽略。
 - 修复：启用对应平台必需的ETC2/ASTC导入选项；不改Forward+/Metal、MSAA、渲染比例或玩法参数。
 - 复验：待修复提交后的干净归档构建与独立窗口启动。
+
+## 结案
+
+在 `4c2fbcb39ede1c0ad4798fa9d8189040845bb414` 的干净归档导出与独立Metal运行中复验通过，原失败记录保留。阶段摘要见 `../acceptance/P00-4c2fbcb.json`。

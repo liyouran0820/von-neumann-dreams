@@ -26,5 +26,5 @@
   "focus_key": "Tab",
   "reference_sha256": "84949b06d212237b82fbc386d83a377ab6633302384e7cf7a2ce7a605246716b",
   "quality_profile_status": "NOT_IMPLEMENTED",
-  "native_driver_verification": "NOT_RUN"
+  "native_driver_verification": "PASS"
 }

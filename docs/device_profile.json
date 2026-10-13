@@ -31,6 +31,12 @@
       1440
     ]
   ],
-  "metal_actual_run": "NOT_RUN",
-  "serials_recorded": false
+  "metal_actual_run": "PASS",
+  "serials_recorded": false,
+  "measured_gpu": "Apple M4 (Apple9)",
+  "measured_window_size": [
+    1920,
+    1080
+  ],
+  "native_probe_source_commit": "4c2fbcb39ede1c0ad4798fa9d8189040845bb414"
 }

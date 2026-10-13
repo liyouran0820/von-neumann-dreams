@@ -1,0 +1,137 @@
+{
+  "stage_id": "P00",
+  "status": "PASS",
+  "tested_source_commit": "4c2fbcb39ede1c0ad4798fa9d8189040845bb414",
+  "engine_version": "4.7.2.stable.official.ed1daf0bf",
+  "rendering_method": "forward_plus",
+  "rendering_driver": "metal",
+  "device": "Apple M4 (Apple9)",
+  "window_size": [
+    1920,
+    1080
+  ],
+  "independent_worlds": true,
+  "checks": [
+    {
+      "id": "P00-ENGINE",
+      "status": "PASS",
+      "expected": "4.7.2.stable.official.ed1daf0bf",
+      "actual": "PASS"
+    },
+    {
+      "id": "P00-SOURCE-夜白映射_PRD.md",
+      "status": "PASS",
+      "expected": "954301c43117595598d8e345a671244324892a42a421d5b6674d5389df69eff9",
+      "actual": "PASS"
+    },
+    {
+      "id": "P00-SOURCE-夜白映射_五关关卡设计.md",
+      "status": "PASS",
+      "expected": "fcd70bf5577d83481d86044145a4fe36311e02c50d569c302ca5a8181ae209d2",
+      "actual": "PASS"
+    },
+    {
+      "id": "P00-SOURCE-夜白映射_Demo开发计划.md",
+      "status": "PASS",
+      "expected": "5fb57007eec5eec75168463a23c17edf507ebb47fcf5b442d4b5801fc31519f7",
+      "actual": "PASS"
+    },
+    {
+      "id": "P00-REFERENCE",
+      "status": "PASS",
+      "expected": "84949b06d212237b82fbc386d83a377ab6633302384e7cf7a2ce7a605246716b",
+      "actual": "PASS"
+    },
+    {
+      "id": "P00-RUNNER-runner-pass",
+      "status": "PASS",
+      "expected": {
+        "exit": 0,
+        "raw_status": "PASS"
+      },
+      "actual": {
+        "exit": 0,
+        "raw_status": "PASS"
+      }
+    },
+    {
+      "id": "P00-RUNNER-runner-fail",
+      "status": "PASS",
+      "expected": {
+        "exit": 1,
+        "raw_status": "FAIL"
+      },
+      "actual": {
+        "exit": 1,
+        "raw_status": "FAIL"
+      }
+    },
+    {
+      "id": "P00-RUNNER-empty",
+      "status": "PASS",
+      "expected": {
+        "exit": 2,
+        "raw_status": "NOT_IMPLEMENTED"
+      },
+      "actual": {
+        "exit": 2,
+        "raw_status": "NOT_IMPLEMENTED"
+      }
+    },
+    {
+      "id": "P00-NATIVE-WINDOW",
+      "status": "PASS",
+      "expected": "Actual Forward+/Metal, independent worlds, 4x MSAA / 100%",
+      "actual": "PASS"
+    },
+    {
+      "id": "P00-EXPORT",
+      "status": "PASS",
+      "expected": "Clean source export, arm64 standalone Metal run for tested SHA",
+      "actual": "PASS"
+    },
+    {
+      "id": "P00-CLEAN-SOURCE",
+      "status": "PASS",
+      "expected": "Committed source; generated artifacts ignored",
+      "actual": "PASS"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "artifacts/acceptance/P00/4c2fbcb/report.json",
+      "sha256": "fde2af4e462c399b7f64de98e45a84fd033a255ca4aa0e9be685bcaa5cf4fefa"
+    },
+    {
+      "path": "artifacts/acceptance/P00/4c2fbcb/empty.json",
+      "sha256": "2a7c98e240bd9b4e7ce354ef403b6d8d352c5a0cdc455add1a9befa107f47e06"
+    },
+    {
+      "path": "artifacts/acceptance/P00/4c2fbcb/runner-pass.json",
+      "sha256": "9d1b9fb4dfc5053f9490798d244b3fd92de0afeb118c6f14369865f86832278d"
+    },
+    {
+      "path": "artifacts/acceptance/P00/4c2fbcb/native-window.json",
+      "sha256": "24a2eda9a64e879456dab55929f9c7694158d819b17d7b5c3b39cff7e923f799"
+    },
+    {
+      "path": "artifacts/acceptance/P00/4c2fbcb/runner-fail.json",
+      "sha256": "cb0e2919e3e29d18dd58a6c8999ea49a265baf4449784620496e3aa71abc10c8"
+    },
+    {
+      "path": "artifacts/build/p00-bootstrap-macos.report.json",
+      "sha256": "ece3cd0e7d55d4b816d34146012015ba38612fed347e414915eb0f0ff4f3b9d6"
+    },
+    {
+      "path": "artifacts/build/p00-bootstrap-macos.runtime.json",
+      "sha256": "5b2fd94694906481118e77e1472b951aa720542c78c262f9fdec3fb3e821d28f"
+    }
+  ],
+  "native_package_sha256": "be908de85562181ee61b453878fa268ab29d8fe1e6b1be9d3588d7e6423998c5",
+  "scope": "Empty native bootstrap and runner only; no P01-P09/K/U gameplay or visual acceptance implied",
+  "defects_resolved": [
+    "P00-EXPORT-001",
+    "P00-EXPORT-002",
+    "P00-EXPORT-003"
+  ]
+}

@@ -16,3 +16,7 @@
 将完全相同的ZIP（SHA-256 `0ef28e87152f6fe24a5dd6e63e5f9eae8925a50b736e6daaa579d1fd50a1e707`）解压到非同步的系统临时目录，无FinderInfo，严格签名验证立即退出0。未修改包字节或安全属性。诊断原文在`artifacts/build/p00-metadata-location-diagnostic.json`。
 
 最终修复改为在独立非同步目录检查和运行解包应用，取消元数据删除步骤。来源Git检出、设备、签名标准、渲染器和画质保持原标准；后续正式构建报告记录真实解包路径。
+
+## 结案
+
+在 `4c2fbcb39ede1c0ad4798fa9d8189040845bb414` 的干净归档导出与独立Metal运行中复验通过，原失败记录保留。阶段摘要见 `../acceptance/P00-4c2fbcb.json`。

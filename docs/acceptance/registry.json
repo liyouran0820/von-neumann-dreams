@@ -605,17 +605,21 @@
       "id": "P00-1",
       "title": "scaffold/export",
       "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
-      "status": "FAIL",
+      "status": "PASS",
       "evidence": [
-        "docs/defects/P00-EXPORT-001.md"
-      ]
+        "docs/acceptance/P00-4c2fbcb.json"
+      ],
+      "tested_source_commit": "4c2fbcb39ede1c0ad4798fa9d8189040845bb414"
     },
     {
       "id": "P00-2",
       "title": "baseline/tests",
       "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
-      "status": "NOT_RUN",
-      "evidence": []
+      "status": "PASS",
+      "evidence": [
+        "docs/acceptance/P00-4c2fbcb.json"
+      ],
+      "tested_source_commit": "4c2fbcb39ede1c0ad4798fa9d8189040845bb414"
     },
     {
       "id": "P01-1",
@@ -1092,10 +1096,11 @@
       "id": "P00",
       "title": "P00",
       "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
-      "status": "FAIL",
+      "status": "PASS",
       "evidence": [
-        "docs/defects/P00-EXPORT-001.md"
-      ]
+        "docs/acceptance/P00-4c2fbcb.json"
+      ],
+      "tested_source_commit": "4c2fbcb39ede1c0ad4798fa9d8189040845bb414"
     },
     {
       "id": "P01",
@@ -1234,9 +1239,9 @@
       "id": "A00",
       "title": "A00",
       "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
-      "status": "FAIL",
+      "status": "PASS",
       "evidence": [
-        "docs/defects/P00-EXPORT-001.md"
+        "docs/acceptance/P00-4c2fbcb.json"
       ],
       "expected_items": [
         "从干净检出可导入并启动空工程；可导出并打开最小 macOS 包。",
@@ -1244,7 +1249,8 @@
         "没有执行的项目为 `NOT_RUN`；没有用例的套件不能报告通过。",
         "Git 基线包含 PRD、开发计划、参数、设备表与验收定义；缓存、机器秘密和导出包不入库。",
         "原始视觉参考按原文件哈希入库，设备支持所选渲染器/驱动；独立运行包没有依赖编辑器预览环境或静默画质回退。"
-      ]
+      ],
+      "tested_source_commit": "4c2fbcb39ede1c0ad4798fa9d8189040845bb414"
     },
     {
       "id": "A01",
