@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createDiorama } from '../../web/renderer.js';
 import * as G from '../../web/engine.js';
 import { ACADEMY_LEVELS } from '../../web/academy-levels.js';
-import { verifyImpact, verifyFall, verifySinglePush } from './motion-checks.js';
+import { verifyImpact, verifyFall, verifyBlockedPush } from './motion-checks.js';
 
 // Test-only clock and scene capture; production exposes no debug state.
 let now=0,id=0,frames=new Map(),level,state,view;
@@ -38,15 +38,16 @@ window.motionTest={load,dispatch,bind,walk,step,metrics,show,update,preview,prep
 load();
 document.getElementById('verify-impact').onclick=async()=>{const result=await verifyImpact(window.motionTest);document.getElementById('report').textContent=JSON.stringify(result,null,2);};
 document.getElementById('verify-fall').onclick=async()=>{const result=await verifyFall(window.motionTest);document.getElementById('report').textContent=JSON.stringify(result,null,2);};
-document.getElementById('verify-single').onclick=async()=>{const result=await verifySinglePush(window.motionTest);document.getElementById('report').textContent=JSON.stringify(result,null,2);};
+document.getElementById('verify-single').onclick=async()=>{const result=await verifyBlockedPush(window.motionTest);document.getElementById('report').textContent=JSON.stringify(result,null,2);};
 document.getElementById('case').onchange=event=>{
  const kind=event.target.value;
  if(kind.startsWith('fall-')){
   prepareFall(kind==='fall-night'?'night':'day',kind==='fall-reduced');dispatch('unlink');
   step(kind==='fall-start'?140:kind==='fall-end'?900:kind==='fall-reduced'?0:450);
   if(kind==='fall-undo')dispatch('undo');
- }else if(kind==='single-arrival'){
-  load();bind('A');dispatch('push','right');step(190);step(65);
+ }else if(kind==='single-arrival'||kind==='blocked-single'){
+  load();bind('A');dispatch('push','right');step(190);
+  if(kind==='blocked-single')dispatch('push','right');step(65);
  }else{
   load(0,kind==='reduced');bind('A');window.motionTest.boxes(kind==='day-left'?{night:3,day:2}:{night:3,day:7});
   dispatch('push',kind==='day-left'?'left':'right');step(kind==='rebound'?162:kind==='finish'?360:65);show(kind==='day-left'?'day':'night');

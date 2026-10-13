@@ -9,7 +9,7 @@ export async function verifyImpact(motionTest) {
  try {
  await check('I01 同动、两种独立受阻、两侧同时受阻与撤销',async()=>{
   await run(()=>{motionTest.load();motionTest.bind('A');motionTest.dispatch('push','right');motionTest.step(200);});
-  assert((await metric('night')).crate.contact);neutral(await metric('day'));
+  for(const w of ['night','day'])neutral(await metric(w));
   await run(()=>motionTest.step(360));for(const w of ['night','day'])neutral(await metric(w));
   await run(()=>{motionTest.dispatch('push','right');motionTest.step(65);});
   let n=await metric('night'),d=await metric('day');assert(n.crate.offset>.06&&n.crate.scale[0]<.9&&n.crate.contact);neutral(d);assert.deepEqual(n.boxes,{night:3,day:4});
@@ -28,7 +28,7 @@ export async function verifyImpact(motionTest) {
   }
  });
  await check('I03 连续推动、观察/预览/缩放不重播及恢复/换关清理',async()=>{
-  await run(()=>{motionTest.load();motionTest.bind('A');motionTest.dispatch('push','right');motionTest.step(200);for(let i=0;i<20;i++){motionTest.dispatch('push','right');motionTest.step(25);}motionTest.step(190);motionTest.step(360);});
+  await run(()=>{motionTest.load();motionTest.bind('A');motionTest.dispatch('push','right');motionTest.step(200);for(let i=0;i<20;i++){motionTest.dispatch('push','right');motionTest.step(25);}motionTest.step(360);});
   for(const w of ['night','day'])neutral(await metric(w));
   await run(()=>{motionTest.dispatch('view',{world:'day',recordHistory:false});motionTest.update({instant:true});motionTest.bind('A');motionTest.zoom(.12);motionTest.step(400);});for(const w of ['night','day'])neutral(await metric(w));
   await run(()=>{motionTest.dispatch('push','right');motionTest.step(65);motionTest.dispatch('recover');motionTest.step(0);});for(const w of ['night','day'])neutral(await metric(w));
@@ -81,40 +81,45 @@ export async function verifyFall(t) {
   return {status:'PASS',checks};
  }catch(error){return {status:'FAIL',checks,error:error.stack};}
 }
-export async function verifySinglePush(t){
+export async function verifyBlockedPush(t){
  const checks=[];
- function assert(value,message='单击验收失败'){if(!value)throw Error(message);}
+ function assert(value,message='贴墙后推动验收失败'){if(!value)throw Error(message);}
  const equal=(a,b)=>assert(JSON.stringify(a)===JSON.stringify(b),`预期 ${JSON.stringify(b)}，实际 ${JSON.stringify(a)}`);
  const neutral=m=>{equal([m.crate.offset,m.crate.rotation,...m.crate.scale],[0,0,1,1,1]);assert(!m.crate.contact);};
  async function check(name,fn){await fn();checks.push(name);}
  try{
-  await check('S01 首次单击到达止挡即反馈，途中不提前闪光，另一侧正常移动',()=>{
-   t.load();t.bind('A');const history=t.state().history.length;assert(t.dispatch('push','right'));t.step(100);
-   assert(t.metrics('night').crate.x<3);neutral(t.metrics('night'));neutral(t.metrics('day'));
-   t.step(90);assert(t.metrics('night').crate.contact);equal(t.metrics('night').crate.x,3);neutral(t.metrics('day'));
-   t.step(65);const m=t.metrics('night');assert(m.crate.offset>.06&&m.crate.scale[0]<.9&&m.crate.flash>.7);equal(m.boxes,{night:3,day:3});equal(m.history,history+1);
+  await check('B01 刚移动到止挡整个过程均不播放碰撞',()=>{
+   t.load();t.bind('A');const before=t.state().history.length;assert(t.dispatch('push','right'));
+   for(const ms of [0,65,125,65,295]){t.step(ms);for(const w of ['night','day'])neutral(t.metrics(w));}
+   equal(t.metrics().boxes,{night:3,day:3});equal(t.state().history.length,before+1);
   });
-  await check('S02 左右到达和已受阻的单次推动，白夜分别反馈且只增加一次历史',()=>{
-   for(const [direction,boxes] of [['right',{night:2,day:6}],['left',{night:3,day:3}]]){
-    t.load();t.bind('A');t.boxes(boxes);const before=t.state().history.length;t.dispatch('push',direction);t.step(190);t.step(65);
-    for(const w of ['night','day']){const m=t.metrics(w);assert(m.crate.contact);assert(Math.sign(m.crate.offset)===(direction==='left'?-1:1));}equal(t.state().history.length,before+1);
-    t.step(360);t.dispatch('push',direction);t.step(65);for(const w of ['night','day'])assert(t.metrics(w).crate.contact);equal(t.state().history.length,before+2);
+  await check('B02 已贴住止挡后每次单击立即反馈，65ms压缩/360ms归位',()=>{
+   t.load();t.bind('A');t.dispatch('push','right');t.step(190);
+   for(let i=0;i<3;i++){
+    const before=t.state().history.length;t.dispatch('push','right');let m=t.metrics('night');
+    assert(m.crate.contact&&m.crate.flash===1);equal(m.crate.x,3);neutral(t.metrics('day'));
+    t.step(65);m=t.metrics('night');assert(m.crate.offset>.06&&m.crate.scale[0]<.9);equal(m.history,before+1);
+    t.step(295);neutral(t.metrics('night'));
    }
-   t.load(4);t.bind('A');t.boxes({night:4,day:5});t.dispatch('push','right');t.step(190);t.step(65);neutral(t.metrics('night'));assert(t.metrics('day').crate.contact);
   });
-  await check('S03 离开止挡与中段移动不误报，非法推动不触发',()=>{
-   t.load(4);t.bind('A');t.boxes({night:6,day:6});t.dispatch('push','left');t.step(550);for(const w of ['night','day'])neutral(t.metrics(w));
-   t.boxes({night:4,day:3});t.dispatch('push','right');t.step(550);for(const w of ['night','day'])neutral(t.metrics(w));
-   for(const direction of ['up','down'])assert(!t.dispatch('push',direction));t.step(0);for(const w of ['night','day'])neutral(t.metrics(w));
-   t.load();assert(!t.dispatch('push','right'));t.step(0);neutral(t.metrics());t.load(2);t.bind('B');assert(!t.dispatch('push','right'));
+  await check('B03 左右/白夜独立受阻，另一側到达止挡和反向离开均不误触发',()=>{
+   for(const [direction,boxes,blockedWorld] of [['right',{night:3,day:6},'night'],['left',{night:3,day:2},'day']]){
+    t.load();t.bind('A');t.boxes(boxes);t.dispatch('push',direction);t.step(65);
+    const free=blockedWorld==='night'?'day':'night';assert(t.metrics(blockedWorld).crate.contact);neutral(t.metrics(free));
+    t.step(125);neutral(t.metrics(free));t.step(170);for(const w of ['night','day'])neutral(t.metrics(w));
+    t.dispatch('push',direction);t.step(65);for(const w of ['night','day'])assert(t.metrics(w).crate.contact);
+   }
+   t.load(4);t.bind('A');t.boxes({night:6,day:6});t.dispatch('push','left');t.step(190);for(const w of ['night','day'])neutral(t.metrics(w));
+   t.load();assert(!t.dispatch('push','right'));t.step(0);neutral(t.metrics());t.bind('A');for(const dir of ['up','down'])assert(!t.dispatch('push',dir));t.step(0);neutral(t.metrics());
   });
-  await check('S04 接触后360ms归位，取消等待反馈、快速输入及减少动态',()=>{
-   t.load();t.bind('A');t.dispatch('push','right');t.step(190);t.step(360);for(const w of ['night','day'])neutral(t.metrics(w));equal(t.metrics().pendingFrames,0);
+  await check('B04 快速接续推动即时反馈，不等上一移动；恢复和减少动态正确',()=>{
+   t.load();t.bind('A');t.dispatch('push','right');t.step(65);assert(t.metrics('night').crate.x<3);
+   t.dispatch('push','right');let m=t.metrics('night');equal(m.crate.x,3);assert(m.crate.contact&&m.crate.flash===1);t.step(65);assert(t.metrics('night').crate.offset>.06);
+   for(const type of ['undo','recover']){t.dispatch(type);t.step(0);for(const w of ['night','day'])neutral(t.metrics(w));}
+   t.load();t.bind('A');t.dispatch('push','right');t.step(190);for(let i=0;i<10;i++){t.dispatch('push','right');assert(t.metrics('night').crate.contact);t.step(25);}t.step(360);for(const w of ['night','day'])neutral(t.metrics(w));
    t.dispatch('view',{world:'day',recordHistory:false});t.zoom(.12);t.update({instant:true});for(const w of ['night','day'])neutral(t.metrics(w));
-   for(const type of ['undo','recover']){t.load();t.bind('A');t.dispatch('push','right');t.step(100);t.dispatch(type);t.step(0);for(const w of ['night','day'])neutral(t.metrics(w));t.step(550);for(const w of ['night','day'])neutral(t.metrics(w));}
-   t.load();t.bind('A');t.dispatch('push','right');t.step(100);t.load(1);t.step(550);for(const w of ['night','day'])neutral(t.metrics(w));
-   t.load();t.bind('A');for(let i=0;i<10;i++){t.dispatch('push','right');t.step(25);}t.step(190);t.step(360);for(const w of ['night','day'])neutral(t.metrics(w));
-   t.load(0,true);t.bind('A');t.dispatch('push','right');t.step(0);const m=t.metrics('night');equal([m.crate.offset,m.crate.rotation,...m.crate.scale],[0,0,1,1,1]);assert(m.crate.contact&&m.crate.flash===1);neutral(t.metrics('day'));t.step(180);neutral(t.metrics('night'));
+   t.dispatch('push','right');t.load(1);for(const w of ['night','day'])neutral(t.metrics(w));
+   t.load(0,true);t.bind('A');t.dispatch('push','right');for(const w of ['night','day'])neutral(t.metrics(w));t.dispatch('push','right');m=t.metrics('night');equal([m.crate.offset,m.crate.rotation,...m.crate.scale],[0,0,1,1,1]);assert(m.crate.contact&&m.crate.flash===1);t.step(180);neutral(t.metrics('night'));
   });
   return {status:'PASS',checks};
  }catch(error){return {status:'FAIL',checks,error:error.stack};}
