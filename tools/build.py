@@ -52,7 +52,8 @@ def main():
         if not output.is_file():
             raise RuntimeError("Exporter did not produce archive")
         report['package_sha256'] = hashlib.sha256(output.read_bytes()).hexdigest()
-        unpacked = output.parent / (output.stem + '-unpacked'); unpacked.mkdir(exist_ok=True)
+        # A non-synced directory avoids File Provider injecting FinderInfo into .app.
+        unpacked = Path(tempfile.mkdtemp(prefix='night-white-validated-' + commit[:8] + '-'))
         result = command(['ditto', '-x', '-k', output, unpacked], ROOT); report['commands'].append(result)
         if result['exit_code'] != 0: raise RuntimeError('Cannot unpack candidate')
         app = next(unpacked.glob('*.app'))
@@ -60,12 +61,6 @@ def main():
         architecture = command(['lipo', '-archs', binary], ROOT); report['commands'].append(architecture)
         if architecture['exit_code'] != 0 or architecture['stdout'].strip() != 'arm64':
             raise RuntimeError('Candidate architecture is not arm64 only')
-        attributes = command(['xattr', app], ROOT); report['commands'].append(attributes)
-        if 'com.apple.FinderInfo' in attributes['stdout'].splitlines():
-            # File Provider adds cosmetic Finder metadata to a newly extracted bundle.
-            # Remove only that attribute; quarantine and provenance remain untouched.
-            cleanup = command(['xattr', '-d', 'com.apple.FinderInfo', app], ROOT); report['commands'].append(cleanup)
-            if cleanup['exit_code'] != 0: raise RuntimeError('Cannot clean generated bundle Finder metadata')
         signature = command(['codesign', '--verify', '--deep', '--strict', app], ROOT); report['commands'].append(signature)
         if signature['exit_code'] != 0: raise RuntimeError('Candidate code signature invalid')
         runtime_path = output.with_suffix('.runtime.json')
