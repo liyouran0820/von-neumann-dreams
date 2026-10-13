@@ -43,3 +43,12 @@ test('有效推动两侧独立受阻，非法方向不添加历史或复用撞�
  assert.equal(s.history.length,history);assert.deepEqual(s.boxes,boxes);
  assert(G.act(l,s,'undo'));assert.deepEqual(s.boxes,{night:3,day:2});
 });
+test('单次推动到止挡即记录接触，已靠住也反馈，blocked仍只表示没有移动',()=>{
+ const l=ACADEMY_LEVELS[0],s=G.createState(l);bind(l,s,'A');const history=s.history.length;
+ assert(G.act(l,s,'push','right'));assert.equal(s.history.length,history+1);
+ assert.deepEqual(s.feedback.night,{from:2,to:3,blocked:false,hitStop:true});assert.deepEqual(s.feedback.day,{from:2,to:3,blocked:false,hitStop:false});
+ assert(G.act(l,s,'push','right'));assert(s.feedback.night.blocked&&s.feedback.night.hitStop);assert(!s.feedback.day.hitStop);
+ s.boxes={night:3,day:3};assert(G.act(l,s,'push','left'));for(const w of ['night','day'])assert(s.feedback[w].hitStop&&!s.feedback[w].blocked);
+ assert(G.act(l,s,'push','left'));for(const w of ['night','day'])assert(s.feedback[w].hitStop&&s.feedback[w].blocked);
+ s.boxes={night:3,day:7};assert(G.act(l,s,'push','left'));assert(s.feedback.night.hitStop);assert(!s.feedback.day.hitStop&&!s.feedback.day.blocked);
+});

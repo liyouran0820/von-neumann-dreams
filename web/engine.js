@@ -91,7 +91,7 @@ export function act(level,s,type,arg){
   if(!['left','right'].includes(arg)){s.message='实验箱只能沿轨道左右推动。';return false;}
   if(!s.mapping){s.message='先选择真实物件，再激活映射。';return false;}
   if(s.mapping!=='A'){s.message='固定桥不可推动。';return false;}
-  save(s);s.feedback={};for(const w of ['night','day']){const old=s.boxes[w];const dx=arg==='left'?-1:arg==='right'?1:0;const [lo,hi]=level.track[w];s.boxes[w]=Math.max(lo,Math.min(hi,old+dx));s.feedback[w]={from:old,to:s.boxes[w],blocked:old===s.boxes[w]};}
+  save(s);s.feedback={};for(const w of ['night','day']){const old=s.boxes[w];const dx=arg==='left'?-1:1;const [lo,hi]=level.track[w];s.boxes[w]=Math.max(lo,Math.min(hi,old+dx));s.feedback[w]={from:old,to:s.boxes[w],blocked:old===s.boxes[w],hitStop:s.boxes[w]===(dx<0?lo:hi)};}
   s.message=['night','day'].map(w=>`${w==='night'?'夜':'白'}端 ${s.feedback[w].blocked?'受阻':`${s.feedback[w].from} → ${s.feedback[w].to}`}`).join(' · ');settle(level,s);return true;
  }
  if(type==='move'){

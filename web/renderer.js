@@ -41,14 +41,18 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  }
  function applyImpact(v,now){
   if(!v.crateVisual)return false;
-  const pose=stopImpactPose(v.impact?now-v.impact.startedAt:-1,v.impact?.direction,reduced);
+  // Arrival and already-blocked pushes share the same contact animation.
+  // Wait for the rendered crate to reach the stop, even under rapid input.
+  if(v.impact&&v.impact.startedAt===null&&Math.abs(v.crate.position.x-v.impact.contactX)<1e-6)v.impact.startedAt=now;
+  const waiting=v.impact?.startedAt===null;
+  const pose=stopImpactPose(v.impact&&!waiting?now-v.impact.startedAt:-1,v.impact?.direction,reduced);
   v.crateVisual.position.x=pose.x;v.crateVisual.rotation.z=pose.rotation;v.crateVisual.scale.set(pose.scaleX,pose.scaleY,1);
   v.impactDecoration.position.set(v.impact?.direction==='left'?-.32:.32,.4,0);
   v.impactDecoration.scale.setScalar(pose.spread);v.impactDecoration.visible=pose.active;
   for(const m of ownMaterials(v.impactDecoration))m.opacity=pose.flash;
   for(const spark of v.impactDecoration.children.slice(1))spark.visible=!reduced;
-  if(!pose.active)v.impact=null;
-  return pose.active;
+  if(!pose.active&&!waiting)v.impact=null;
+  return waiting||pose.active;
  }
  function character(v){
   const g=new THREE.Group(),rig=new THREE.Group(),cream=mat(0xf0eee4),shade=mat(0xc2c6bf);g.add(rig);
@@ -201,7 +205,9 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
    else if(!v.fall)v.player.visible=false;
    if(v.crate){v.crate.userData.pick.x=state.boxes[v.world];patch(v,v.crate,{x:state.boxes[v.world],y:0,z:level.track.y});
     if(type==='undo'||type==='recover')v.impact=null;
-    else if(type==='push'&&['left','right'].includes(direction))v.impact=state.feedback?.[v.world]?.blocked?{startedAt:performance.now(),direction}:null;
+    else if(type==='push'&&['left','right'].includes(direction)){
+     const feedback=state.feedback?.[v.world];v.impact=feedback?.hitStop?{startedAt:Math.abs(v.crate.position.x-feedback.to)<1e-6?performance.now():null,contactX:feedback.to,direction}:null;
+    }
    }
    for(const target of v.targets)for(const m of ownMaterials(target)){m.emissiveIntensity=state.boxes[v.world]===level.track.targets[v.world]?1:.08;}
    for(const d of v.doors){const occupied=!!level.science&&body.world===v.world&&body.x===d.position.x&&body.y===d.position.z;const open=doorOpen(level,state,v.world,d.position.x,d.position.z)||occupied;patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}

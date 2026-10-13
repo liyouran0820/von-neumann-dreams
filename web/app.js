@@ -87,8 +87,8 @@ function render(meta = {}) {
     $(world + '-focus').hidden = state.view !== world;
     document.querySelector(`[data-focus-world="${world}"]`).setAttribute('aria-pressed', String(state.view === world));
     const feedback = state.feedback?.[world];
-    $(world + '-feedback').textContent = lastAction === 'push' && feedback ? feedback.blocked ? '止挡 · 这一侧停住了' : '沿轨道移动一格' : '';
-    $(world + '-feedback').classList.toggle('blocked', Boolean(feedback?.blocked));
+    $(world + '-feedback').textContent = lastAction === 'push' && feedback ? feedback.hitStop ? '止挡 · 推力已作用' : '沿轨道移动一格' : '';
+    $(world + '-feedback').classList.toggle('blocked', Boolean(feedback?.hitStop));
   }
   $('body-view').hidden = true;
   $('view').setAttribute('aria-pressed', String(state.view !== state.body.world));
@@ -122,7 +122,7 @@ function render(meta = {}) {
 function readableMessage(type, before, accepted) {
   if (state.failed) return '支撑消失了，随时可以撤回。';
   if (state.won) return '你的安排，让两侧连成了一条路。';
-  if (type === 'push') return accepted ? ['night', 'day'].map(world => worldName(world) + '侧' + (state.feedback?.[world]?.blocked ? '受阻' : '移动一格')).join(' · ') : state.message;
+  if (type === 'push') return accepted ? ['night', 'day'].map(world => {const feedback=state.feedback?.[world];return worldName(world)+'侧'+(feedback?.blocked?'受阻，推力已作用':feedback?.hitStop?'移动到止挡，推力已作用':'移动一格');}).join(' · ') : state.message;
   if (type === 'mirror' || type === 'switch') return accepted ? (type === 'mirror' ? '镜面已转动，观察光输入与逻辑输出。' : '开关已改变，沿线路观察输出。') : '先用空格切到实验器材所在世界。';
   if (type === 'activate') return state.preview ? state.message : '映射已生效。';
   if (type === 'unlink') return before.mapping === 'A' ? '联系已解除，真实箱子的位置留下了。' : '联系已解除，虚影消失。';
