@@ -22,6 +22,8 @@ func _run() -> void:
 		elif argument.begins_with("--report="):
 			report_path = argument.trim_prefix("--report=")
 	match suite:
+		"state-codec", "core":
+			results.append_array(preload("res://tests/native/test_state_codec.gd").new().run())
 		"runner-pass":
 			_record("RUNNER-KNOWN-PASS", 2 + 3 == 5, "2 + 3 == 5", 2 + 3)
 		"runner-fail":
