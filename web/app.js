@@ -19,14 +19,11 @@ try { const saved = JSON.parse(localStorage.getItem(KEY) || '[]'); if (Array.isA
 let index = 0, level = LEVELS[0], state = Game.createState(level), hint = 0, walking = 0, lastAction = '', diorama;
 let message = '先点任意一侧的实验箱，查看映射。';
 let pendingReset = null;
-const observationEvents = [];
-function toggleObservation(kind) {
+function toggleObservation() {
   walking++;
   Game.act(level, state, 'view', { world: Game.other(state.view), recordHistory: false });
   lastAction = 'observe';
   message = state.view === state.body.world ? '已回到身体所在的世界。' : '身体留在' + worldName(state.body.world) + '侧，按空格切回。';
-  observationEvents.push({ kind, view: state.view, body: state.body.world, history: state.history.length });
-  if (observationEvents.length > 8) observationEvents.shift();
   render({ instant: true });
 }
 function persist() { try { localStorage.setItem(KEY, JSON.stringify(completed)); } catch { /* 无存储也可玩。 */ } }
@@ -119,7 +116,6 @@ function render(meta = {}) {
   $('failure').hidden = !state.failed; $('completion').hidden = !state.won;
   $('complete-title').textContent = level.academy?.completion || (index === 4 ? '天文台亮起，夜间课程完成。' : level.name.split(' · ')[0] + '已点亮。');
   $('next').hidden = index === 4;
-  $('debug-state').textContent = JSON.stringify({ level: level.id, body: state.body, view: state.view, boxes: state.boxes, mapping: state.mapping, preview: state.preview, failed: state.failed, won: state.won, history: state.history.length, observationEvents, science:Game.scienceResult(level,state) }, null, 2);
   diorama?.update(state, meta);
   diorama?.setActiveWorld(state.view);
 }
@@ -145,7 +141,7 @@ function action(type, arg, fromPath = false) {
   render({ type, direction: arg }); return accepted;
 }
 function focusWorld(world) {
-  if (world !== state.view) toggleObservation('button-toggle');
+  if (world !== state.view) toggleObservation();
 }
 function chooseObject(id, world) {
   walking++; if (world !== state.view) return;
@@ -171,7 +167,6 @@ function handlePick(pick) {
 }
 function load(i) {
   walking++; index = i; level = LEVELS[i]; state = Game.createState(level); hint = 0; lastAction = '';
-  observationEvents.length = 0;
   document.body.classList.remove('course-collapsed'); $('course-collapse').setAttribute('aria-expanded','true');$('course-collapse').textContent='收起';
   message = level.track ? '先点实验箱，查看两侧的映射。' : '比较两侧的桥，点真实桥查看预览。';
   $('hint-text').hidden = true; $('hint-text').textContent = ''; $('hint').textContent = '给我一点提示';
@@ -188,7 +183,7 @@ document.addEventListener('click', event => {
   else if (button.dataset.push) action('push', button.dataset.push);
 });
 for (const [id, type] of [['activate', 'activate'], ['confirm-preview', 'activate'], ['cancel-preview', 'cancelPreview'], ['unlink', 'unlink'], ['teleport', 'teleport'], ['undo', 'undo'], ['failure-undo', 'undo'], ['failure-recover', 'recover']]) $(id).onclick = () => action(type);
-$('view').onclick = () => toggleObservation('button-toggle');
+$('view').onclick = () => toggleObservation();
 window.addEventListener('blur', () => { walking++; });
 document.addEventListener('visibilitychange', () => { if (document.hidden) walking++; });
 $('body-view').onclick = () => focusWorld(state.body.world);
@@ -231,7 +226,7 @@ document.querySelector('[data-push="left"]').innerHTML = icon('arrowUp', -90);
 document.querySelector('[data-push="right"]').innerHTML = icon('arrowUp', 90);
 window.addEventListener('keydown', event => {
   if (event.ctrlKey || event.metaKey || event.altKey || document.querySelector('dialog[open]') || event.target.matches('input,textarea,select')) return;
-  if (event.code === 'Space') { event.preventDefault(); event.stopPropagation(); if (!event.repeat) toggleObservation('keyboard-toggle'); return; }
+  if (event.code === 'Space') { event.preventDefault(); event.stopPropagation(); if (!event.repeat) toggleObservation(); return; }
   if (event.code === 'KeyR' && level.science?.mirrors?.length) { event.preventDefault(); if(!event.repeat)action('mirror','M');return; }
   const key = event.key.toLowerCase();
   const moves = { w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0] };
