@@ -69,7 +69,7 @@ python3 tools/verify.py --stage P00 --engine "$DEMO_GODOT_BIN" --window-probe --
 
 ## 网页试玩与版本对照
 
-打开[本地网页预览](http://127.0.0.1:5173/)进入五项逻辑门试炼。点按Space切换世界，点击实验开关改变输入，光门房间可点击镜面或按R转向；札记只记录已观察到的结果。选馆菜单提供[原版五关对照](http://127.0.0.1:5173/?version=original)，另保留[上一逻辑光学试验](http://127.0.0.1:5173/?version=optics)，各版进度独立。
+打开[本地网页预览](http://127.0.0.1:5173/)进入五项逻辑门试炼。点按Space切换世界，点击实验开关改变输入，光门房间可点击镜面或按R转向；札记只记录已观察到的结果。选馆菜单仅保留关卡选择和进度操作，历史版本的开发对照方式见[课程记录](docs/LOGIC_GATES_CURRICULUM.md)。
 
 完整旧版已打标签 `codex/pre-logic-optics-20261013`，指向 `560ed6f`。原网页五关 `66fb648`、双视图试验 `74ab81d` 也继续保留。新版遵守已批准的[单世界交互](docs/UI_INTERACTION_AMENDMENT.md)，源码与旧版对照规则同时留存。
 

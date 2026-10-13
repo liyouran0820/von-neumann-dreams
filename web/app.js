@@ -200,8 +200,6 @@ $('dismiss-welcome').onclick = dismissWelcome;
 $('science-observe').onclick = () => focusWorld(level.science.world);
 $('science-mirror').onclick = () => action('mirror','M');
 $('course-collapse').onclick = () => { const collapsed=document.body.classList.toggle('course-collapsed');$('course-collapse').setAttribute('aria-expanded',String(!collapsed));$('course-collapse').textContent=collapsed?'展开':'收起'; };
-$('original-mode').href = originalMode ? '?' : '?version=original';
-$('original-mode').textContent = originalMode ? '回到学院新版' : '原版五关对照';
 $('levels-dialog').querySelector('h2').textContent = originalMode ? '原版空间试炼' : '新生入学试炼';
 function requestReset(kind) {
   walking++;
