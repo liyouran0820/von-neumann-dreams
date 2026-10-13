@@ -44,6 +44,7 @@ Node.js 20+；Three.js 与 esbuild 版本锁定，无运行时 CDN。构建输�
 - [acceptance_baseline.md](docs/acceptance_baseline.md)：冻结参数、证据格式与状态语义。
 - [PROJECT_INTRODUCTION.md](PROJECT_INTRODUCTION.md)：背景、历史和当前范围。
 - [AGENTS.md](AGENTS.md)：协作与文档边界；[log.md](log.md)：实际变更和检查。
+- [AI_USAGE.md](AI_USAGE.md)：团队核心创意来源、Codex 使用范围及人工与 AI 分工。
 - [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：已用依赖与素材许可。
 
 五关不能改图、目标、出口或启用 G5 备用简化来通过验收。真实玩家尚未安排，工程/关卡/前端/玩法理解分别报告。
