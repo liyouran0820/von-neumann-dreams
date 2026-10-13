@@ -7,6 +7,24 @@ test('G1 独立止挡：同时动、夜停白动、同时停、白停夜动',()=
 test('G1 目标实时而非锁存；身体到出口仍需双槽',()=>{const[l,s]=setup(0);walk(l,s,8,4);assert(!s.won);walk(l,s,7,4);bind(l,s,'A');push(l,s,'RRRR');assert.equal(G.goals(l,s)[1].ok,false);assert(!s.won);});
 test('G5 五步位置表与断开重连不跳位',()=>{const[l,s]=setup(4);bind(l,s,'A');const expected=[[3,2],[3,1],[4,2],[5,3],[6,4]];[...'LLRRR'].forEach((d,i)=>{push(l,s,d);assert.deepEqual(Object.values(s.boxes),expected[i]);});G.act(l,s,'unlink');bind(l,s,'A');assert.deepEqual(s.boxes,{night:6,day:4});bind(l,s,'B');assert.deepEqual(s.boxes,{night:6,day:4});assert(G.doorOpen(l,s,'day'));assert(!G.doorOpen(l,s,'night'));});
 test('观察不移动身体，另一观察仍能遥控',()=>{const[l,s]=setup(0);G.act(l,s,'view');const body={...s.body};assert(!G.act(l,s,'move',[1,0]));assert.deepEqual(s.body,body);bind(l,s,'A');push(l,s,'R');assert.equal(s.boxes.day,3);assert.equal(s.body.world,'night');});
+test('单世界观察不占撤销历史，切换后仍保留所选来源',()=>{
+ const[l,s]=setup(2),body={...s.body};
+ for(let i=0;i<100;i++)G.act(l,s,'view',{world:G.other(s.view),recordHistory:false});
+ assert.equal(s.view,'night');assert.equal(s.history.length,0);assert.deepEqual(s.body,body);
+ G.select(l,s,'B','night');G.act(l,s,'view',{world:'day',recordHistory:false});
+ assert(!G.act(l,s,'move',[1,0]));assert(G.act(l,s,'activate'));
+ assert.equal(s.view,'day');assert.equal(s.mapping,'B');assert.deepEqual(s.body,body);assert.equal(s.history.length,1);
+ G.act(l,s,'view',{world:'night',recordHistory:false});G.act(l,s,'undo');
+ assert.equal(s.mapping,null);assert.deepEqual(s.body,body);assert.equal(s.history.length,0);
+});
+test('观察切回后穿门跟随身体，撤销仍恢复穿门前状态',()=>{
+ const[l,s]=setup(1);walk(l,s,3,3);const before=structuredClone(s.body),count=s.history.length;
+ G.act(l,s,'view',{world:'day',recordHistory:false});assert(!G.act(l,s,'teleport'));assert.deepEqual(s.body,before);
+ G.act(l,s,'view',{world:'night',recordHistory:false});assert(G.act(l,s,'teleport'));
+ assert.equal(s.body.world,'day');assert.equal(s.view,'day');assert.equal(s.history.length,count+1);
+ G.act(l,s,'view',{world:'night',recordHistory:false});G.act(l,s,'view',{world:'day',recordHistory:false});
+ assert(G.act(l,s,'undo'));assert.deepEqual(s.body,before);assert.equal(s.view,'night');assert.equal(s.history.length,count);
+});
 test('玻璃与轨道不能走，夜墙无绕路',()=>{const[l,s]=setup(1);assert.equal(G.findPath(l,s,10,3),null);assert.equal(G.support(l,s,'night',2,7),null);assert.equal(G.support(l,s,'night',2,6),null);});
 test('P1 仅同坐标穿行；门是本地持续接触',()=>{const[l,s]=setup(1);bind(l,s,'A');push(l,s,'RR');portal(l,s,3,3);assert.deepEqual(s.body,{world:'day',x:3,y:3});assert.equal(G.support(l,s,'night',6,3),null);G.act(l,s,'unlink');assert(G.doorOpen(l,s,'day'));bind(l,s,'A');push(l,s,'R');assert(!G.doorOpen(l,s,'day'));});
 test('桥预览不支撑，激活全宽支撑，固定且虚影不能为源',()=>{const[l,s]=setup(2);G.select(l,s,'B','night');assert.equal(G.support(l,s,'day',6,2),null);G.act(l,s,'activate');for(const x of [6,7])for(const y of [2,3])assert.equal(G.support(l,s,'day',x,y),'ghost-B');assert(!G.act(l,s,'push','right'));assert(!G.select(l,s,'B','day'));G.act(l,s,'unlink');assert.equal(G.support(l,s,'night',6,2),'real-B');assert.equal(G.support(l,s,'day',6,2),null);});

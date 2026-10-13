@@ -2,11 +2,12 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 // Logical coordinates map directly to X/Z; the walkable surface is Y=0.
-const PALETTE={day:{background:0xc8c3b9,stone:0xe7e2d6,edge:0xcac5b8,wall:0xe1ddcf,pit:0x343b40,ground:0xc8c3b9},night:{background:0x172238,stone:0x394660,edge:0x2b374d,wall:0x475570,pit:0x0c1424,ground:0x172238}};
+// White stone stays neutral under soft light; cooler edges separate walls and paths.
+const PALETTE={day:{background:0xdde1df,stone:0xf5f4ef,edge:0xa4afb0,wall:0xd9dfdf,pit:0x596a73,ground:0xdde1df},night:{background:0x3d4a59,stone:0x647481,edge:0x465866,wall:0x71808b,pit:0x202e3a,ground:0x3d4a59}};
 const CYAN=0x7bddf4,GOLD=0xf2cd61;
 const inside=(x,y,b)=>x>=b.x[0]&&x<=b.x[1]&&y>=b.y[0]&&y<=b.y[1];
 export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=()=>{},onError=()=>{}}){
- let level=null,state=null,reduced=false,zoomFactor=1,raf=0,animationStart=0,disposed=false;
+ let level=null,state=null,activeWorld='night',reduced=false,zoomFactor=1,raf=0,animationStart=0,disposed=false;
  const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2(),scenes=[],geometries=new Map();
  const geo=(x,y,z,r=.025)=>{const k=[x,y,z,r].join(':');if(!geometries.has(k))geometries.set(k,new RoundedBoxGeometry(x,y,z,2,Math.min(r,x/3,y/3,z/3)));return geometries.get(k);};
  const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.87,metalness:0,...extra});
@@ -18,11 +19,11 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  try{
  for(const [world,host] of [['day',dayElement],['night',nightElement]]){
   const p=PALETTE[world],scene=new THREE.Scene();scene.background=new THREE.Color(p.background);
-  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=world==='day'?1.28:1.16;renderer.domElement.style.cssText='width:100%;height:100%;display:block;touch-action:manipulation';renderer.domElement.setAttribute('aria-hidden','true');host.appendChild(renderer.domElement);
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=world==='day'?.9:.98;renderer.domElement.style.cssText='width:100%;height:100%;display:block;touch-action:manipulation';renderer.domElement.setAttribute('aria-hidden','true');host.appendChild(renderer.domElement);
   const camera=new THREE.OrthographicCamera(-10,10,10,-10,.1,160);camera.position.set(-18,27,28);camera.lookAt(0,0,0);camera.updateMatrixWorld();
-  scene.add(new THREE.HemisphereLight(world==='day'?0xfff9e9:0xb6d5ff,world==='day'?0x716a60:0x172439,world==='day'?2.3:1.8));
-  const sun=new THREE.DirectionalLight(world==='day'?0xfff6e4:0xc7deff,world==='day'?3.5:2.5);sun.position.set(-8,18,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0003;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun);scene.add(sun.target);
-  const bounce=new THREE.DirectionalLight(world==='day'?0xe8e5df:0x4a76bd,.6);bounce.position.set(10,6,-8);scene.add(bounce);
+  scene.add(new THREE.HemisphereLight(world==='day'?0xfffefa:0xb6d5ff,world==='day'?0x879296:0x172439,world==='day'?1.25:1.4));
+  const sun=new THREE.DirectionalLight(world==='day'?0xfffdf8:0xc7deff,world==='day'?1.7:1.5);sun.position.set(-8,18,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0003;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun);scene.add(sun.target);
+  const bounce=new THREE.DirectionalLight(world==='day'?0xe7eff3:0x4a76bd,.35);bounce.position.set(10,6,-8);scene.add(bounce);
   const root=new THREE.Group();scene.add(root);const v={world,host,scene,renderer,camera,sun,root,pickables:[],dynamic:[],anchors:[],width:1,height:1,materials:[],player:null,crate:null,bridges:[],doors:[],targets:[],lastBody:null};
   v.click=e=>pick(v,e);host.addEventListener('click',v.click);scenes.push(v);
  }
@@ -35,7 +36,8 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  function build(v){
  clean(v.root);v.pickables=[];v.dynamic=[];v.anchors=[];v.bridges=[];v.doors=[];v.targets=[];v.player=null;v.crate=null;
  const p=PALETTE[v.world],rows=level.grids[v.world],W=rows[0].length,H=rows.length;v.root.position.set(-(W-1)/2,0,-(H-1)/2);
- const stone=mat(p.stone),edge=mat(p.edge),wall=mat(p.wall),pit=mat(p.pit),glass=mat(v.world==='day'?0x9dc8cd:0x719db7,{transparent:true,opacity:.4,roughness:.24,depthWrite:false}),gold=mat(GOLD,{emissive:GOLD,emissiveIntensity:.12}),track=mat(v.world==='day'?0xc8c6bb:0x303e55);
+ const marker=v.world==='day'?0xa67c29:GOLD;
+ const stone=mat(p.stone),edge=mat(p.edge),wall=mat(p.wall),pit=mat(p.pit),glass=mat(v.world==='day'?0x9dc8cd:0x719db7,{transparent:true,opacity:.4,roughness:.24,depthWrite:false}),gold=mat(marker,{emissive:marker,emissiveIntensity:.12}),track=mat(v.world==='day'?0xc3cdd0:0x303e55);
  // Background receives the cast shadow; it remains well below every pit.
  const ground=new THREE.Mesh(new THREE.PlaneGeometry(160,160),mat(p.ground));ground.rotation.x=-Math.PI/2;ground.position.set((W-1)/2,-1.65,(H-1)/2);ground.receiveShadow=true;v.root.add(ground);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
@@ -62,7 +64,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
    v.anchors.push({kind:'portal',id:'P'+t,cell:[x,y],height:.25});
   }
  }
- if(level.track){const x=state.boxes[v.world],y=level.track.y;const g=new THREE.Group();g.position.set(x,0,y);const crate=mat(v.world==='day'?0xeeeadd:0x8896a6);box(g,0,.31,0,.56,.62,.56,crate,.035);box(g,-.288,.3,0,.02,.4,.075,gold,.004);g.userData.pick={kind:'object',id:'A',x,y};v.root.add(g);v.pickables.push(g);v.crate=g;
+ if(level.track){const x=state.boxes[v.world],y=level.track.y;const g=new THREE.Group();g.position.set(x,0,y);const crate=mat(v.world==='day'?0xb5aa8b:0x9ba9ad);box(g,0,.31,0,.56,.62,.56,crate,.035);box(g,-.288,.3,0,.02,.4,.075,gold,.004);g.userData.pick={kind:'object',id:'A',x,y};v.root.add(g);v.pickables.push(g);v.crate=g;
   const tx=level.track.targets[v.world];if(tx!==undefined){const target=new THREE.Group();target.position.set(tx,.04,y);for(const z of [-.36,.36])box(target,0,0,z,.76,.025,.035,gold,.006);for(const xx of [-.36,.36])box(target,xx,0,0,.035,.025,.76,gold,.006);v.root.add(target);v.targets.push(target);}
  }
  for(const b of level.bridges){if(b.world===v.world){bridgeGroup(v,b,false);v.anchors.push({kind:'object',id:b.id,cell:[(b.x[0]+b.x[1])/2,(b.y[0]+b.y[1])/2],height:.05});}else{
@@ -78,7 +80,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  const extent=Math.max(W,H);Object.assign(v.sun.shadow.camera,{left:-extent,right:extent,top:extent,bottom:-extent,near:1,far:60});v.sun.shadow.camera.updateProjectionMatrix();
  }
  function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2};});}
- function draw(){if(disposed||!level||document.hidden)return;for(const v of scenes){v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
+ function draw(){if(disposed||!level||document.hidden)return;for(const v of scenes){if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
  function frame(now){raf=0;if(disposed||document.hidden)return;const t=reduced?1:Math.min(1,(now-animationStart)/190),e=1-Math.pow(1-t,3);for(const v of scenes)for(const a of v.dynamic){a.obj.position.set(THREE.MathUtils.lerp(a.from.x,a.to.x??a.from.x,e),THREE.MathUtils.lerp(a.from.y,a.to.y??a.from.y,e),THREE.MathUtils.lerp(a.from.z,a.to.z??a.from.z,e));if(a.to.opacity!==undefined)opacity(a.obj,THREE.MathUtils.lerp(a.from.opacity,a.to.opacity,e));if(a.to.shake)a.obj.position.x+=Math.sin(t*Math.PI*4)*(1-t)*.045;}draw();if(t<1)raf=requestAnimationFrame(frame);else for(const v of scenes)v.dynamic=[];}
  function update(next,{type,instant=false}={}){
   if(!level||disposed)return;state=next;if(raf){cancelAnimationFrame(raf);raf=0;}
@@ -98,5 +100,5 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  }
  const observer=new ResizeObserver(resize);for(const v of scenes)observer.observe(v.host);
  function visibility(){if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=0;}else if(state)update(state,{instant:true});}document.addEventListener('visibilitychange',visibility);
- return {setLevel(next,nextState){level=next;state=nextState;zoomFactor=1;for(const v of scenes)build(v);resize();update(nextState,{instant:true});},update,resize,zoom(delta){zoomFactor=Math.max(.7,Math.min(1.65,zoomFactor+delta));resize();},setReducedMotion(value){reduced=!!value;if(reduced&&state)update(state,{instant:true});},dispose(){disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();document.removeEventListener('visibilitychange',visibility);for(const v of scenes){v.host.removeEventListener('click',v.click);clean(v.root);v.renderer.dispose();v.renderer.domElement.remove();}for(const g of geometries.values())g.dispose();}};
+ return {setLevel(next,nextState){level=next;state=nextState;zoomFactor=1;for(const v of scenes)build(v);resize();update(nextState,{instant:true});},update,resize,setActiveWorld(world){activeWorld=world;draw();},zoom(delta){zoomFactor=Math.max(.7,Math.min(1.65,zoomFactor+delta));resize();},setReducedMotion(value){reduced=!!value;if(reduced&&state)update(state,{instant:true});},dispose(){disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();document.removeEventListener('visibilitychange',visibility);for(const v of scenes){v.host.removeEventListener('click',v.click);clean(v.root);v.renderer.dispose();v.renderer.domElement.remove();}for(const g of geometries.values())g.dispose();}};
 }

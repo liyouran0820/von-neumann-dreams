@@ -12,6 +12,16 @@ let completed = [];
 try { const saved = JSON.parse(localStorage.getItem(KEY) || '[]'); if (Array.isArray(saved)) completed = saved.filter(id => LEVELS.some(level => level.id === id)); } catch { /* 存储可选。 */ }
 let index = 0, level = LEVELS[0], state = Game.createState(level), hint = 0, walking = 0, lastAction = '', diorama;
 let message = '先点任意一侧的实验箱，查看映射。';
+const observationEvents = [];
+function toggleObservation(kind) {
+  walking++;
+  Game.act(level, state, 'view', { world: Game.other(state.view), recordHistory: false });
+  lastAction = 'observe';
+  message = state.view === state.body.world ? '已回到身体所在的世界。' : '身体留在' + worldName(state.body.world) + '侧，按空格切回。';
+  observationEvents.push({ kind, view: state.view, body: state.body.world, history: state.history.length });
+  if (observationEvents.length > 8) observationEvents.shift();
+  render({ instant: true });
+}
 function persist() { try { localStorage.setItem(KEY, JSON.stringify(completed)); } catch { /* 无存储也可玩。 */ } }
 function icon(name, rotation = 0) {
   return `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:rotate(${rotation}deg)">${ICONS[name].map(d => `<path d="${d}"/>`).join('')}</svg>`;
@@ -57,18 +67,21 @@ function render(meta = {}) {
   $('goal').textContent = level.goal.replace(/夜箱到6、白箱到4，身体踏上夜C桥末端验收环。/, '让两侧实验槽亮起，穿过夜侧桥上的验收环。');
   $('levels').innerHTML = LEVELS.map((item, i) => `<button data-level="${i}" aria-current="${i === index ? 'step' : 'false'}"><span>${String(i + 1).padStart(2, '0')}</span><strong>${item.name.split(' · ')[0]}</strong><small>${completed.includes(item.id) ? '已抵达' : item.name.split(' · ')[1]}</small></button>`).join('');
   for (const world of ['day', 'night']) {
+    $(world + '-world').classList.toggle('inactive', state.view !== world);
+    $(world + '-world').setAttribute('aria-hidden', String(state.view !== world));
     $(world + '-world').classList.toggle('is-focused', state.view === world);
-    $(world + '-body').hidden = state.body.world !== world;
+    $(world + '-body').hidden = false;
+    $(world + '-body').textContent = state.body.world === world ? '身体所在' : '身体在' + worldName(state.body.world) + '侧';
     $(world + '-focus').hidden = state.view !== world;
     document.querySelector(`[data-focus-world="${world}"]`).setAttribute('aria-pressed', String(state.view === world));
     const feedback = state.feedback?.[world];
     $(world + '-feedback').textContent = lastAction === 'push' && feedback ? feedback.blocked ? '止挡 · 这一侧停住了' : '沿轨道移动一格' : '';
     $(world + '-feedback').classList.toggle('blocked', Boolean(feedback?.blocked));
   }
-  $('body-view').hidden = state.view === state.body.world;
-  $('body-view').textContent = '回到' + worldName(state.body.world) + '侧身体';
+  $('body-view').hidden = true;
+  $('view').setAttribute('aria-pressed', String(state.view !== state.body.world));
   $('mapping-status').innerHTML = icon('link') + `<span>${state.mapping ? objectName(state.mapping) + ' · 1/1' : '映射 · 0/1'}</span>`;
-  const options = ['day', 'night'].flatMap(world => [ ...(level.track ? [{ id: 'A', world }] : []), ...level.bridges.filter(bridge => bridge.world === world) ]);
+  const options = [ ...(level.track ? [{ id: 'A', world: state.view }] : []), ...level.bridges.filter(bridge => bridge.world === state.view) ];
   $('objects').innerHTML = options.map(object => `<button data-select-object="${object.id}" data-source-world="${object.world}"><span>${worldName(object.world)}世界</span><strong>${objectName(object.id)}</strong></button>`).join('');
   $('goals').innerHTML = goalLabels().map((goal, i) => `<li class="${goal.ok ? 'satisfied' : ''}${goal.required === false ? ' optional' : ''}" data-goal="${i}" aria-label="${goal.label}${goal.ok ? '已满足' : '未满足'}"><i></i><span>${goal.label}</span></li>`).join('');
   $('selection-card').hidden = !state.preview || state.failed || state.won;
@@ -91,18 +104,19 @@ function render(meta = {}) {
   $('failure').hidden = !state.failed; $('completion').hidden = !state.won;
   $('complete-title').textContent = index === 4 ? '天文台亮起，夜间课程完成。' : level.name.split(' · ')[0] + '已点亮。';
   $('next').hidden = index === 4;
-  $('debug-state').textContent = JSON.stringify({ level: level.id, body: state.body, view: state.view, boxes: state.boxes, mapping: state.mapping, preview: state.preview, failed: state.failed, won: state.won, history: state.history.length }, null, 2);
+  $('debug-state').textContent = JSON.stringify({ level: level.id, body: state.body, view: state.view, boxes: state.boxes, mapping: state.mapping, preview: state.preview, failed: state.failed, won: state.won, history: state.history.length, observationEvents }, null, 2);
   diorama?.update(state, meta);
+  diorama?.setActiveWorld(state.view);
 }
 function readableMessage(type, before, accepted) {
   if (state.failed) return '支撑消失了，随时可以撤回。';
   if (state.won) return '你的安排，让两侧连成了一条路。';
-  if (type === 'push') return accepted ? '同一次推动，两侧各自回应。' : state.message;
+  if (type === 'push') return accepted ? ['night', 'day'].map(world => worldName(world) + '侧' + (state.feedback?.[world]?.blocked ? '受阻' : '移动一格')).join(' · ') : state.message;
   if (type === 'activate') return state.preview ? state.message : '映射已生效。';
   if (type === 'unlink') return before.mapping === 'A' ? '联系已解除，真实箱子的位置留下了。' : '联系已解除，虚影消失。';
   if (type === 'view') return state.view === state.body.world ? '现在可以移动身体。' : '观察另一侧，身体仍在' + worldName(state.body.world) + '世界。';
-  if (type === 'move') return accepted ? '' : '这边暂时走不通。';
-  if (type === 'teleport') return accepted ? '身体来到' + worldName(state.body.world) + '世界。' : '先走上门座，再穿门。';
+  if (type === 'move') return accepted ? '' : state.view !== state.body.world ? '按空格回到身体所在的世界，再走路。' : '这边暂时走不通。';
+  if (type === 'teleport') return accepted ? '身体来到' + worldName(state.body.world) + '世界。' : state.view !== state.body.world ? '按空格回到身体所在的世界，再穿门。' : '先走上门座，再穿门。';
   if (type === 'undo') return '回到上一步。';
   if (type === 'recover') return '已恢复当时的完整安全状态。';
   return '';
@@ -115,14 +129,15 @@ function action(type, arg, fromPath = false) {
   render({ type, direction: arg }); return accepted;
 }
 function focusWorld(world) {
-  if (world !== state.view) action('view', world);
+  if (world !== state.view) toggleObservation('button-toggle');
 }
 function chooseObject(id, world) {
-  walking++; focusWorld(world);
+  walking++; if (world !== state.view) return;
   if (Game.select(level, state, id, world)) { lastAction = 'select'; message = '预览已就绪，确认后生效。'; render({ type: 'select' }); }
 }
 function handlePick(pick) {
   if (state.failed || state.won || document.querySelector('dialog[open]')) return;
+  if (pick.world !== state.view) return;
   if (pick.kind === 'object') { chooseObject(pick.id, pick.world); return; }
   focusWorld(pick.world);
   if (pick.world !== state.body.world) { message = '身体仍在' + worldName(state.body.world) + '侧；穿门才能过去。'; render(); return; }
@@ -139,6 +154,7 @@ function handlePick(pick) {
 }
 function load(i) {
   walking++; index = i; level = LEVELS[i]; state = Game.createState(level); hint = 0; lastAction = '';
+  observationEvents.length = 0;
   message = level.track ? '先点实验箱，查看两侧的映射。' : '比较两侧的桥，点真实桥查看预览。';
   $('hint-text').hidden = true; $('hint-text').textContent = ''; $('hint').textContent = '给我一点提示';
   for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close();
@@ -152,7 +168,10 @@ document.addEventListener('click', event => {
   else if (button.dataset.move) action('move', button.dataset.move.split(',').map(Number));
   else if (button.dataset.push) action('push', button.dataset.push);
 });
-for (const [id, type] of [['view', 'view'], ['activate', 'activate'], ['confirm-preview', 'activate'], ['cancel-preview', 'cancelPreview'], ['unlink', 'unlink'], ['teleport', 'teleport'], ['undo', 'undo'], ['failure-undo', 'undo'], ['failure-recover', 'recover']]) $(id).onclick = () => action(type);
+for (const [id, type] of [['activate', 'activate'], ['confirm-preview', 'activate'], ['cancel-preview', 'cancelPreview'], ['unlink', 'unlink'], ['teleport', 'teleport'], ['undo', 'undo'], ['failure-undo', 'undo'], ['failure-recover', 'recover']]) $(id).onclick = () => action(type);
+$('view').onclick = () => toggleObservation('button-toggle');
+window.addEventListener('blur', () => { walking++; });
+document.addEventListener('visibilitychange', () => { if (document.hidden) walking++; });
 $('body-view').onclick = () => focusWorld(state.body.world);
 $('mapping-status').onclick = () => { walking++; $('objects-dialog').showModal(); };
 $('open-levels').onclick = () => { walking++; $('levels-dialog').showModal(); };
@@ -169,14 +188,15 @@ document.querySelector('[data-push="left"]').innerHTML = icon('arrowUp', -90);
 document.querySelector('[data-push="right"]').innerHTML = icon('arrowUp', 90);
 window.addEventListener('keydown', event => {
   if (event.ctrlKey || event.metaKey || event.altKey || document.querySelector('dialog[open]') || event.target.matches('input,textarea,select')) return;
+  if (event.code === 'Space') { event.preventDefault(); event.stopPropagation(); if (!event.repeat) toggleObservation('keyboard-toggle'); return; }
   const key = event.key.toLowerCase();
   const moves = { w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0] };
   const pushes = { arrowleft: 'left', arrowright: 'right', arrowup: 'up', arrowdown: 'down' };
-  const keys = { v: 'view', e: 'activate', q: 'unlink', f: 'teleport', z: 'undo' };
+  const keys = { e: 'activate', q: 'unlink', f: 'teleport', z: 'undo' };
   if (moves[key]) { event.preventDefault(); action('move', moves[key]); }
   else if (pushes[key]) { event.preventDefault(); action('push', pushes[key]); }
   else if (keys[key]) { event.preventDefault(); action(keys[key]); }
   else if (key === 'escape' && state.preview) action('cancelPreview');
-});
+}, true);
 window.addEventListener('pagehide', () => { walking++; diorama?.dispose(); });
 load(0);

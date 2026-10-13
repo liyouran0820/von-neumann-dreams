@@ -1,5 +1,5 @@
 {
-  "baseline_id": "native-demo-1.2-reference-amendment-1",
+  "baseline_id": "native-demo-1.2-single-world-space-toggle-2",
   "godot_version": "4.7.2.stable.official.ed1daf0bf",
   "edition": "standard",
   "renderer": "forward_plus",
@@ -18,13 +18,18 @@
   "movement_history_max_ms": 2000,
   "camera_yaw_deg": 45,
   "camera_pitch_deg": 35.264,
-  "world_layout": "day-left/night-right/50:50",
+  "world_layout": "single-visible-world",
   "render_scale": 1.0,
   "msaa_samples": 4,
   "ssao": true,
   "fixed_exposure": true,
-  "focus_key": "Tab",
+  "focus_key": "Space",
   "reference_sha256": "84949b06d212237b82fbc386d83a377ab6633302384e7cf7a2ce7a605246716b",
   "quality_profile_status": "NOT_IMPLEMENTED",
-  "native_driver_verification": "PASS"
+  "native_driver_verification": "PASS",
+  "focus_mode": "press-toggle",
+  "observation_records_history": false,
+  "day_color_direction": "soft-white-with-cool-grey-depth",
+  "interaction_amendment": "docs/UI_INTERACTION_AMENDMENT.md",
+  "native_interaction_amendment_status": "NOT_IMPLEMENTED"
 }

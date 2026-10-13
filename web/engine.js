@@ -44,7 +44,14 @@ export function canActivate(level,s){
 export function act(level,s,type,arg){
  if(type==='undo'){const h=s.history.pop();if(!h)return false;const history=s.history;Object.assign(s,copy(h.state),{checkpoint:copy(h.checkpoint),history});return true;}
  if(type==='recover'){save(s);const h=s.history;const cp=copy(s.checkpoint);Object.assign(s,cp,{checkpoint:cp,history:h});s.message='已恢复进入安全区时的完整状态。';return true;}
- if(type==='view'){save(s);s.view=arg||other(s.view);return true;}
+ if(type==='view'){
+  const recordHistory=!(arg&&typeof arg==='object'&&arg.recordHistory===false);
+  const world=arg&&typeof arg==='object'?arg.world:arg||other(s.view);
+  if(!['night','day'].includes(world))return false;
+  if(s.view===world)return true;
+  if(recordHistory)save(s);
+  s.view=world;return true;
+ }
  if(type==='cancelPreview'){s.preview=null;return true;}
  if(s.failed||s.won)return false;
  if(type==='activate'){

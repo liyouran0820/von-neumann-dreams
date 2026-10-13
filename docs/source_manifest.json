@@ -42,5 +42,22 @@
     ]
   },
   "historical_web_commit": "66fb648",
-  "web_diorama_wip_commit": "74ab81d"
+  "web_diorama_wip_commit": "74ab81d",
+  "user_amendments": [
+    {
+      "id": "single-world-space-toggle-2",
+      "date": "2026-10-13",
+      "document": "docs/UI_INTERACTION_AMENDMENT.md",
+      "approval": [
+        "每次只显示一个世界",
+        "白天还是以白色为主色调吧",
+        "用户不用按住空格切换，按一下切换，然后按一下切换回来"
+      ],
+      "supersedes": [
+        "固定左右双视图",
+        "Tab观察焦点",
+        "按住空格临时观察"
+      ]
+    }
+  ]
 }

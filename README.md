@@ -24,7 +24,7 @@ python3 tools/verify.py --stage P00 --engine "$DEMO_GODOT_BIN" --window-probe --
 
 ## 历史网页试验
 
-网页五关保存在 `66fb648`，Three.js 双世界立体呈现试验保存在 `74ab81d`。现有 [本地网页预览](http://127.0.0.1:5173/) 可作对照，采用旧离散规则及 V 观察，不是新计划的原生交付。
+网页五关保存在 `66fb648`，Three.js 双世界立体呈现试验保存在 `74ab81d`。现有 [本地网页预览](http://127.0.0.1:5173/) 已按最新要求改为单世界显示、点按 Space 往返切换和柔白配色，保留旧离散规则。详见 [交互修订](docs/UI_INTERACTION_AMENDMENT.md)；原生实现和验收另行推进。
 
 ```bash
 npm ci

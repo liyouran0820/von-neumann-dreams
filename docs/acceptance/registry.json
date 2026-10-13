@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "baseline_id": "native-demo-1.2-reference-amendment-1",
+  "baseline_id": "native-demo-1.2-single-world-space-toggle-2",
   "allowed_statuses": [
     "PASS",
     "FAIL",
@@ -495,12 +495,18 @@
     },
     {
       "id": "V01",
-      "title": "双视图与语义",
-      "expected": "默认左白右夜、宽度各 50%（分隔线外最多 2 px 舍入差），双世界一直可见；身体、焦点、映射身份分别显示。Tab/点击只改焦点，身体不复制、不传送",
-      "source": "开发计划v1.2",
+      "title": "单世界观察与身体语义",
+      "expected": "每次只显示一个世界；默认身体所在世界，点按Space或点击按钮切换，松开保持，再按切回。观察不改变身体或机关、不占玩法历史；长按不重复切换。身体所在侧、观察世界与映射身份清楚显示；穿门后视图跟随身体。",
+      "source": "开发计划v1.2 + 用户修订 single-world-space-toggle-2",
       "status": "NOT_IMPLEMENTED",
       "evidence": [],
-      "evidence_requirement": "各关双视图截图、连续切焦点录像、状态差分；点击/长按/失焦负向测试"
+      "evidence_requirement": "五关各世界独立截图、点按/长按/按钮切换录像、状态差分；检查失焦、弹窗、选择映射、穿门和撤销。",
+      "previous_definition": {
+        "title": "双视图与语义",
+        "expected": "默认左白右夜、宽度各 50%（分隔线外最多 2 px 舍入差），双世界一直可见；身体、焦点、映射身份分别显示。Tab/点击只改焦点，身体不复制、不传送",
+        "evidence_requirement": "各关双视图截图、连续切焦点录像、状态差分；点击/长按/失焦负向测试"
+      },
+      "amendment": "docs/UI_INTERACTION_AMENDMENT.md"
     },
     {
       "id": "V02",
@@ -523,11 +529,15 @@
     {
       "id": "V04",
       "title": "冷暖配色与表面",
-      "expected": "白侧米白暖灰、夜侧深蓝灰；均保留地面/墙层次，石质哑光、细格线、低视觉噪声。两世界身份不用纯颜色判断",
-      "source": "开发计划v1.2",
+      "expected": "白侧以柔和白色为主、浅冷灰墙与较深侧面保留层次，夜侧柔和蓝灰；石质哑光、细格线、低视觉噪声。墙、地面和机关清晰，两世界身份不用纯颜色判断。",
+      "source": "开发计划v1.2 + 用户修订 single-world-space-toggle-2",
       "status": "NOT_IMPLEMENTED",
       "evidence": [],
-      "evidence_requirement": "五关原图并排对照、各世界标题/纹样/身份符号、颜色 profile；不得用全白/全黑省略层次"
+      "evidence_requirement": "五关原图并排对照、各世界标题/纹样/身份符号、颜色 profile；不得用全白/全黑省略层次",
+      "previous_definition": {
+        "expected": "白侧米白暖灰、夜侧深蓝灰；均保留地面/墙层次，石质哑光、细格线、低视觉噪声。两世界身份不用纯颜色判断"
+      },
+      "amendment": "docs/UI_INTERACTION_AMENDMENT.md"
     },
     {
       "id": "V05",
@@ -586,11 +596,15 @@
     {
       "id": "V11",
       "title": "分辨率与缩放",
-      "expected": "1920×1080、1280×720、2560×1440 均保持双视图、主题与安全区；字号/点击区域按可读 UI 尺寸布局。无拉伸、裁字、控件重叠、重要目标被盖、两侧不一致缩放；窗口缩放后命中仍正确",
-      "source": "开发计划v1.2",
+      "expected": "1920×1080、1280×720、2560×1440均保持单世界显示、主题与安全区；切换前后镜头尺度和取景一致。字号/点击区域按可读UI尺寸布局；无拉伸、裁字、重叠或重要目标被遮，缩放后命中正确。",
+      "source": "开发计划v1.2 + 用户修订 single-world-space-toggle-2",
       "status": "NOT_IMPLEMENTED",
       "evidence": [],
-      "evidence_requirement": "三种分辨率的五关截图、窗口缩放和边缘点击录像；720p/1440p 是布局测试，不替代 1080p 性能门槛"
+      "evidence_requirement": "三种分辨率的五关截图、窗口缩放和边缘点击录像；720p/1440p 是布局测试，不替代 1080p 性能门槛",
+      "previous_definition": {
+        "expected": "1920×1080、1280×720、2560×1440 均保持双视图、主题与安全区；字号/点击区域按可读 UI 尺寸布局。无拉伸、裁字、控件重叠、重要目标被盖、两侧不一致缩放；窗口缩放后命中仍正确"
+      },
+      "amendment": "docs/UI_INTERACTION_AMENDMENT.md"
     },
     {
       "id": "V12",

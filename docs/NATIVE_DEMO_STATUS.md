@@ -26,7 +26,7 @@ python3 tools/verify.py --stage P00 --engine "$DEMO_GODOT_BIN" --window-probe --
 
 三份原文在 `sources/native_v1.2/` 按字节归档；对应关系与哈希见 `source_manifest.json`。PRD定规则、五关稿定内容、计划v1.2定工程/视觉/验收。
 
-用户确认1000×572上传图为新的正式视觉基线，旧1672×941记录保留。视图、字号、画质、碰撞与试玩门槛未降低。
+用户确认1000×572上传图为新的正式视觉基线，旧1672×941记录保留。随后明确改为单世界显示、点按 Space 切换，白侧以柔白为主；详见 [交互修订](UI_INTERACTION_AMENDMENT.md)。原生空工程尚未迁移此交互，P02/U 将按新版基线落地；字号、画质、碰撞和试玩门槛保持。
 
 设备与参数分别见 `device_profile.json`、`acceptance_baseline.json`。186项要求/预期在 `acceptance/registry.json` 追踪；真实玩家与安排仍待用户协调，不虚构人选或预约。
 

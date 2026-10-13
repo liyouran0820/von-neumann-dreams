@@ -4,9 +4,10 @@
 
 ## 基线
 
-- 版本：`native-demo-1.2-reference-amendment-1`。
+- 版本：`native-demo-1.2-single-world-space-toggle-2`；前版 `native-demo-1.2-reference-amendment-1` 与其 P00 证据保留于 Git 历史及阶段报告。
 - 来源：PRD1.0、五关灰盒交付1.0、开发计划1.2，原始哈希见 `source_manifest.json`。
 - 视觉更正：用户2026-10-13明确批准已上传1000×572图作为正式基线，哈希`84949b06d212237b82fbc386d83a377ab6633302384e7cf7a2ce7a605246716b`。原计划的1672×941/6550d6…身份作为历史保留。
+- 交互更正：用户明确采用单世界显示、点按 Space 往返切换；白天以柔白色为主。覆盖原固定双视图/Tab 条款，详见 [修订记录](UI_INTERACTION_AMENDMENT.md)。网页已实现，原生 P02/U 阶段尚待落地，旧报告不追溯改写。
 - 技术：Godot4.7.2标准版、类型化GDScript、Forward+、Metal、macOS arm64。版本/驱动不自动回退。
 - 范围：连续G1—G5；不采用G5备用简化、不移动目标、墙或出口。
 - 冻结尺寸、时序、误差、历史、相机和质量参数见 `acceptance_baseline.json`。U03后补充版本化材质/灯光数值；现阶段不宣称profile或视觉通过。

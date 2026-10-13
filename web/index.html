@@ -24,7 +24,7 @@
       </section>
     </div>
     <header class="chapter-bar"><button id="open-levels" aria-label="选择学馆" title="选择学馆"></button><div><span id="chapter" class="chapter-number"></span><h1 id="title"></h1></div><button id="open-help" aria-label="操作帮助">帮助</button></header>
-    <div class="zoom-tools" aria-label="同时缩放两侧"><button id="zoom-out" aria-label="缩小两侧沙盘">−</button><button id="zoom-in" aria-label="放大两侧沙盘">＋</button></div>
+    <div class="zoom-tools" aria-label="缩放沙盘"><button id="zoom-out" aria-label="缩小沙盘">−</button><button id="zoom-in" aria-label="放大沙盘">＋</button></div>
     <div class="scene-caption"><span>THE MIDNIGHT ACADEMY</span><span>同一校园 · 两种回应</span></div>
     <div id="render-error" class="render-error" role="alert" hidden></div>
     <section class="bottom-hud" aria-label="游戏操作">
@@ -35,13 +35,13 @@
       <section id="completion" class="result-card completion" hidden><strong id="complete-title"></strong><button id="next">继续探索</button><button id="replay">重新试玩</button></section>
       <nav class="keybar" aria-label="键盘与点击操作">
         <div class="key-group movement-group"><span class="key-label">走路</span><div class="keys"><button data-move="0,-1" class="keycap" aria-label="向上走 W">W</button><button data-move="-1,0" class="keycap" aria-label="向左走 A">A</button><button data-move="0,1" class="keycap" aria-label="向下走 S">S</button><button data-move="1,0" class="keycap" aria-label="向右走 D">D</button></div></div>
-        <div class="key-group"><button id="view" class="key-action" aria-label="切换观察 V"><kbd>V</kbd><span>观察</span></button><button id="activate" class="key-action" aria-label="激活映射 E"><kbd>E</kbd><span>映射</span></button><button id="unlink" class="key-action" aria-label="解除映射 Q"><kbd>Q</kbd><span>解除</span></button><button id="teleport" class="key-action" aria-label="穿门 F"><kbd>F</kbd><span>穿门</span></button><button id="undo" class="key-action" aria-label="撤销 Z"><kbd>Z</kbd><span>撤销</span></button></div>
+        <div class="key-group"><button id="view" class="key-action" aria-label="切换观察世界 空格"><kbd>Space</kbd><span>切换世界</span></button><button id="activate" class="key-action" aria-label="激活映射 E"><kbd>E</kbd><span>映射</span></button><button id="unlink" class="key-action" aria-label="解除映射 Q"><kbd>Q</kbd><span>解除</span></button><button id="teleport" class="key-action" aria-label="穿门 F"><kbd>F</kbd><span>穿门</span></button><button id="undo" class="key-action" aria-label="撤销 Z"><kbd>Z</kbd><span>撤销</span></button></div>
         <div class="key-group push-group"><span class="key-label">推箱</span><div class="keys"><button data-push="left" class="keycap" aria-label="向左推箱"></button><button data-push="right" class="keycap" aria-label="向右推箱"></button></div></div>
       </nav>
     </section>
     <dialog id="objects-dialog" class="small-dialog"><form method="dialog"><button class="dialog-close">返回</button></form><p class="eyebrow">唯一的映射</p><h2>选择真实物件</h2><div id="objects" class="object-options"></div></dialog>
     <dialog id="levels-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">午夜学院</p><h2>继续你的夜间漫游</h2><nav id="levels" class="level-list" aria-label="学馆选择"></nav><div class="dialog-tools"><button id="reset">本关重来</button><button id="recover">恢复安全点</button><button id="clear-progress">清除通关记录</button></div></dialog>
-    <dialog id="help-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">夜白映射</p><h2>看见、联系、穿行。</h2><ol><li><b>点箱子或真实桥</b>查看预览，再用 E 激活。</li><li><b>方向键推动</b>，两端各自判断阻挡；每次一格。</li><li><b>WASD 或点地面走路</b>。站到门座后，用 F 穿门。</li><li><b>V 切换观察焦点</b>，身体只通过传送门改变世界。</li><li><b>Q 解除，Z 撤销</b>。虚影桥消失时，脚下会失去支撑。</li></ol><div class="help-actions"><button id="hint">给我一点提示</button><label><input type="checkbox" id="reduced-motion"> 减少动态</label></div><p id="hint-text" class="hint-text" hidden></p><details id="debug"><summary>调试状态</summary><pre id="debug-state"></pre></details></dialog>
+    <dialog id="help-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">夜白映射</p><h2>看见、联系、穿行。</h2><ol><li><b>点箱子或真实桥</b>查看预览，再用 E 激活。</li><li><b>方向键推动</b>，两端各自判断阻挡；每次一格。</li><li><b>WASD 或点地面走路</b>。站到门座后，用 F 穿门。</li><li><b>按一下空格切换观察世界</b>，再按一下切回来；身体只通过传送门改变世界。</li><li><b>Q 解除，Z 撤销</b>。虚影桥消失时，脚下会失去支撑。</li></ol><div class="help-actions"><button id="hint">给我一点提示</button><label><input type="checkbox" id="reduced-motion"> 减少动态</label></div><p id="hint-text" class="hint-text" hidden></p><details id="debug"><summary>调试状态</summary><pre id="debug-state"></pre></details></dialog>
   </main>
   <script src="./generated/app.js" defer></script>
 </body>
