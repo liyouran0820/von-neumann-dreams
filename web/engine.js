@@ -26,7 +26,8 @@ export function support(level,s,world,x,y){
  return null;
 }
 export function goals(level,s){
- const result=Object.entries(level.track?.targets||{}).map(([w,x])=>({required:level.id!=='G2',label:`${w==='night'?'夜':'白'}箱 A · x=${x}${level.id==='G2'||(level.id==='G5'&&w==='day')?' / 白门':''}`,ok:s.boxes[w]===x}));
+ const targets=level.science?.lessonGate==='or'?{}:level.track?.targets||{};
+ const result=Object.entries(targets).map(([w,x])=>({required:level.id!=='G2',label:`${w==='night'?'夜':'白'}箱 A · x=${x}${level.id==='G2'||(level.id==='G5'&&w==='day')?' / 白门':''}`,ok:s.boxes[w]===x}));
  if(level.science)result.push({label:'实验线路 · '+level.science.formula,required:false,ok:scienceResult(level,s).output});
  result.push({label:level.id==='G5'?'身体 · 夜C虚影桥末端 (15,2–3)':'身体 · 夜世界出口',ok:s.body.world==='night'&&level.exit.some(([x,y])=>x===s.body.x&&y===s.body.y)&&(level.id!=='G5'||support(level,s,'night',s.body.x,s.body.y)==='ghost-C')});return result;
 }

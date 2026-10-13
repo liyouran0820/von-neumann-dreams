@@ -59,5 +59,15 @@
         "按住空格临时观察"
       ]
     }
-  ]
+  ],
+  "supplemental_documents": [
+    {
+      "id": "academy-theme-v1.1",
+      "actual_name": "夜白映射_五关关卡设计(3).md",
+      "repository_path": "docs/sources/academy_v1.1/夜白映射_五关关卡设计.md",
+      "sha256": "d64174917053cbb81d69dd39e7d4804fc374b22c0f8bfc2ceb2effd335613188",
+      "lines": 745
+    }
+  ],
+  "current_web_spec": "docs/LOGIC_GATES_CURRICULUM.md"
 }

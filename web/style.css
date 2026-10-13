@@ -13,3 +13,6 @@
 @media(max-width:375px){.course-panel{left:12px;width:calc(100% - 24px)}.academy.has-science .scene-host,.academy.has-science .hotspots{top:330px}.course-heading{gap:3px}.course-heading h2{font-size:16px}.science-circuit svg{height:86px}.scene-readout{font-size:10px;padding:3px 5px}.science-controls button{padding:6px 8px}}
 .optics-course .science-circuit svg{height:70px}.instrument-hotspot:after{content:"";position:absolute;left:-9px;bottom:-12px;width:15px;height:1px;background:#8e956f;transform:rotate(-47deg);pointer-events:none}
 @media(max-width:1099px){.academy .scene-host,.academy .hotspots,.academy.has-science .scene-host,.academy.has-science .hotspots,.academy.has-science.course-collapsed .scene-host,.academy.has-science.course-collapsed .hotspots{top:var(--course-bottom,180px)}}
+#science-switches{display:flex;gap:8px;flex-wrap:wrap}.science-status code{white-space:normal;overflow-wrap:anywhere;line-height:1.45;min-width:0}.science-status span{flex-shrink:0}
+.science-controls button{min-height:44px}
+@media(max-width:450px){.world-heading{gap:8px}.world-tags{position:absolute;top:34px;left:0;flex-direction:row;align-items:center;margin:0;gap:4px}.body-tag,.focus-tag{padding:2px 6px}}

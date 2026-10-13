@@ -1,14 +1,16 @@
 import * as Game from './engine.js';
 import { LEVELS as ORIGINAL_LEVELS } from './levels.js';
 import { ACADEMY_LEVELS } from './academy-levels.js';
+import { OPTICS_LEVELS } from './optics-levels.js';
 import { renderCourse, showNotebook, resetCourseNotes, dismissWelcome } from './course-ui.js';
 import { createDiorama } from './renderer.js';
 import { ICONS } from './icons.js';
 
 const $ = id => document.getElementById(id);
 const originalMode = new URLSearchParams(location.search).get('version') === 'original';
-const LEVELS = originalMode ? ORIGINAL_LEVELS : ACADEMY_LEVELS;
-const KEY = originalMode ? 'night-white-five-v1-progress' : 'night-white-academy-v1-progress';
+const opticsMode = new URLSearchParams(location.search).get('version') === 'optics';
+const LEVELS = originalMode ? ORIGINAL_LEVELS : opticsMode ? OPTICS_LEVELS : ACADEMY_LEVELS;
+const KEY = originalMode ? 'night-white-five-v1-progress' : opticsMode ? 'night-white-academy-v1-progress' : 'night-white-logic-gates-v1-progress';
 const worldName = world => world === 'day' ? '白' : '夜';
 const objectName = id => ({ A: '实验箱', B: '第一座桥', C: '第二座桥' })[id];
 const media = matchMedia('(prefers-reduced-motion: reduce)');
@@ -64,7 +66,7 @@ $('reduced-motion').checked = media.matches;
 media.addEventListener('change', event => { $('reduced-motion').checked = event.matches; diorama?.setReducedMotion(event.matches); });
 function goalLabels() {
   return Game.goals(level, state).map(goal => {
-    if (goal.label.startsWith('实验线路')) return { ...goal, label: '白门线路' };
+    if (goal.label.startsWith('实验线路')) return { ...goal, label: level.science.scope === 'assessment' ? '与门验收' : worldName(level.science.world) + '门线路' };
     const body = goal.label.startsWith('身体');
     const label = body ? level.id === 'G5' ? '入学验收环' : '出口' : goal.label.startsWith('夜') ? level.id === 'G5' ? '夜侧校准槽' : '夜侧实验槽' : level.id === 'G1' ? '白侧实验槽' : '白侧踏板';
     return { ...goal, label };
@@ -124,11 +126,11 @@ function readableMessage(type, before, accepted) {
   if (state.failed) return '支撑消失了，随时可以撤回。';
   if (state.won) return '你的安排，让两侧连成了一条路。';
   if (type === 'push') return accepted ? ['night', 'day'].map(world => worldName(world) + '侧' + (state.feedback?.[world]?.blocked ? '受阻' : '移动一格')).join(' · ') : state.message;
-  if (type === 'mirror' || type === 'switch') return accepted ? (type === 'mirror' ? '镜面已转动，光路已更新。' : 'B 开关已改变，沿线路观察输出。') : '先用空格观察白侧实验台。';
+  if (type === 'mirror' || type === 'switch') return accepted ? (type === 'mirror' ? '镜面已转动，观察光输入与逻辑输出。' : '开关已改变，沿线路观察输出。') : '先用空格切到实验器材所在世界。';
   if (type === 'activate') return state.preview ? state.message : '映射已生效。';
   if (type === 'unlink') return before.mapping === 'A' ? '联系已解除，真实箱子的位置留下了。' : '联系已解除，虚影消失。';
   if (type === 'view') return state.view === state.body.world ? '现在可以移动身体。' : '观察另一侧，身体仍在' + worldName(state.body.world) + '世界。';
-  if (type === 'move') return accepted ? '' : state.view !== state.body.world ? '按空格回到身体所在的世界，再走路。' : '这边暂时走不通。';
+  if (type === 'move') return accepted ? '' : state.view !== state.body.world ? '按空格回到身体所在的世界，再走路。' : state.message || '这边暂时走不通。';
   if (type === 'teleport') return accepted ? '身体来到' + worldName(state.body.world) + '世界。' : state.view !== state.body.world ? '按空格回到身体所在的世界，再穿门。' : '先走上门座，再穿门。';
   if (type === 'undo') return '回到上一步。';
   if (type === 'recover') return '已恢复当时的完整安全状态。';
@@ -179,6 +181,7 @@ document.addEventListener('click', event => {
   const button = event.target.closest('button'); if (!button) return;
   if (button.dataset.level !== undefined) load(Number(button.dataset.level));
   else if (button.dataset.selectObject) { $('objects-dialog').close(); chooseObject(button.dataset.selectObject, button.dataset.sourceWorld); }
+  else if (button.dataset.signal) action('switch', button.dataset.signal);
   else if (button.dataset.focusWorld) focusWorld(button.dataset.focusWorld);
   else if (button.dataset.move) action('move', button.dataset.move.split(',').map(Number));
   else if (button.dataset.push) action('push', button.dataset.push);
@@ -194,7 +197,6 @@ $('open-help').onclick = () => { walking++; $('help-dialog').showModal(); };
 $('open-notebook').onclick = () => { walking++; showNotebook(level); };
 $('dismiss-welcome').onclick = dismissWelcome;
 $('science-observe').onclick = () => focusWorld(level.science.world);
-$('science-switch').onclick = () => action('switch','B');
 $('science-mirror').onclick = () => action('mirror','M');
 $('course-collapse').onclick = () => { const collapsed=document.body.classList.toggle('course-collapsed');$('course-collapse').setAttribute('aria-expanded',String(!collapsed));$('course-collapse').textContent=collapsed?'展开':'收起'; };
 $('original-mode').href = originalMode ? '?' : '?version=original';

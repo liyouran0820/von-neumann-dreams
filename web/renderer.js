@@ -55,6 +55,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
    const face=new THREE.Group();face.position.set(x,.65,z);
    box(face,0,0,0,.86,.68,.08,mat(0xbadbe2,{roughness:.16,metalness:.5}),.02);
    box(face,0,.36,0,.94,.055,.12,mat(0x967b45),.009);box(face,0,-.36,0,.94,.055,.12,mat(0x967b45),.009);
+   face.userData.pick={kind:'mirror',id:mirror.id};v.pickables.push(face);
    v.root.add(face);v.instruments.push({kind:'mirror',id:mirror.id,face,cell:mirror.cell});
    v.anchors.push({kind:'mirror',id:mirror.id,cell:mirror.cell,height:.98});
   }
@@ -65,7 +66,8 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   }
   for(const input of config.inputs.filter(i=>i.type==='switch')){
    const [x,z]=input.cell;box(v.root,x,.16,z,.48,.32,.48,stone,.04);
-   const lens=mat(GOLD,{emissive:GOLD,emissiveIntensity:.2});box(v.root,x,.44,z,.26,.3,.26,lens,.06);
+   const lens=mat(GOLD,{emissive:GOLD,emissiveIntensity:.2});const cap=box(v.root,x,.44,z,.26,.3,.26,lens,.06);
+   cap.userData.pick={kind:'switch',id:input.id};v.pickables.push(cap);
    v.instruments.push({kind:'switch',id:input.id,lens});v.anchors.push({kind:'switch',id:input.id,cell:input.cell,height:.93});
   }
   v.beams=new THREE.Group();v.root.add(v.beams);
@@ -77,9 +79,11 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   for(const item of v.instruments){
    if(item.kind==='mirror'){
     const slash=state.science.mirrors[item.id]==='/';item.face.rotation.y=slash?Math.PI/4:-Math.PI/4;
-    const [x,z]=item.cell,sign=slash?1:-1;
-    const points=[new THREE.Vector3(x-.7,.66,z-.7*sign),new THREE.Vector3(x+.7,.66,z+.7*sign)];
-    const normal=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),new THREE.LineDashedMaterial({color:0x457b8c,dashSize:.08,gapSize:.055}));normal.computeLineDistances();v.beams.add(normal);
+    if(!level.science.lessonGate){
+     const [x,z]=item.cell,sign=slash?1:-1;
+     const points=[new THREE.Vector3(x-.7,.66,z-.7*sign),new THREE.Vector3(x+.7,.66,z+.7*sign)];
+     const normal=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),new THREE.LineDashedMaterial({color:0x457b8c,dashSize:.08,gapSize:.055}));normal.computeLineDistances();v.beams.add(normal);
+    }
    }else{
     const on=item.kind==='sensor'?result.optics.hits.includes(item.id):result.signals[item.id];
     item.lens.color.setHex(on?0x55c6c0:0x6b7883);item.lens.emissive.setHex(on?0x24adab:0x101d23);item.lens.emissiveIntensity=on?.7:.05;

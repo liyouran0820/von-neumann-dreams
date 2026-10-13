@@ -14,7 +14,7 @@ const courses = [
 ];
 ACADEMY_LEVELS.forEach((level, i) => {
   const [title, goal, note] = courses[i];
-  level.academy = { title, schools: school, note, completion: i === 4 ? '入学试炼完成，你已掌握五种逻辑门。' : title + '课程通过' };
+  level.academy = { title, schools: school, note, completion: i === 4 ? '入学试炼完成，欢迎成为午夜学院的一员。' : title + '课程通过' };
   level.goal = goal;
 });
 
