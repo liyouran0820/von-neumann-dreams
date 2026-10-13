@@ -60,6 +60,12 @@ def main():
         architecture = command(['lipo', '-archs', binary], ROOT); report['commands'].append(architecture)
         if architecture['exit_code'] != 0 or architecture['stdout'].strip() != 'arm64':
             raise RuntimeError('Candidate architecture is not arm64 only')
+        attributes = command(['xattr', app], ROOT); report['commands'].append(attributes)
+        if 'com.apple.FinderInfo' in attributes['stdout'].splitlines():
+            # File Provider adds cosmetic Finder metadata to a newly extracted bundle.
+            # Remove only that attribute; quarantine and provenance remain untouched.
+            cleanup = command(['xattr', '-d', 'com.apple.FinderInfo', app], ROOT); report['commands'].append(cleanup)
+            if cleanup['exit_code'] != 0: raise RuntimeError('Cannot clean generated bundle Finder metadata')
         signature = command(['codesign', '--verify', '--deep', '--strict', app], ROOT); report['commands'].append(signature)
         if signature['exit_code'] != 0: raise RuntimeError('Candidate code signature invalid')
         runtime_path = output.with_suffix('.runtime.json')
