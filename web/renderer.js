@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { doorOpen } from './engine.js';
 import { scienceResult } from './science.js';
+import { stopImpactPose } from './motion.js';
 
 // Logical coordinates map directly to X/Z; the walkable surface is Y=0.
 // White stone stays neutral under soft light; cooler edges separate walls and paths.
@@ -32,6 +33,23 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  }catch(error){for(const v of scenes)v.renderer.dispose();onError(error);throw error;}
  function patch(v,obj,to){const from={x:obj.position.x,y:obj.position.y,z:obj.position.z,opacity:obj.userData.opacity??1};v.dynamic.push({obj,from,to});}
  function opacity(group,value){group.userData.opacity=value;group.visible=value>.002;group.traverse(o=>{if(o.material){o.material.transparent=value<.999||o.userData.glass===true;o.material.opacity=value*(o.userData.baseOpacity??1);}});}
+ function impactDecoration(v,parent){
+  const g=new THREE.Group(),material=new THREE.MeshBasicMaterial({color:v.world==='day'?0x996611:GOLD,transparent:true,opacity:0,depthWrite:false,depthTest:false});
+  const halo=new THREE.Mesh(new THREE.TorusGeometry(.28,.026,6,32),material);halo.rotation.y=Math.PI/2;halo.renderOrder=10;g.add(halo);
+  for(let i=0;i<5;i++){const angle=i*Math.PI*2/5,spark=box(g,0,Math.cos(angle)*.42,Math.sin(angle)*.42,.028,.2,.028,material,.003);spark.rotation.x=angle;spark.castShadow=false;spark.renderOrder=10;}
+  g.visible=false;parent.add(g);return g;
+ }
+ function applyImpact(v,now){
+  if(!v.crateVisual)return false;
+  const pose=stopImpactPose(v.impact?now-v.impact.startedAt:-1,v.impact?.direction,reduced);
+  v.crateVisual.position.x=pose.x;v.crateVisual.rotation.z=pose.rotation;v.crateVisual.scale.set(pose.scaleX,pose.scaleY,1);
+  v.impactDecoration.position.set(v.impact?.direction==='left'?-.32:.32,.4,0);
+  v.impactDecoration.scale.setScalar(pose.spread);v.impactDecoration.visible=pose.active;
+  for(const m of ownMaterials(v.impactDecoration))m.opacity=pose.flash;
+  for(const spark of v.impactDecoration.children.slice(1))spark.visible=!reduced;
+  if(!pose.active)v.impact=null;
+  return pose.active;
+ }
  function character(v){const g=new THREE.Group(),cream=mat(0xf0eee4),shade=mat(0xc2c6bf);const head=new THREE.Mesh(new THREE.SphereGeometry(.15,16,12),cream);head.position.y=.62;head.castShadow=true;g.add(head);const body=new THREE.Mesh(new THREE.CapsuleGeometry(.13,.25,5,12),cream);body.position.y=.32;body.castShadow=true;g.add(body);box(g,-.065,.065,.01,.085,.13,.13,shade);box(g,.065,.065,.01,.085,.13,.13,shade);const shadow=new THREE.Mesh(new THREE.CircleGeometry(.21,24),new THREE.MeshBasicMaterial({color:0x101724,transparent:true,opacity:.2,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.012;g.add(shadow);v.root.add(g);return g;}
  function bridgeGroup(v,b,ghost){const g=new THREE.Group(),p=PALETTE[v.world],w=b.x[1]-b.x[0]+1,d=b.y[1]-b.y[0]+1;g.position.set((b.x[0]+b.x[1])/2,0,(b.y[0]+b.y[1])/2);const surface=mat(ghost?0x65bcd3:p.stone,ghost?{emissive:0x267b99,emissiveIntensity:.35}:{});box(g,0,-.13,0,w-.035,.26,d-.035,surface,.035);const edge=mat(ghost?CYAN:p.edge,{emissive:ghost?CYAN:0,emissiveIntensity:ghost?.3:0});for(const z of [-d/2+.035,d/2-.035])box(g,0,.012,z,w-.06,.025,.025,edge,.006);if(!ghost)g.userData.pick={kind:'object',id:b.id,x:Math.round((b.x[0]+b.x[1])/2),y:Math.round((b.y[0]+b.y[1])/2)};v.root.add(g);if(!ghost)v.pickables.push(g);return g;}
  function previewBridge(v,b){const g=new THREE.Group(),color=new THREE.LineDashedMaterial({color:CYAN,dashSize:.13,gapSize:.1,transparent:true,opacity:.8});const x1=b.x[0]-.47,x2=b.x[1]+.47,z1=b.y[0]-.47,z2=b.y[1]+.47;const points=[new THREE.Vector3(x1,.035,z1),new THREE.Vector3(x2,.035,z1),new THREE.Vector3(x2,.035,z2),new THREE.Vector3(x1,.035,z2),new THREE.Vector3(x1,.035,z1)];const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),color);line.computeLineDistances();g.add(line);v.root.add(g);g.visible=false;return g;}
@@ -96,7 +114,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   for(const line of result.optics.segments){beam(v.beams,line.from,line.to,0x99723d,.044);beam(v.beams,line.from,line.to,0xffd278,.022,.657);}
  }
  function build(v){
- clean(v.root);v.pickables=[];v.dynamic=[];v.anchors=[];v.bridges=[];v.doors=[];v.targets=[];v.player=null;v.crate=null;
+ clean(v.root);v.pickables=[];v.dynamic=[];v.anchors=[];v.bridges=[];v.doors=[];v.targets=[];v.player=null;v.crate=null;v.crateVisual=null;v.impact=null;v.impactDecoration=null;
  const p=PALETTE[v.world],rows=level.grids[v.world],W=rows[0].length,H=rows.length;v.root.position.set(-(W-1)/2,0,-(H-1)/2);
  const marker=v.world==='day'?0xa67c29:GOLD;
  const stone=mat(p.stone),edge=mat(p.edge),wall=mat(p.wall),pit=mat(p.pit),glass=mat(v.world==='day'?0x9dc8cd:0x719db7,{transparent:true,opacity:.4,roughness:.24,depthWrite:false}),gold=mat(marker,{emissive:marker,emissiveIntensity:.12}),track=mat(v.world==='day'?0xc3cdd0:0x303e55);
@@ -126,7 +144,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
    v.anchors.push({kind:'portal',id:'P'+t,cell:[x,y],height:.25});
   }
  }
- if(level.track){const x=state.boxes[v.world],y=level.track.y;const g=new THREE.Group();g.position.set(x,0,y);const crate=mat(v.world==='day'?0xb5aa8b:0x9ba9ad);box(g,0,.31,0,.56,.62,.56,crate,.035);box(g,-.288,.3,0,.02,.4,.075,gold,.004);g.userData.pick={kind:'object',id:'A',x,y};v.root.add(g);v.pickables.push(g);v.crate=g;
+ if(level.track){const x=state.boxes[v.world],y=level.track.y;const g=new THREE.Group(),visual=new THREE.Group();g.position.set(x,0,y);g.add(visual);const crate=mat(v.world==='day'?0xb5aa8b:0x9ba9ad);box(visual,0,.31,0,.56,.62,.56,crate,.035);box(visual,-.288,.3,0,.02,.4,.075,gold,.004);g.userData.pick={kind:'object',id:'A',x,y};v.root.add(g);v.pickables.push(g);v.crate=g;v.crateVisual=visual;v.impactDecoration=impactDecoration(v,g);
   const tx=level.track.targets[v.world];if(tx!==undefined){const target=new THREE.Group();target.position.set(tx,.04,y);for(const z of [-.36,.36])box(target,0,0,z,.76,.025,.035,gold,.006);for(const xx of [-.36,.36])box(target,xx,0,0,.035,.025,.76,gold,.006);v.root.add(target);v.targets.push(target);}
  }
  for(const b of level.bridges){if(b.world===v.world){bridgeGroup(v,b,false);v.anchors.push({kind:'object',id:b.id,cell:[(b.x[0]+b.x[1])/2,(b.y[0]+b.y[1])/2],height:.05});}else{
@@ -143,10 +161,22 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  }
  function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),...(a.label?{label:a.label}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2};});}
  function draw(){if(disposed||!level||document.hidden)return;for(const v of scenes){if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
- function frame(now){raf=0;if(disposed||document.hidden)return;const t=reduced?1:Math.min(1,(now-animationStart)/190),e=1-Math.pow(1-t,3);for(const v of scenes)for(const a of v.dynamic){a.obj.position.set(THREE.MathUtils.lerp(a.from.x,a.to.x??a.from.x,e),THREE.MathUtils.lerp(a.from.y,a.to.y??a.from.y,e),THREE.MathUtils.lerp(a.from.z,a.to.z??a.from.z,e));if(a.to.opacity!==undefined)opacity(a.obj,THREE.MathUtils.lerp(a.from.opacity,a.to.opacity,e));if(a.to.shake)a.obj.position.x+=Math.sin(t*Math.PI*4)*(1-t)*.045;}draw();if(t<1)raf=requestAnimationFrame(frame);else for(const v of scenes)v.dynamic=[];}
- function update(next,{type,instant=false}={}){
+ function frame(now){
+  raf=0;if(disposed||document.hidden)return;
+  const t=reduced?1:Math.min(1,(now-animationStart)/190),e=1-Math.pow(1-t,3);let running=false;
+  for(const v of scenes){
+   for(const a of v.dynamic){a.obj.position.set(THREE.MathUtils.lerp(a.from.x,a.to.x??a.from.x,e),THREE.MathUtils.lerp(a.from.y,a.to.y??a.from.y,e),THREE.MathUtils.lerp(a.from.z,a.to.z??a.from.z,e));if(a.to.opacity!==undefined)opacity(a.obj,THREE.MathUtils.lerp(a.from.opacity,a.to.opacity,e));}
+   if(t>=1)v.dynamic=[];else if(v.dynamic.length)running=true;
+   if(applyImpact(v,now))running=true;
+  }
+  draw();if(running)raf=requestAnimationFrame(frame);
+ }
+ function update(next,{type,direction,instant=false}={}){
   if(!level||disposed)return;state=next;if(raf){cancelAnimationFrame(raf);raf=0;}
-  for(const v of scenes){v.dynamic=[];const body=state.body;v.player.visible=body.world===v.world;patch(v,v.player,{x:body.x,y:state.failed?-1.1:0,z:body.y});if(v.crate){v.crate.userData.pick.x=state.boxes[v.world];patch(v,v.crate,{x:state.boxes[v.world],y:0,z:level.track.y,shake:type==='push'&&state.feedback?.[v.world]?.blocked});}
+  for(const v of scenes){v.dynamic=[];const body=state.body;v.player.visible=body.world===v.world;patch(v,v.player,{x:body.x,y:state.failed?-1.1:0,z:body.y});if(v.crate){v.crate.userData.pick.x=state.boxes[v.world];patch(v,v.crate,{x:state.boxes[v.world],y:0,z:level.track.y});
+    if(type==='undo'||type==='recover')v.impact=null;
+    else if(type==='push'&&['left','right'].includes(direction))v.impact=state.feedback?.[v.world]?.blocked?{startedAt:performance.now(),direction}:null;
+   }
    for(const target of v.targets)for(const m of ownMaterials(target)){m.emissiveIntensity=state.boxes[v.world]===level.track.targets[v.world]?1:.08;}
    for(const d of v.doors){const occupied=!!level.science&&body.world===v.world&&body.x===d.position.x&&body.y===d.position.z;const open=doorOpen(level,state,v.world,d.position.x,d.position.z)||occupied;patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}
    updateScience(v);

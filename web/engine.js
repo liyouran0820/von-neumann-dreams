@@ -88,6 +88,7 @@ export function act(level,s,type,arg){
  }
  if(type==='unlink'){if(!s.mapping)return false;save(s);s.mapping=null;s.preview=null;s.message='联系已解除 · 真实物件保持位置。';settle(level,s);return true;}
  if(type==='push'){
+  if(!['left','right'].includes(arg)){s.message='实验箱只能沿轨道左右推动。';return false;}
   if(!s.mapping){s.message='先选择真实物件，再激活映射。';return false;}
   if(s.mapping!=='A'){s.message='固定桥不可推动。';return false;}
   save(s);s.feedback={};for(const w of ['night','day']){const old=s.boxes[w];const dx=arg==='left'?-1:arg==='right'?1:0;const [lo,hi]=level.track[w];s.boxes[w]=Math.max(lo,Math.min(hi,old+dx));s.feedback[w]={from:old,to:s.boxes[w],blocked:old===s.boxes[w]};}

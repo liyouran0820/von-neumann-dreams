@@ -137,8 +137,8 @@ function action(type, arg, fromPath = false) {
   if (!fromPath) walking++;
   const before = { mapping: state.mapping, world: state.body.world };
   const accepted = Game.act(level, state, type, arg);
-  lastAction = type; message = readableMessage(type, before, accepted);
-  render({ type, direction: arg }); return accepted;
+  lastAction = accepted ? type : ''; message = readableMessage(type, before, accepted);
+  render({ type: accepted ? type : undefined, direction: arg }); return accepted;
 }
 function focusWorld(world) {
   if (world !== state.view) toggleObservation();
