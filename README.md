@@ -8,7 +8,7 @@
 
 当前按用户的开发计划 v1.2 迁移到 **Godot 4.7.2 / Forward+ / Metal / macOS arm64**。P00 原生启动、测试运行器与干净导出已通过；P01状态与几何模块已保存，81项模块检查通过。原生五关玩法、完整视觉和真人验收尚未完成。
 
-当前网页在 `codex/logic-gates-curriculum` 按五关学习 **AND → OR → NOT → XOR → NAND与组合**。光门保留为玩法，镜面改变感应器的0/1输入；第二关器材穿模已修复。具体规则、验证和回溯方法见[逻辑门课程](docs/LOGIC_GATES_CURRICULUM.md)。原生进度仍以[原生状态](docs/NATIVE_DEMO_STATUS.md)为准，网页结果不转标原生通过。
+当前网页按五关学习 **AND → OR → NOT → XOR → NAND与组合**。光门保留为玩法，镜面改变感应器的0/1输入；第二关器材穿模已修复，第四关采用异或联动双门，第三关保持单光门。具体规则、验证和回溯方法见[逻辑门课程](docs/LOGIC_GATES_CURRICULUM.md)。原生进度仍以[原生状态](docs/NATIVE_DEMO_STATUS.md)为准，网页结果不转标原生通过。
 
 ## 原生运行与验证
 
@@ -46,13 +46,14 @@ Node.js 20+；Three.js 与 esbuild 版本锁定，无运行时 CDN。构建输�
 - [acceptance_baseline.md](docs/acceptance_baseline.md)：冻结参数、证据格式与状态语义。
 - [PROJECT_INTRODUCTION.md](PROJECT_INTRODUCTION.md)：背景、历史和当前范围。
 - [AGENTS.md](AGENTS.md)：协作与文档边界；[log.md](log.md)：实际变更和检查。
+- [AI_USAGE.md](AI_USAGE.md)：团队核心创意来源、Codex 使用范围及人工与 AI 分工。
 - [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：已用依赖与素材许可。
 
 五关不能改图、目标、出口或启用 G5 备用简化来通过验收。真实玩家尚未安排，工程/关卡/前端/玩法理解分别报告。
 
 ## Git
 
-远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。`main`保留改造前的`560ed6f`；当前开发分支是`codex/logic-gates-curriculum`。旧逻辑光学分支及两个回溯标签均保留，详见课程文档。此前已将原生开发分支的`7915359`整合进main，完整历史和来源原文保留。
+远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。`main`统一接收当前逻辑门课程和工程修复；开发历史保留在`codex/logic-gates-curriculum`。原版`560ed6f`、旧逻辑光学分支及两个回溯标签继续保留，详见课程文档。原生开发分支的`7915359`也已整合，完整历史和来源原文保留。
 
 旧刻轨版本 `f4705f7`、指令交换 `480d261`、首版 `eb63a22` 和设计历史均保留。缓存、SDK、导出包和完整录像 / 日志进入 Git 忽略目录。
 

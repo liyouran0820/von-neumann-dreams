@@ -16,7 +16,10 @@ export function doorOpen(level,s,world,x,y){
   if(level.science.doors&&x!==undefined){const door=level.science.doors.find(d=>d.cells.some(([a,b])=>a===x&&b===y));return door?result.doors[door.id]:false;}
   return result.output;
  }
- return world==='day'&&!!level.track&&s.boxes.day===level.track.targets.day;
+ if(world!=='day'||!level.track)return false;
+ // Keep the original campaign's occupied-door protection from main.
+ const occupied=s.body.world===world&&level.grids[world][s.body.y]?.[s.body.x]==='D';
+ return s.boxes.day===level.track.targets.day||occupied;
 }
 export function support(level,s,world,x,y){
  if(instrumentAt(level,world,x,y))return null;

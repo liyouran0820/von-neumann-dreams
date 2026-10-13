@@ -37,7 +37,7 @@ G5电路图分别显示中间C和最终Y，札记同时记录两列，避免将�
 
 ## Git回溯
 
-- 当前分支：`codex/logic-gates-curriculum`。
+- 发布入口：`main`；开发历史保留在`codex/logic-gates-curriculum`。
 - 最初改造前：`codex/pre-logic-optics-20261013` → `560ed6f`。
 - 上一逻辑光学试验：`codex/logic-optics-preview-20261013` → `b1c0ff9`，保留已知器材穿模缺陷供回看。
 - 原版由上述标签固定保留；每阶段独立提交，不用reset覆盖旧历史。
