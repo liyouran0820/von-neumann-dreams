@@ -1,25 +1,32 @@
+import { initialScience, scienceResult } from './science.js';
+export { scienceResult } from './science.js';
 export const other = w => w === 'night' ? 'day' : 'night';
 const copy = x => structuredClone(x);
 const inside = (p,r) => p.x>=r.x[0]&&p.x<=r.x[1]&&p.y>=r.y[0]&&p.y<=r.y[1];
 export function createState(level) {
  const s={body:{world:'night',x:level.start[0],y:level.start[1]},view:'night',boxes:level.track?{night:level.track.initial,day:level.track.initial}:null,mapping:null,preview:null,failed:false,won:false,feedback:null,message:level.goal,checkpoint:null,region:-1,history:[]};
+ if(level.science)s.science=initialScience(level);
  s.checkpoint=snapshot(s); return s;
 }
 function snapshot(s){ const {history,checkpoint,...rest}=s;return copy(rest); }
 function save(s){s.history.push({state:snapshot(s),checkpoint:copy(s.checkpoint)});}
-export function doorOpen(level,s,world){return world==='day'&&!!level.track&&s.boxes.day===level.track.targets.day;}
+export function doorOpen(level,s,world){
+ if(level.science?.world===world)return scienceResult(level,s).output;
+ return world==='day'&&!!level.track&&s.boxes.day===level.track.targets.day;
+}
 export function support(level,s,world,x,y){
  const p={x,y};
  const real=level.bridges.find(b=>b.world===world&&inside(p,b));if(real)return 'real-'+real.id;
  const ghost=level.bridges.find(b=>b.world!==world&&b.id===s.mapping&&inside(p,b));if(ghost)return 'ghost-'+ghost.id;
  const tile=level.grids[world][y]?.[x];
- if(tile==='D')return doorOpen(level,s,world)?'floor':null;
+ if(tile==='D')return doorOpen(level,s,world)||(level.science&&s.body.world===world&&s.body.x===x&&s.body.y===y)?'floor':null;
  if(tile&&'.S12'.includes(tile))return 'floor';
  if(tile==='E'&&level.id!=='G5')return 'floor';
  return null;
 }
 export function goals(level,s){
  const result=Object.entries(level.track?.targets||{}).map(([w,x])=>({required:level.id!=='G2',label:`${w==='night'?'夜':'白'}箱 A · x=${x}${level.id==='G2'||(level.id==='G5'&&w==='day')?' / 白门':''}`,ok:s.boxes[w]===x}));
+ if(level.science)result.push({label:'实验线路 · '+level.science.formula,required:false,ok:scienceResult(level,s).output});
  result.push({label:level.id==='G5'?'身体 · 夜C虚影桥末端 (15,2–3)':'身体 · 夜世界出口',ok:s.body.world==='night'&&level.exit.some(([x,y])=>x===s.body.x&&y===s.body.y)&&(level.id!=='G5'||support(level,s,'night',s.body.x,s.body.y)==='ghost-C')});return result;
 }
 function settle(level,s,moved=false){
@@ -54,6 +61,18 @@ export function act(level,s,type,arg){
  }
  if(type==='cancelPreview'){s.preview=null;return true;}
  if(s.failed||s.won)return false;
+ if(type==='switch'||type==='mirror'){
+  const config=level.science;
+  if(!config||s.view!==config.world)return false;
+  const item=type==='switch'?config.inputs.find(i=>i.id===arg&&i.type==='switch'):(config.mirrors||[]).find(m=>m.id===arg);
+  if(!item)return false;
+  save(s);
+  if(type==='switch')s.science.switches[arg]=!s.science.switches[arg];
+  else s.science.mirrors[arg]=s.science.mirrors[arg]==='/'?'\\':'/';
+  const result=scienceResult(level,s);
+  s.message=result.output?'实验线路接通，白门打开。':'实验线路未接通。';
+  settle(level,s);return true;
+ }
  if(type==='activate'){
   if(!canActivate(level,s)){s.message='此处无法生成，原映射保持。';return false;}
   save(s);s.mapping=s.preview.id;s.preview=null;s.message='映射已激活 · '+s.mapping;settle(level,s);return true;
