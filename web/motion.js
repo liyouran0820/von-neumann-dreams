@@ -1,5 +1,6 @@
 // Presentation only: these poses never change logical coordinates or history.
 export const STOP_IMPACT_MS = 360;
+export const VOID_FALL_MS = 900;
 const clamp = value => Math.max(0, Math.min(1, value));
 function keyframe(t, points) {
  for (let i=1;i<points.length;i++) {
@@ -17,4 +18,14 @@ export function stopImpactPose(elapsed,direction,reduced=false) {
  const x=keyframe(t,[[0,0],[.18,.07],[.45,-.055],[.72,.017],[1,0]]);
  const scaleX=keyframe(t,[[0,1],[.18,.82],[.45,1.06],[.72,.97],[1,1]]);
  return {active,x:sign*x,rotation:-sign*x*1.3,scaleX,scaleY:1/Math.sqrt(scaleX),flash:1-t,spread:1+t*.8};
+}
+export function voidFallPose(elapsed,reduced=false) {
+ const t=clamp(elapsed/VOID_FALL_MS),drop=clamp((elapsed-140)/(VOID_FALL_MS-140));
+ const fade=clamp((t-.45)/.47),opacity=1-fade*fade*(3-2*fade);
+ if(reduced)return {active:false,visible:false,y:-5.5,roll:0,pitch:0,scaleX:1,scaleY:1,armLift:0,opacity:0};
+ return {active:elapsed<VOID_FALL_MS,visible:elapsed<VOID_FALL_MS&&opacity>.002,
+  y:elapsed<=0?0:-.025*clamp(elapsed/140)-5.5*drop*drop,
+  roll:keyframe(t,[[0,0],[.16,.2],[.5,-.25],[1,-.48]]),pitch:drop*.3,
+  scaleX:1-drop*.1,scaleY:1+drop*.18,
+  armLift:keyframe(t,[[0,0],[.16,1],[.6,.8],[1,.2]]),opacity};
 }

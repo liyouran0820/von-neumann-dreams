@@ -44,3 +44,39 @@ export async function verifyImpact(motionTest) {
  return {status:'PASS',checks};
  }catch(error){return {status:'FAIL',checks,error:error.stack};}
 }
+export async function verifyFall(t) {
+ const checks=[];
+ function assert(value,message='验收断言失败'){if(!value)throw Error(message);}
+ const equal=(a,b)=>assert(JSON.stringify(a)===JSON.stringify(b),`预期 ${JSON.stringify(b)}，实际 ${JSON.stringify(a)}`);
+ const restored=m=>{assert(m.player.visible&&m.player.shadow);equal(m.player.position,[m.body.x,0,m.body.y]);equal(m.player.scale,[1,1,1]);equal(m.player.rotation,[0,0,0,'XYZ']);equal(m.player.arms,[-.12,.12]);equal(m.player.opacity,1);equal(m.player.shadowOpacity,.2);assert(!m.failed);};
+ async function check(name,fn){await fn();checks.push(name);}
+ try {
+  await check('F01 白侧桥上解除、夜侧桥上替换触发；预览及合法地面解除不触发',()=>{
+   t.prepareFall('day');assert(t.dispatch('unlink'));let m=t.metrics();assert(m.failed&&!m.won&&m.player.visible&&!m.player.shadow);
+   t.prepareFall('night');assert(t.preview('C','day'));assert(!t.metrics().failed);restored(t.metrics());assert(t.dispatch('activate'));assert(t.metrics().failed&&!t.metrics().player.shadow);
+   t.load(2);t.bind('B');t.dispatch('unlink');t.step(900);restored(t.metrics());
+   t.walk(3,3);t.dispatch('teleport');t.walk(5,3);assert(!t.dispatch('move',[1,0]));t.step(900);restored(t.metrics());
+   t.load(1);t.walk(3,3);t.dispatch('teleport');t.walk(2,3);assert(!t.dispatch('move',[0,-1]));t.step(900);restored(t.metrics());
+  });
+  await check('F02 失衡、加速下坠、淡出及900ms内隐藏且停止重绘',()=>{
+   t.prepareFall('day');t.dispatch('unlink');t.step(140);let m=t.metrics();assert(m.player.rotation[2]>.15&&Math.abs(m.player.position[1])<.03);assert(Math.abs(m.player.arms[0])>1&&!m.player.shadow);
+   t.step(160);const a=t.metrics().player.position[1];t.step(200);const b=t.metrics().player.position[1];t.step(200);m=t.metrics();const c=m.player.position[1];assert(a>b&&b>c&&b-c>a-b);assert(m.player.opacity<.5);
+   t.step(200);m=t.metrics();assert(!m.player.visible&&m.player.position[1]<-5&&!m.player.shadow&&m.failed&&!m.won);equal(m.pendingFrames,0);
+  });
+  await check('F03 观察/缩放不重播；任意时刻撤销、恢复、重开/换关立即完整还原',()=>{
+   for(const elapsed of [0,140,450,900]){
+    t.prepareFall('day');const before=t.state();t.dispatch('unlink');t.step(elapsed);const originalY=t.metrics().player.position[1];t.zoom(.12);t.dispatch('view',{world:'night',recordHistory:false});t.dispatch('view',{world:'day',recordHistory:false});t.update({instant:true});const y=t.metrics().player.position[1];equal(y,originalY);if(elapsed===900)assert(!t.metrics().player.visible);
+    for(const [type,arg] of [['move',[1,0]],['push','right'],['teleport'],['activate']])assert(!t.dispatch(type,arg));assert(!t.preview('B','night'));
+    t.dispatch('undo');t.step(0);restored(t.metrics());equal(t.state(),before);
+    t.dispatch('unlink');t.step(elapsed);const cp=t.state().checkpoint;t.dispatch('recover');t.step(0);restored(t.metrics());equal(t.state().body,cp.body);equal(t.state().mapping,cp.mapping);
+   }
+   t.prepareFall('night');t.dispatch('unlink');t.step(140);t.load(3);restored(t.metrics());t.prepareFall('night');t.dispatch('unlink');t.step(450);t.load(1);restored(t.metrics());
+  });
+  await check('F04 减少动态直接隐藏可立即恢复，切换偏好不重播，恢复可撤销',()=>{
+   t.prepareFall('day',true);t.dispatch('unlink');t.step(0);let m=t.metrics();assert(m.failed&&!m.player.visible&&!m.player.shadow);equal(m.pendingFrames,0);t.dispatch('undo');t.step(0);restored(t.metrics());
+   t.prepareFall('day');t.dispatch('unlink');t.step(140);t.reduce(true);assert(!t.metrics().player.visible);t.reduce(false);t.update({instant:true});assert(!t.metrics().player.visible);
+   const failed=t.state();t.dispatch('recover');t.step(0);restored(t.metrics());t.dispatch('undo');t.step(900);assert(t.metrics().failed&&!t.metrics().player.visible);equal(t.state(),failed);
+  });
+  return {status:'PASS',checks};
+ }catch(error){return {status:'FAIL',checks,error:error.stack};}
+}

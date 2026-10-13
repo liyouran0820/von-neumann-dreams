@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createDiorama } from '../../web/renderer.js';
 import * as G from '../../web/engine.js';
 import { ACADEMY_LEVELS } from '../../web/academy-levels.js';
-import { verifyImpact } from './motion-checks.js';
+import { verifyImpact, verifyFall } from './motion-checks.js';
 
 // Test-only clock and scene capture; production exposes no debug state.
 let now=0,id=0,frames=new Map(),level,state,view;
@@ -21,18 +21,32 @@ function bind(id){const world=id==='A'?state.view:level.bridges.find(b=>b.id===i
 function walk(x,y){dispatch('view',{world:state.body.world,recordHistory:false});const path=G.findPath(level,state,x,y);if(!path)throw Error('No path');for(const move of path){dispatch('move',move);step(200);}}
 function metrics(world=view){
  if(!scenes[world]){diorama.setActiveWorld(world);diorama.setActiveWorld(view);}
- const root=scenes[world]?.children.find(c=>c.type==='Group'),crate=root?.children.find(c=>c.userData.pick?.id==='A');
+ const root=scenes[world]?.children.find(c=>c.type==='Group'),crate=root?.children.find(c=>c.userData.pick?.kind==='object'&&c.userData.pick.id==='A');
  const visual=crate?.children[0],contact=crate?.children[1];
  const player=root?.children.find(c=>c.userData.character);
  return {boxes:{...state.boxes},body:{...state.body},failed:state.failed,won:state.won,mapping:state.mapping,history:state.history.length,pendingFrames:frames.size,
   crate:crate&&{x:crate.position.x,offset:visual.position.x,rotation:visual.rotation.z,scale:visual.scale.toArray(),contact:contact.visible,contactX:contact.position.x,flash:contact.children[0].material.opacity},
-  player:player&&{visible:player.visible,position:player.position.toArray(),rotation:player.rotation.toArray(),scale:player.scale.toArray(),opacity:player.userData.opacity??1,shadow:player.userData.shadow.visible}};
+  player:player&&{visible:player.visible,position:player.position.toArray(),rotation:player.userData.rig.rotation.toArray(),scale:player.userData.rig.scale.toArray(),opacity:player.userData.opacity??1,shadow:player.userData.shadow.visible,shadowOpacity:player.userData.shadow.material.opacity,arms:player.userData.arms.map(a=>a.rotation.z)}};
 }
-window.motionTest={load,dispatch,bind,walk,step,metrics,show,update,zoom:delta=>diorama.zoom(delta),boxes(value){state.boxes={...value};update({instant:true});},state:()=>structuredClone(state),reduce(value){diorama.setReducedMotion(value);}};
+function preview(id,world){const accepted=G.select(level,state,id,world);update({type:'select'});return accepted;}
+function prepareFall(world='day',reduced=false){
+ load(world==='day'?2:3,reduced);bind('B');walk(world==='day'?3:6,world==='day'?3:2);
+ if(world==='day'){dispatch('teleport');step(200);walk(6,3);}
+ return metrics();
+}
+window.motionTest={load,dispatch,bind,walk,step,metrics,show,update,preview,prepareFall,zoom:delta=>diorama.zoom(delta),boxes(value){state.boxes={...value};update({instant:true});},state:()=>structuredClone(state),reduce(value){diorama.setReducedMotion(value);}};
 load();
 document.getElementById('verify-impact').onclick=async()=>{const result=await verifyImpact(window.motionTest);document.getElementById('report').textContent=JSON.stringify(result,null,2);};
+document.getElementById('verify-fall').onclick=async()=>{const result=await verifyFall(window.motionTest);document.getElementById('report').textContent=JSON.stringify(result,null,2);};
 document.getElementById('case').onchange=event=>{
- const kind=event.target.value;load(0,kind==='reduced');bind('A');window.motionTest.boxes(kind==='day-left'?{night:3,day:2}:{night:3,day:7});
- dispatch('push',kind==='day-left'?'left':'right');step(kind==='rebound'?162:kind==='finish'?360:65);show(kind==='day-left'?'day':'night');
+ const kind=event.target.value;
+ if(kind.startsWith('fall-')){
+  prepareFall(kind==='fall-night'?'night':'day',kind==='fall-reduced');dispatch('unlink');
+  step(kind==='fall-start'?140:kind==='fall-end'?900:kind==='fall-reduced'?0:450);
+  if(kind==='fall-undo')dispatch('undo');
+ }else{
+  load(0,kind==='reduced');bind('A');window.motionTest.boxes(kind==='day-left'?{night:3,day:2}:{night:3,day:7});
+  dispatch('push',kind==='day-left'?'left':'right');step(kind==='rebound'?162:kind==='finish'?360:65);show(kind==='day-left'?'day':'night');
+ }
  document.getElementById('report').textContent=JSON.stringify(metrics(),null,2);
 };
