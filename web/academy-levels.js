@@ -1,70 +1,78 @@
 import { LEVELS } from './levels.js';
 
-// New course metadata and explicit science amendments; source layouts remain
-// available as LEVELS for comparison and the original regression suite.
+// Five successive logic lessons. Mirrors remain signal-generating play objects.
 export const ACADEMY_LEVELS = structuredClone(LEVELS);
+const signal = id => ({ signal: id });
+const gate = (op, ...args) => ({ op, args });
+const school = '午夜学院 · 数字逻辑';
 const courses = [
-  ['双界校准', '对应 · 约束', '让两侧校准箱入槽，前往回廊。', '同样的推动，在不同障碍下可以产生不同位移。'],
-  ['逻辑回廊', '对应 · 数字逻辑', '让白侧 A 亮、B 灭，穿过回廊。', '与门要求所有输入为 1；非门把 0 变成 1。这里的门由 A 与 非 B 控制。'],
-  ['反射与支撑', '约束 · 光学', '借桥，再将光反射到白侧 A 感应器。', '平面镜的入射角等于反射角，两者都相对法线测量。转动镜面会改变光路。'],
-  ['有限名额', '统筹', '安排两座虚影桥，穿过双院。', '真实位置会留下；临时支撑需要维持。站稳后，同一个名额可以继续使用。'],
-  ['联合实验', '逻辑 · 光学 · 统筹', '双箱归位，接通白侧光路，穿过入学验收环。', '感应器把光转换成信号，逻辑电路组合这些信号。已留下的状态与临时支撑共同完成路线。'],
+  ['与门 AND', '让夜槽 A、白槽 B 同时亮起，走到验收环。', '与门：只有全部输入都是1，输出才是1。两侧校准槽是本关的两个输入。'],
+  ['或门 OR', '接通白侧任意一路输入，穿过回廊。', '或门：至少一个输入为1，输出就是1。A亮、B亮、两路都亮，都能开门。'],
+  ['非门 NOT', '让白侧感应器 A 熄灭，打开非门并借桥通过。', '非门翻转输入：输入1得到0，输入0得到1。光门只是输入来源，镜面用来改变亮与灭。'],
+  ['异或门 XOR', '让夜侧 A、B 恰好一路亮起，安排双桥通行。', '异或门：两个输入不同时输出1，相同时输出0。两路都亮不会开门。'],
+  ['与非门 NAND', '双箱归位、点亮白侧 B，用两个与非门打开通路。', '与非门把“与”的结果取反。第一门 C = A NAND B；第二门的两端都接 C，得到 C NAND C = 非C，组合后等价于与门。'],
 ];
 ACADEMY_LEVELS.forEach((level, i) => {
-  const [title, schools, goal, note] = courses[i];
-  level.academy = { title, schools, note, completion: i === 4 ? '入学试炼完成，欢迎成为午夜学院的一员。' : title + '通过' };
+  const [title, goal, note] = courses[i];
+  level.academy = { title, schools: school, note, completion: i === 4 ? '入学试炼完成，你已掌握五种逻辑门。' : title + '课程通过' };
   level.goal = goal;
 });
 
-const signal = id => ({ signal: id });
-const not = id => ({ op: 'not', args: [signal(id)] });
-const and = (...args) => ({ op: 'and', args });
-ACADEMY_LEVELS[1].science = {
-  world: 'day', kind: 'logic', formula: 'A ∧ ¬B',
+ACADEMY_LEVELS[0].science = {
+  world: 'night', scope: 'assessment', kind: 'logic', lessonGate: 'and', formula: 'Y = A ∧ B',
   inputs: [
-    { id: 'A', type: 'plate', x: 4, label: '箱子压住踏板' },
-    { id: 'B', type: 'switch', initial: true, cell: [2, 2], label: '实验开关' },
-  ], circuit: and(signal('A'), not('B')),
+    { id: 'A', type: 'plate', world: 'night', x: 3, label: '夜侧校准槽' },
+    { id: 'B', type: 'plate', world: 'day', x: 5, label: '白侧校准槽' },
+  ], circuit: gate('and', signal('A'), signal('B')),
 };
-ACADEMY_LEVELS[1].hints = [
-  '观察白侧线路：B 先经过“非”，再和 A 一起进入“与”。',
-  '与门需要两路都亮。A 来自踏板，另一条线路来自非 B；B 灭时，非 B 才亮。',
-  '绑定箱 A，向右推两次；切到白侧，关闭 B 开关。回到身体视角，经 P1 → 白门 → P2 抵达夜出口。',
-];
+ACADEMY_LEVELS[0].hints = ['先让一个槽亮起，观察与门输出。','与门需要两路同时为1。夜箱到止挡后，白箱仍能继续移动。','映射箱A，向右推三次，到夜3、白5。两个输入都为1后走到夜出口。'];
 
-// A visible local light gate across the white corridor; the source bridge,
-// chasm, portals and exit coordinates are untouched.
+ACADEMY_LEVELS[1].science = {
+  world: 'day', kind: 'logic', lessonGate: 'or', formula: 'Y = A ∨ B',
+  inputs: [
+    { id: 'A', type: 'plate', x: 4, label: '白箱踏板' },
+    { id: 'B', type: 'switch', initial: false, cell: [2, 2], label: 'B 实验开关' },
+  ], circuit: gate('or', signal('A'), signal('B')),
+};
+ACADEMY_LEVELS[1].hints = ['白门前的或门接受两路输入。试试只接通其中一路。','A来自白箱踏板，B来自开关。任意一路为1就开门，两路同时亮也可以。','可以映射箱A向右两次，或切到白侧打开B开关。再经P1 → 白门 → P2到夜出口。'];
+
+// The light gate is a physical route constraint, not a separate optics lesson.
 for (let y = 1; y <= 5; y++) {
   const row = ACADEMY_LEVELS[2].grids.day[y];
   ACADEMY_LEVELS[2].grids.day[y] = row.slice(0, 10) + (y === 2 || y === 3 ? 'D' : '#') + row.slice(11);
 }
 ACADEMY_LEVELS[2].science = {
-  world: 'day', kind: 'optics', formula: '光 → A → 门',
+  world: 'day', kind: 'light-input', lessonGate: 'not', formula: 'Y = ¬A',
   emitters: [{ id: 'light', cell: [1, 2], direction: [1, 0] }],
-  mirrors: [{ id: 'M', cell: [4, 2], orientation: '/' }],
+  mirrors: [{ id: 'M', cell: [4, 2], orientation: '\\' }],
   sensors: [{ id: 'light-A', cell: [4, 4], label: 'A' }],
-  inputs: [{ id: 'A', type: 'sensor', sensor: 'light-A', label: '受光感应器' }],
-  circuit: signal('A'),
+  inputs: [{ id: 'A', type: 'sensor', sensor: 'light-A', label: '白侧受光感应器' }],
+  circuit: gate('not', signal('A')),
 };
-ACADEMY_LEVELS[2].hints = [
-  '白侧镜面的虚线是法线。看看反射光目前照到哪里。',
-  '光照到 A 感应器才会开门。镜面有两个 45° 朝向；点一下镜面即可转向。',
-  '在白侧转动 M，让光向下照到 A。映射夜桥 B，经 P1 → 白桥 → 光门 → P2 到夜出口。',
-];
+ACADEMY_LEVELS[2].hints = ['现在A亮着，非门输出却是0。怎样改变这个输入？','非门的输入和输出总是相反。转动镜面，让光不再照到A。','切到白侧转一次M，让A=0、门=1。映射夜桥B，经P1 → 白桥 → 光门 → P2抵达夜出口。'];
 
-ACADEMY_LEVELS[4].science = {
-  world: 'day', kind: 'combined', formula: 'P ∧ A ∧ ¬B',
-  emitters: [{ id: 'light', cell: [1, 2], direction: [1, 0] }],
-  mirrors: [{ id: 'M', cell: [3, 2], orientation: '\\' }],
-  sensors: [{ id: 'light-A', cell: [3, 1], label: 'A' }, { id: 'light-B', cell: [3, 4], label: 'B' }],
+for (let y = 1; y <= 5; y++) {
+  const row = ACADEMY_LEVELS[3].grids.night[y];
+  ACADEMY_LEVELS[3].grids.night[y] = row.slice(0, 17) + (y === 4 || y === 5 ? 'D' : '#') + row.slice(18);
+}
+ACADEMY_LEVELS[3].science = {
+  world: 'night', kind: 'logic', lessonGate: 'xor', formula: 'Y = A ⊕ B',
   inputs: [
-    { id: 'P', type: 'plate', x: 4, label: '白箱踏板' },
-    { id: 'A', type: 'sensor', sensor: 'light-A', label: 'A 受光' },
-    { id: 'B', type: 'sensor', sensor: 'light-B', label: 'B 受光' },
-  ], circuit: and(signal('P'), signal('A'), not('B')),
+    { id: 'A', type: 'switch', initial: true, cell: [8, 1], label: 'A 实验开关' },
+    { id: 'B', type: 'switch', initial: true, cell: [12, 5], label: 'B 实验开关' },
+  ], circuit: gate('xor', signal('A'), signal('B')),
 };
-ACADEMY_LEVELS[4].hints = [
-  '白门需要三条输入：踏板 P、感应器 A、非 B。光和箱子各负责其中一部分。',
-  '先用止挡制造位差；白箱压住 P 后，还要让光照到 A，避开 B。真实箱位会保留。',
-  '箱子先左两次、右三次，到夜 6 / 白 4。在白侧转一次 M，让 A 亮、B 灭。借 B 到岛，经 P1 → 白门 → P2，再借 C 走入验收环。',
-];
+ACADEMY_LEVELS[3].hints = ['异或门与刚才的或门有什么不同？试试两个开关都亮的情况。','异或要求输入不同。只留A或只留B都可以；都亮、都灭均关闭。','在夜侧关闭任意一个开关。借B到岛，经P1/P2绕墙，在安全地面换C，穿过夜门抵达出口。'];
+
+const intermediate = gate('nand', signal('A'), signal('B'));
+ACADEMY_LEVELS[4].science = {
+  world: 'day', kind: 'light-input', lessonGate: 'nand', formula: 'C=¬(A∧B) · Y=¬C',
+  emitters: [{ id: 'light', cell: [1, 2], direction: [1, 0] }],
+  mirrors: [{ id: 'M', cell: [3, 2], orientation: '/' }],
+  sensors: [{ id: 'light-B', cell: [3, 4], label: 'B' }],
+  inputs: [
+    { id: 'A', type: 'plate', x: 4, label: '白箱踏板' },
+    { id: 'B', type: 'sensor', sensor: 'light-B', label: '白侧受光感应器' },
+  ], lessonCircuit: intermediate, circuit: gate('nand', intermediate, intermediate),
+};
+ACADEMY_LEVELS[4].hints = ['先看第一门的C，再看C进入第二门后发生什么。','与非门只有在两路都是1时输出0。把同一输出接到第二门两端，就能再取反一次。','箱子左两次、右三次到夜6/白4；在白侧转一次M让B亮。此时A=B=1，C=0、门Y=1。再借B、穿门、换C，走入验收环。'];

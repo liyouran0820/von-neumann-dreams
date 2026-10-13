@@ -6,8 +6,10 @@ export function evaluateCircuit(node, signals, depth = 0) {
     return signals[node.signal];
   }
   if (node.op === 'not' && node.args?.length === 1) return !evaluateCircuit(node.args[0], signals, depth + 1);
-  if (!['and', 'or'].includes(node.op) || !node.args?.length) throw new Error('Invalid logic gate');
+  if (!['and', 'or', 'xor', 'nand'].includes(node.op) || !node.args?.length) throw new Error('Invalid logic gate');
   const values = node.args.map(child => evaluateCircuit(child, signals, depth + 1));
+  if (node.op === 'nand') return !values.every(Boolean);
+  if (node.op === 'xor') return values.filter(Boolean).length % 2 === 1;
   return node.op === 'and' ? values.every(Boolean) : values.some(Boolean);
 }
 
@@ -69,10 +71,22 @@ export function scienceResult(level, state) {
     (config.mirrors || []).map(m => ({ ...m, orientation: state.science.mirrors[m.id] })), config.sensors);
   const signals = {};
   for (const input of config.inputs) {
-    if (input.type === 'plate') signals[input.id] = state.boxes?.[config.world] === input.x;
+    const inputWorld = input.world || config.world;
+    if (config.scope !== 'assessment' && inputWorld !== config.world) throw new Error('Door circuits require local inputs');
+    if (input.type === 'plate') signals[input.id] = state.boxes?.[inputWorld] === input.x;
     else if (input.type === 'switch') signals[input.id] = state.science.switches[input.id];
     else if (input.type === 'sensor') signals[input.id] = optics.hits.includes(input.sensor);
     else throw new Error('Unknown science input');
   }
-  return { world: config.world, signals, output: evaluateCircuit(config.circuit, signals), optics };
+  return { world: config.world, signals, output: evaluateCircuit(config.circuit, signals), lessonOutput: evaluateCircuit(config.lessonCircuit || config.circuit, signals), optics };
+}
+
+export function instrumentAt(level, world, x, y) {
+  const config = level.science;
+  if (!config || config.world !== world) return null;
+  const instruments = [
+    ...config.inputs.filter(i => i.type === 'switch'),
+    ...(config.mirrors || []), ...(config.emitters || []), ...(config.sensors || []),
+  ];
+  return instruments.find(item => item.cell?.[0] === x && item.cell?.[1] === y) || null;
 }

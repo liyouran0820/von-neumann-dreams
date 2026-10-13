@@ -1,4 +1,4 @@
-import { initialScience, scienceResult } from './science.js';
+import { initialScience, scienceResult, instrumentAt } from './science.js';
 export { scienceResult } from './science.js';
 export const other = w => w === 'night' ? 'day' : 'night';
 const copy = x => structuredClone(x);
@@ -11,10 +11,11 @@ export function createState(level) {
 function snapshot(s){ const {history,checkpoint,...rest}=s;return copy(rest); }
 function save(s){s.history.push({state:snapshot(s),checkpoint:copy(s.checkpoint)});}
 export function doorOpen(level,s,world){
- if(level.science?.world===world)return scienceResult(level,s).output;
+ if(level.science?.world===world&&level.science.scope!=='assessment')return scienceResult(level,s).output;
  return world==='day'&&!!level.track&&s.boxes.day===level.track.targets.day;
 }
 export function support(level,s,world,x,y){
+ if(instrumentAt(level,world,x,y))return null;
  const p={x,y};
  const real=level.bridges.find(b=>b.world===world&&inside(p,b));if(real)return 'real-'+real.id;
  const ghost=level.bridges.find(b=>b.world!==world&&b.id===s.mapping&&inside(p,b));if(ghost)return 'ghost-'+ghost.id;
@@ -70,7 +71,7 @@ export function act(level,s,type,arg){
   if(type==='switch')s.science.switches[arg]=!s.science.switches[arg];
   else s.science.mirrors[arg]=s.science.mirrors[arg]==='/'?'\\':'/';
   const result=scienceResult(level,s);
-  s.message=result.output?'实验线路接通，白门打开。':'实验线路未接通。';
+  s.message=result.output?'实验线路接通，机关打开。':'实验线路未接通。';
   settle(level,s);return true;
  }
  if(type==='activate'){
@@ -87,6 +88,7 @@ export function act(level,s,type,arg){
  if(type==='move'){
   if(s.view!==s.body.world){s.message='正在观察另一世界 · 返回身体视角才能走路。';return false;}
   const [dx,dy]=arg;if(Math.abs(dx)+Math.abs(dy)!==1)return false;
+  if(instrumentAt(level,s.body.world,s.body.x+dx,s.body.y+dy)){s.message='前方是实验器材，请从旁边绕行。';return false;}
   if(!support(level,s,s.body.world,s.body.x+dx,s.body.y+dy)){s.message='前方没有可通行的支撑。';return false;}
   save(s);s.body.x+=dx;s.body.y+=dy;s.message='';settle(level,s,true);return true;
  }

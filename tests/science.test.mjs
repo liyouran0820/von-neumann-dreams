@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { evaluateCircuit, reflect, traceLight, scienceResult } from '../web/science.js';
-import { ACADEMY_LEVELS } from '../web/academy-levels.js';
+import { OPTICS_LEVELS as ACADEMY_LEVELS } from '../web/optics-levels.js';
 import { LEVELS } from '../web/levels.js';
 import * as G from '../web/engine.js';
 import { bind, walk, push, portal, solve } from './helpers/walkthroughs.mjs';
