@@ -4,6 +4,8 @@
 
 ## 当前状态
 
+2026-10-13，网页增加逻辑门课程并修复器材碰撞；光门作为信号输入玩法保留。详见[当前课程](LOGIC_GATES_CURRICULUM.md)。以下原生阶段未因网页改动而自动通过，逻辑门和光门尚未移植进原生场景。
+
 P00通过：锁定Godot4.7.2标准版，空工程从干净Git归档导出arm64包，严格签名校验通过，独立Forward+/Metal窗口实际启动。窗口1920×1080，GPU报告Apple M4 (Apple9)，两独立World3D、4×MSAA、100%渲染和60Hz配置已测。
 
 被测源码：`4c2fbcb39ede1c0ad4798fa9d8189040845bb414`。证据摘要：[P00报告](acceptance/P00-4c2fbcb.json)。故意失败断言原始结果仍为FAIL且退出1；空套件为NOT_IMPLEMENTED且退出2，没有伪装通过。

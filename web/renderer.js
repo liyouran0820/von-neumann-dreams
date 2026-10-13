@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { doorOpen } from './engine.js';
+import { scienceResult } from './science.js';
 
 // Logical coordinates map directly to X/Z; the walkable surface is Y=0.
 // White stone stays neutral under soft light; cooler edges separate walls and paths.
@@ -19,8 +20,8 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  function pick(v,event){if(event.target.closest('button')||!level||disposed)return;const rect=v.host.getBoundingClientRect();pointer.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(pointer,v.camera);const hits=raycaster.intersectObjects(v.pickables,true);for(const hit of hits){let obj=hit.object;while(obj&&!obj.userData.pick)obj=obj.parent;if(obj?.userData.bridgeId&&state.mapping!==obj.userData.bridgeId)continue;if(obj?.userData.pick){const data=obj.userData.pick;onPick({world:v.world,...data});break;}}}
  try{
  for(const [world,host] of [['day',dayElement],['night',nightElement]]){
-  const p=PALETTE[world],scene=new THREE.Scene();scene.background=new THREE.Color(p.background);
-  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=world==='day'?.9:.98;renderer.domElement.style.cssText='width:100%;height:100%;display:block;touch-action:manipulation';renderer.domElement.setAttribute('aria-hidden','true');host.appendChild(renderer.domElement);
+  const p=PALETTE[world],scene=new THREE.Scene();scene.background=null;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=world==='day'?.9:.98;renderer.domElement.style.cssText='width:100%;height:100%;display:block;touch-action:manipulation';renderer.domElement.setAttribute('aria-hidden','true');host.appendChild(renderer.domElement);
   const camera=new THREE.OrthographicCamera(-10,10,10,-10,.1,160);camera.position.set(-18,27,28);camera.lookAt(0,0,0);camera.updateMatrixWorld();
   scene.add(new THREE.HemisphereLight(world==='day'?0xfffefa:0xb6d5ff,world==='day'?0x879296:0x172439,world==='day'?1.25:1.4));
   const sun=new THREE.DirectionalLight(world==='day'?0xfffdf8:0xc7deff,world==='day'?1.7:1.5);sun.position.set(-8,18,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0003;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun);scene.add(sun.target);
@@ -34,13 +35,73 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  function character(v){const g=new THREE.Group(),cream=mat(0xf0eee4),shade=mat(0xc2c6bf);const head=new THREE.Mesh(new THREE.SphereGeometry(.15,16,12),cream);head.position.y=.62;head.castShadow=true;g.add(head);const body=new THREE.Mesh(new THREE.CapsuleGeometry(.13,.25,5,12),cream);body.position.y=.32;body.castShadow=true;g.add(body);box(g,-.065,.065,.01,.085,.13,.13,shade);box(g,.065,.065,.01,.085,.13,.13,shade);const shadow=new THREE.Mesh(new THREE.CircleGeometry(.21,24),new THREE.MeshBasicMaterial({color:0x101724,transparent:true,opacity:.2,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.012;g.add(shadow);v.root.add(g);return g;}
  function bridgeGroup(v,b,ghost){const g=new THREE.Group(),p=PALETTE[v.world],w=b.x[1]-b.x[0]+1,d=b.y[1]-b.y[0]+1;g.position.set((b.x[0]+b.x[1])/2,0,(b.y[0]+b.y[1])/2);const surface=mat(ghost?0x65bcd3:p.stone,ghost?{emissive:0x267b99,emissiveIntensity:.35}:{});box(g,0,-.13,0,w-.035,.26,d-.035,surface,.035);const edge=mat(ghost?CYAN:p.edge,{emissive:ghost?CYAN:0,emissiveIntensity:ghost?.3:0});for(const z of [-d/2+.035,d/2-.035])box(g,0,.012,z,w-.06,.025,.025,edge,.006);if(!ghost)g.userData.pick={kind:'object',id:b.id,x:Math.round((b.x[0]+b.x[1])/2),y:Math.round((b.y[0]+b.y[1])/2)};v.root.add(g);if(!ghost)v.pickables.push(g);return g;}
  function previewBridge(v,b){const g=new THREE.Group(),color=new THREE.LineDashedMaterial({color:CYAN,dashSize:.13,gapSize:.1,transparent:true,opacity:.8});const x1=b.x[0]-.47,x2=b.x[1]+.47,z1=b.y[0]-.47,z2=b.y[1]+.47;const points=[new THREE.Vector3(x1,.035,z1),new THREE.Vector3(x2,.035,z1),new THREE.Vector3(x2,.035,z2),new THREE.Vector3(x1,.035,z2),new THREE.Vector3(x1,.035,z1)];const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),color);line.computeLineDistances();g.add(line);v.root.add(g);g.visible=false;return g;}
+ function beam(parent,from,to,color,radius=.023,height=.65){
+  const a=new THREE.Vector3(from[0],height,from[1]),b=new THREE.Vector3(to[0],height,to[1]);
+  const d=b.clone().sub(a);if(d.length()<.001)return;
+  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,d.length(),8),new THREE.MeshBasicMaterial({color}));
+  mesh.position.copy(a.add(b).multiplyScalar(.5));mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());parent.add(mesh);
+ }
+ function buildScience(v){
+  v.instruments=[];v.beams=null;v.scienceSignature='';
+  const config=level.science;if(!config||config.world!==v.world)return;
+  const stone=mat(PALETTE[v.world].edge);
+  for(const door of config.doors||[]){
+   const cell=[door.cells.reduce((n,c)=>n+c[0],0)/door.cells.length,door.cells.reduce((n,c)=>n+c[1],0)/door.cells.length];
+   v.anchors.push({kind:'readout',id:'door-'+door.id,label:door.label,cell,height:1.2});
+  }
+  for(const emitter of config.emitters||[]){
+   const [x,z]=emitter.cell;box(v.root,x,.22,z,.42,.44,.42,stone);
+   box(v.root,x,.59,z,.58,.24,.28,mat(0xa88d59));ring(v.root,x,.73,z,.16,GOLD);
+   v.anchors.push({kind:'readout',id:'light',label:'光源',cell:[x,z],height:1.05});
+  }
+  for(const mirror of config.mirrors||[]){
+   const [x,z]=mirror.cell;box(v.root,x,.12,z,.58,.24,.58,stone,.05);box(v.root,x,.42,z,.1,.64,.1,stone);
+   const face=new THREE.Group();face.position.set(x,.65,z);
+   box(face,0,0,0,.86,.68,.08,mat(0xbadbe2,{roughness:.16,metalness:.5}),.02);
+   box(face,0,.36,0,.94,.055,.12,mat(0x967b45),.009);box(face,0,-.36,0,.94,.055,.12,mat(0x967b45),.009);
+   face.userData.pick={kind:'mirror',id:mirror.id};v.pickables.push(face);
+   v.root.add(face);v.instruments.push({kind:'mirror',id:mirror.id,face,cell:mirror.cell});
+   v.anchors.push({kind:'mirror',id:mirror.id,cell:mirror.cell,height:.98});
+  }
+  for(const sensor of config.sensors||[]){
+   const [x,z]=sensor.cell;box(v.root,x,.16,z,.52,.32,.52,stone,.04);
+   const lens=mat(0x6b8590,{emissive:0x14363d,emissiveIntensity:.15});box(v.root,x,.56,z,.28,.48,.28,lens,.07);
+   v.instruments.push({kind:'sensor',id:sensor.id,lens});v.anchors.push({kind:'sensor',id:sensor.id,label:sensor.label,cell:sensor.cell,height:1.03});
+  }
+  for(const input of config.inputs.filter(i=>i.type==='switch')){
+   const [x,z]=input.cell;box(v.root,x,.16,z,.48,.32,.48,stone,.04);
+   const lens=mat(GOLD,{emissive:GOLD,emissiveIntensity:.2});const cap=box(v.root,x,.44,z,.26,.3,.26,lens,.06);
+   cap.userData.pick={kind:'switch',id:input.id};v.pickables.push(cap);
+   v.instruments.push({kind:'switch',id:input.id,lens});v.anchors.push({kind:'switch',id:input.id,cell:input.cell,height:.93});
+  }
+  v.beams=new THREE.Group();v.root.add(v.beams);
+ }
+ function updateScience(v){
+  if(!v.beams)return;
+  const result=scienceResult(level,state),signature=JSON.stringify([state.science,result.signals]);
+  if(signature===v.scienceSignature)return;v.scienceSignature=signature;clean(v.beams);
+  for(const item of v.instruments){
+   if(item.kind==='mirror'){
+    const slash=state.science.mirrors[item.id]==='/';item.face.rotation.y=slash?Math.PI/4:-Math.PI/4;
+    if(!level.science.lessonGate){
+     const [x,z]=item.cell,sign=slash?1:-1;
+     const points=[new THREE.Vector3(x-.7,.66,z-.7*sign),new THREE.Vector3(x+.7,.66,z+.7*sign)];
+     const normal=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),new THREE.LineDashedMaterial({color:0x457b8c,dashSize:.08,gapSize:.055}));normal.computeLineDistances();v.beams.add(normal);
+    }
+   }else{
+    const on=item.kind==='sensor'?result.optics.hits.includes(item.id):result.signals[item.id];
+    item.lens.color.setHex(on?0x55c6c0:0x6b7883);item.lens.emissive.setHex(on?0x24adab:0x101d23);item.lens.emissiveIntensity=on?.7:.05;
+   }
+  }
+  for(const line of result.optics.segments){beam(v.beams,line.from,line.to,0x99723d,.044);beam(v.beams,line.from,line.to,0xffd278,.022,.657);}
+ }
  function build(v){
  clean(v.root);v.pickables=[];v.dynamic=[];v.anchors=[];v.bridges=[];v.doors=[];v.targets=[];v.player=null;v.crate=null;
  const p=PALETTE[v.world],rows=level.grids[v.world],W=rows[0].length,H=rows.length;v.root.position.set(-(W-1)/2,0,-(H-1)/2);
  const marker=v.world==='day'?0xa67c29:GOLD;
  const stone=mat(p.stone),edge=mat(p.edge),wall=mat(p.wall),pit=mat(p.pit),glass=mat(v.world==='day'?0x9dc8cd:0x719db7,{transparent:true,opacity:.4,roughness:.24,depthWrite:false}),gold=mat(marker,{emissive:marker,emissiveIntensity:.12}),track=mat(v.world==='day'?0xc3cdd0:0x303e55);
  // Background receives the cast shadow; it remains well below every pit.
- const ground=new THREE.Mesh(new THREE.PlaneGeometry(160,160),mat(p.ground));ground.rotation.x=-Math.PI/2;ground.position.set((W-1)/2,-1.65,(H-1)/2);ground.receiveShadow=true;v.root.add(ground);
+ const ground=new THREE.Mesh(new THREE.PlaneGeometry(160,160),new THREE.ShadowMaterial({color:v.world==='day'?0x34484e:0x061629,opacity:v.world==='day'?.18:.3}));ground.rotation.x=-Math.PI/2;ground.position.set((W-1)/2,-1.65,(H-1)/2);ground.receiveShadow=true;v.root.add(ground);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
   const t=rows[y][x],b=level.bridges.find(b=>inside(x,y,b)),chasm=t==='~'||'bc'.includes(t)||(t==='E'&&level.id==='G5');
   if(chasm){box(v.root,x,-1.52,y,.998,.12,.998,pit,.005);}else{
@@ -77,17 +138,18 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  if(v.world==='night'){
   const cells=level.exit,midY=cells.reduce((a,c)=>a+c[1],0)/cells.length,x=cells[0][0],depth=cells.length>1?2:.85;const goldLight=mat(GOLD,{emissive:GOLD,emissiveIntensity:.4});for(const z of [midY-depth/2,midY+depth/2]){box(v.root,x,.45,z,.07,.9,.07,wall,.015);box(v.root,x,.47,z,.026,.8,.026,goldLight,.004);}const lintel=box(v.root,x,.94,midY,.035,.025,depth,goldLight,.004);lintel.castShadow=false;v.anchors.push({kind:'exit',cell:[x,midY],height:.2});
  }
- v.player=character(v);
+ buildScience(v);v.player=character(v);
  const extent=Math.max(W,H);Object.assign(v.sun.shadow.camera,{left:-extent,right:extent,top:extent,bottom:-extent,near:1,far:60});v.sun.shadow.camera.updateProjectionMatrix();
  }
- function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2};});}
+ function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),...(a.label?{label:a.label}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2};});}
  function draw(){if(disposed||!level||document.hidden)return;for(const v of scenes){if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
  function frame(now){raf=0;if(disposed||document.hidden)return;const t=reduced?1:Math.min(1,(now-animationStart)/190),e=1-Math.pow(1-t,3);for(const v of scenes)for(const a of v.dynamic){a.obj.position.set(THREE.MathUtils.lerp(a.from.x,a.to.x??a.from.x,e),THREE.MathUtils.lerp(a.from.y,a.to.y??a.from.y,e),THREE.MathUtils.lerp(a.from.z,a.to.z??a.from.z,e));if(a.to.opacity!==undefined)opacity(a.obj,THREE.MathUtils.lerp(a.from.opacity,a.to.opacity,e));if(a.to.shake)a.obj.position.x+=Math.sin(t*Math.PI*4)*(1-t)*.045;}draw();if(t<1)raf=requestAnimationFrame(frame);else for(const v of scenes)v.dynamic=[];}
  function update(next,{type,instant=false}={}){
   if(!level||disposed)return;state=next;if(raf){cancelAnimationFrame(raf);raf=0;}
   for(const v of scenes){v.dynamic=[];const body=state.body;v.player.visible=body.world===v.world;patch(v,v.player,{x:body.x,y:state.failed?-1.1:0,z:body.y});if(v.crate){v.crate.userData.pick.x=state.boxes[v.world];patch(v,v.crate,{x:state.boxes[v.world],y:0,z:level.track.y,shake:type==='push'&&state.feedback?.[v.world]?.blocked});}
    for(const target of v.targets)for(const m of ownMaterials(target)){m.emissiveIntensity=state.boxes[v.world]===level.track.targets[v.world]?1:.08;}
-   for(const d of v.doors){const open=doorOpen(level,state,v.world);patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}
+   for(const d of v.doors){const occupied=!!level.science&&body.world===v.world&&body.x===d.position.x&&body.y===d.position.z;const open=doorOpen(level,state,v.world,d.position.x,d.position.z)||occupied;patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}
+   updateScience(v);
    for(const b of v.bridges){const active=state.mapping===b.id;patch(v,b.g,{y:active?0:-.22,opacity:active?1:0});b.preview.visible=state.preview?.id===b.id&&!active;b.stripes.visible=active&&!!state.preview&&state.preview.id!==b.id;}
    for(const o of v.pickables)if(o.userData.bridgeId)o.visible=state.mapping===o.userData.bridgeId;
   }
@@ -96,7 +158,8 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  function resize(){if(disposed)return;for(const v of scenes){const r=v.host.getBoundingClientRect();v.width=Math.max(1,r.width);v.height=Math.max(1,r.height);v.renderer.setSize(v.width,v.height,false);}if(!level)return;
   // Fit the same complete map envelope in both views, never the current objects.
   const W=level.grids.day[0].length,H=level.grids.day.length,camera=scenes[0].camera;camera.updateMatrixWorld();let maxX=0,maxY=0;for(const x of [-W/2,W/2])for(const z of [-H/2,H/2])for(const y of [-1.65,1.7]){const p=new THREE.Vector3(x,y,z).applyMatrix4(camera.matrixWorldInverse);maxX=Math.max(maxX,Math.abs(p.x));maxY=Math.max(maxY,Math.abs(p.y));}
-  const needed=Math.max(...scenes.map(v=>Math.max(maxY*1.12/(Math.max(.5,(v.height-180)/v.height)),maxX*1.12/(v.width/v.height))));
+  const padding=level.academy?36:180;
+  const needed=Math.max(...scenes.map(v=>Math.max(maxY*1.1/(Math.max(.5,(v.height-padding)/v.height)),maxX*1.1/(v.width/v.height))));
   for(const v of scenes){const h=needed/zoomFactor,a=v.width/v.height;v.camera.left=-h*a;v.camera.right=h*a;v.camera.top=h;v.camera.bottom=-h;v.camera.updateProjectionMatrix();}draw();
  }
  const observer=new ResizeObserver(resize);for(const v of scenes)observer.observe(v.host);

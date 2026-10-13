@@ -2,6 +2,8 @@
 
 本文件负责当前玩法契约与参赛表达。续写以最新用户要求、批准来源和原型证据为依据；实现与检查写入 [NIGHT_WHITE_DEMO.md](NIGHT_WHITE_DEMO.md)，探索与取舍写入 [MECHANIC_EXPLORATION.md](MECHANIC_EXPLORATION.md)，经过写入 `../log.md`。
 
+最新用户修订：五关逐关学习AND、OR、NOT、XOR、NAND及组合，光门保留为玩法而非学习内容。当前网页规格及明确布局修订以[逻辑门课程](LOGIC_GATES_CURRICULUM.md)为准；下面保留原映射五关的共同规则与历史来源，不覆盖新课程。
+
 状态：用户先要求继续刻轨版，随后明确“原来的不好，这个新的吧”，采用《夜白映射：五关关卡设计》，并要求 GPT-6 Astra 制作新版。当前最高关卡依据为 [五关设计原文](sources/夜白映射_五关关卡设计.md)。其五关范围覆盖早期 PRD 的八关安排。
 
 最新路线：用户已提供开发计划v1.2，采用Godot原生、连续身体移动和整数毫米规则；随后明确采用单世界显示与Space点按观察。下面保留网页阶段规则整理；涉及操作、工程和验收的差异以 [用户交互修订](UI_INTERACTION_AMENDMENT.md)、[原生来源计划](sources/native_v1.2/夜白映射_Demo开发计划.md) 与 [当前状态](NATIVE_DEMO_STATUS.md) 为准。

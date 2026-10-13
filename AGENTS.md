@@ -23,6 +23,8 @@
 | `docs/DEMO_V2.md` | 第二版指令交换历史范围与检查 | 明确历史快照，不能当作当前源码状态 |
 | `docs/MAPPING_DEMO.md` | 刻轨映射历史范围与检查 | 明确对应历史快照，不能当作当前源码状态 |
 | `docs/NIGHT_WHITE_DEMO.md` | 历史网页五关范围与检查 | 明确历史版本，不能转标原生通过 |
+| `docs/LOGIC_GATES_CURRICULUM.md` | 当前五关逻辑课程、知识与玩法边界及验证 | 与实际配置一致；不转标原生或真人验收 |
+| `docs/ACADEMY_LOGIC_OPTICS.md` | 历史逻辑光学试验及回溯 | 保留已知缺陷与被替代的范围 |
 | `docs/NATIVE_DEMO_STATUS.md` | 当前原生阶段、运行和验证范围 | 关联实际被测提交与证据，不把未执行项算通过 |
 | `docs/acceptance/` | 阶段预期、状态和证据摘要 | 只有PASS计入完成，保留失败与修复历史 |
 | `docs/requirements_gap_analysis.md` | 新要求与现场差距 | 随实际证据更新可复用、迁移和外部条件 |

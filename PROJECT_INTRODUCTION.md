@@ -4,6 +4,8 @@
 
 ## 当前原生路线
 
+当前正在试玩的网页版本已按用户最新要求改为五关逻辑门课程，保留光门作为0/1信号玩法。学院叙事采用五关设计v1.1的新生入学主线；范围和回溯见[逻辑门课程](docs/LOGIC_GATES_CURRICULUM.md)。本轮不是原生完整交付。
+
 用户新增完整开发计划 v1.2，最终产物为 Godot 4.7.2 标准版、Forward+/Metal、macOS arm64 原生包。当前已完成 P00 空工程与运行器/导出验收，尚未实现原生五关；详情见 [原生状态](docs/NATIVE_DEMO_STATUS.md)。三份原文与批准的参考图按哈希归档，见 [来源清单](docs/source_manifest.json)。原网页只作历史参考。
 
 ## 原型方向沿革
@@ -30,10 +32,10 @@ The Midnight Academy 主题下的空间机制解谜小游戏，当前名为《�
 
 ## 实现边界
 
-采用无第三方运行依赖的网页白盒，Node.js 提供本地预览、测试和单文件构建。原型先验证五关规则、路线、撤销与完整恢复，再评估手感与趣味。二维离散模型不宣称实现三维刚体物理，来源的目标体验时长不能当作实测。
+当前网页采用Three.js实时沙盘，由Node.js提供本地预览、测试和内联构建；运行时无CDN依赖。原型先验证五关规则、路线、撤销与完整恢复，再评估手感与趣味。二维离散模型不宣称实现三维刚体物理，来源的目标体验时长不能当作实测。
 
 ## Git
 
-远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前分支 `main`，已合并开发分支 `codex/godot-plan-v1-2`。刻轨版 `f4705f7`、指令交换试验 `480d261`、首版 `eb63a22` 均可恢复。
+远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前发布入口为main，逻辑门课程的开发历史保留在 `codex/logic-gates-curriculum`；原生开发分支已在此前整合。改造前版本由 `codex/pre-logic-optics-20261013` 标签固定保留；刻轨版 `f4705f7`、指令交换试验 `480d261`、首版 `eb63a22` 均可恢复。
 
 2026-10-13先同步远程main的7e0581e及其三份设计原文，随后按用户要求将开发成果合并到main。阶段和模块验证结果见原生状态文档。

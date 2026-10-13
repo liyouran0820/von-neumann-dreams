@@ -8,7 +8,52 @@
 
 当前按用户的开发计划 v1.2 迁移到 **Godot 4.7.2 / Forward+ / Metal / macOS arm64**。P00 原生启动、测试运行器与干净导出已通过；P01状态与几何模块已保存，81项模块检查通过。原生五关玩法、完整视觉和真人验收尚未完成。
 
-当前成果已合并到 `main`。进度以 [原生状态](docs/NATIVE_DEMO_STATUS.md)、[差距审查](docs/requirements_gap_analysis.md) 和 [验收登记](docs/acceptance/registry.json) 为准，旧网页结果不转标原生通过。
+当前网页按五关学习 **AND → OR → NOT → XOR → NAND与组合**。光门保留为玩法，镜面改变感应器的0/1输入；第二关器材穿模已修复，第四关采用异或联动双门，第三关保持单光门。具体规则、验证和回溯方法见[逻辑门课程](docs/LOGIC_GATES_CURRICULUM.md)。原生进度仍以[原生状态](docs/NATIVE_DEMO_STATUS.md)为准，网页结果不转标原生通过。
+
+## 功能实现状态
+
+当前默认网页为 AND、OR、NOT、XOR、NAND 五种逻辑门课程，状态见[课程记录](docs/LOGIC_GATES_CURRICULUM.md)。下表说明保留的原版映射对照与原生工程，实际截图来自原版映射对照。
+
+| 功能 | 原版映射对照 | Godot 原生版 |
+| --- | --- | --- |
+| G1—G5 五关、固定配对与两端独立阻挡 | 已实现，有规则与参考路线验证记录 | 尚未接入完整玩法 |
+| 单组映射、实体虚影桥、真实箱状态留存 | 已实现 | 尚未完成 |
+| 单世界显示、Space 点按观察、传送门穿行 | 已实现 | 尚未迁移到原生界面 |
+| 撤销、安全点恢复、提示与通关记录 | 已实现；重置与清除记录有确认弹窗 | 尚未完成 |
+| Three.js 立体场景、柔白与夜侧配色 | 已实现；全五关视觉验收尚未完成 | 完整视觉尚未完成 |
+| 原生启动、导出、状态与几何模块 | 不适用 | P00 已验收；两个模块共 81 项检查通过 |
+| 独立新玩家盲测与体验时长 | 尚未完成 | 尚未完成 |
+
+原版映射对照的工程修复记录为 `b2860d7`，28 项自动检查、构建与五关参考路线通过；详见[网页试验记录](docs/WEB_DIORAMA_WIP.md)。这些结果不转为原生验收结果。
+
+## 提交材料与演示
+
+- **源码**：`web/`、`src/`、`scenes/`、`scripts/`、`tools/` 和 `tests/`。
+- **AI 使用说明**：[AI_USAGE.md](AI_USAGE.md)。核心创意与 PRD 创意由团队独立提出，AI 辅助范围单独说明。
+- **AI 对话记录**：[ai-logs/](ai-logs/README.md)，含真实对话正文节选与五张原始对话截图。
+- **实际运行截图**：[screenshots/](screenshots/README.md)，共四张网页原型实际截图。
+- **本地试玩**：[打开游戏](http://127.0.0.1:5173/)，需先启动下文的本地服务；此地址仅在运行服务的电脑上有效。
+- **对外演示**：目前没有公网网页链接；视频由团队稍后自行提交，本轮不制作或上传视频。
+
+## 核心文件清单
+
+| 文件 | 作用 |
+| --- | --- |
+| [web/engine.js](web/engine.js) | 双世界状态、映射、独立阻挡、身体移动、支撑、撤销与判胜 |
+| [web/levels.js](web/levels.js) | 原版 G1—G5 地图、机关、配对、目标与提示 |
+| [web/academy-levels.js](web/academy-levels.js) | 当前逻辑门课程关卡配置 |
+| [web/science.js](web/science.js) | 逻辑电路与光学规则 |
+| [web/course-ui.js](web/course-ui.js) | 课程电路面板与实验札记 |
+| [web/app.js](web/app.js) | 页面交互、键盘输入、关卡选择和进度保存 |
+| [web/renderer.js](web/renderer.js) | Three.js 场景、物体、材质、预览与虚影呈现 |
+| [scripts/build.mjs](scripts/build.mjs) | 生成本地网页脚本与内联单文件演示产物 |
+| [tests/engine.test.mjs](tests/engine.test.mjs) | 网页规则、合法路线、失败恢复和反例检查 |
+| [tests/build.test.mjs](tests/build.test.mjs) | 含空格及特殊字符路径的构建回归 |
+| [project.godot](project.godot) | Godot 原生工程入口 |
+| [src/domain/game_state.gd](src/domain/game_state.gd) | 原生领域状态模块 |
+| [src/domain/state_codec.gd](src/domain/state_codec.gd) | 原生状态编码、校验与恢复基础 |
+| [src/domain/geometry_query.gd](src/domain/geometry_query.gd) | 原生碰撞与支撑几何查询 |
+| [tools/verify.py](tools/verify.py) | 原生阶段验收与证据报告 |
 
 ## 原生运行与验证
 
@@ -22,9 +67,11 @@ python3 tools/verify.py --stage P00 --engine "$DEMO_GODOT_BIN" --window-probe --
 
 没有独立导出证据时，以上阶段报告会保留未执行项。只有全部必需检查通过才能记 PASS；空套件和未来能力不伪装通过。构建从已提交的干净源码归档产生，详情见原生状态文档。
 
-## 历史网页试验
+## 网页试玩与版本对照
 
-网页五关保存在 `66fb648`，Three.js 双世界立体呈现试验保存在 `74ab81d`。现有 [本地网页预览](http://127.0.0.1:5173/) 已按最新要求改为单世界显示、点按 Space 往返切换和柔白配色，保留旧离散规则。详见 [交互修订](docs/UI_INTERACTION_AMENDMENT.md)；原生实现和验收另行推进。
+打开[本地网页预览](http://127.0.0.1:5173/)进入五项逻辑门试炼。点按Space切换世界，点击实验开关改变输入，光门房间可点击镜面或按R转向；札记只记录已观察到的结果。选馆菜单提供[原版五关对照](http://127.0.0.1:5173/?version=original)，另保留[上一逻辑光学试验](http://127.0.0.1:5173/?version=optics)，各版进度独立。
+
+完整旧版已打标签 `codex/pre-logic-optics-20261013`，指向 `560ed6f`。原网页五关 `66fb648`、双视图试验 `74ab81d` 也继续保留。新版遵守已批准的[单世界交互](docs/UI_INTERACTION_AMENDMENT.md)，源码与旧版对照规则同时留存。
 
 ```bash
 npm ci
@@ -52,7 +99,7 @@ Node.js 20+；Three.js 与 esbuild 版本锁定，无运行时 CDN。构建输�
 
 ## Git
 
-远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前成果入口为 [`main`](https://github.com/liyouran0820/von-neumann-dreams/tree/main)。2026-10-13按用户要求将开发分支 `codex/godot-plan-v1-2` 的 `7915359` 快进合并到主分支，保留完整开发历史。此前远程 `7e0581e` 新增的三份设计原文与 `docs/sources/native_v1.2/` 归档逐字节一致。
+远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。`main`统一接收当前逻辑门课程和工程修复；开发历史保留在`codex/logic-gates-curriculum`。原版`560ed6f`、旧逻辑光学分支及两个回溯标签继续保留，详见课程文档。原生开发分支的`7915359`也已整合，完整历史和来源原文保留。
 
 旧刻轨版本 `f4705f7`、指令交换 `480d261`、首版 `eb63a22` 和设计历史均保留。缓存、SDK、导出包和完整录像 / 日志进入 Git 忽略目录。
 
