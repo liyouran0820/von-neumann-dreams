@@ -8,7 +8,7 @@
 
 当前按用户的开发计划 v1.2 迁移到 **Godot 4.7.2 / Forward+ / Metal / macOS arm64**。P00 原生启动、测试运行器与干净导出已通过；P01状态与几何模块已保存，81项模块检查通过。原生五关玩法、完整视觉和真人验收尚未完成。
 
-当前分支 `codex/godot-plan-v1-2`。进度以 [原生状态](docs/NATIVE_DEMO_STATUS.md)、[差距审查](docs/requirements_gap_analysis.md) 和 [验收登记](docs/acceptance/registry.json) 为准，旧网页结果不转标原生通过。
+当前成果已合并到 `main`。进度以 [原生状态](docs/NATIVE_DEMO_STATUS.md)、[差距审查](docs/requirements_gap_analysis.md) 和 [验收登记](docs/acceptance/registry.json) 为准，旧网页结果不转标原生通过。
 
 ## 原生运行与验证
 
@@ -50,7 +50,7 @@ Node.js 20+；Three.js 与 esbuild 版本锁定，无运行时 CDN。构建输�
 
 ## Git
 
-远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前成果位于开发分支 [`codex/godot-plan-v1-2`](https://github.com/liyouran0820/von-neumann-dreams/tree/codex/godot-plan-v1-2)。2026-10-13获取到远程 `main` 的 `7e0581e`；该提交新增三份设计原文，与 `docs/sources/native_v1.2/` 归档逐字节一致。
+远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前成果入口为 [`main`](https://github.com/liyouran0820/von-neumann-dreams/tree/main)。2026-10-13按用户要求将开发分支 `codex/godot-plan-v1-2` 的 `7915359` 快进合并到主分支，保留完整开发历史。此前远程 `7e0581e` 新增的三份设计原文与 `docs/sources/native_v1.2/` 归档逐字节一致。
 
 旧刻轨版本 `f4705f7`、指令交换 `480d261`、首版 `eb63a22` 和设计历史均保留。缓存、SDK、导出包和完整录像 / 日志进入 Git 忽略目录。
 
