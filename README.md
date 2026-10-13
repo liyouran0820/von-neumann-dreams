@@ -84,6 +84,7 @@ Node.js 20+；Three.js 与 esbuild 版本锁定，无运行时 CDN。构建输�
 
 ## 需求与文档
 
+- [关卡设计v2.0.md](关卡设计v2.0.md)：最新十三关设计，原第六关删除；第四关加入错位校准与XOR/AND双门，第五关以一对真箱和双世界AND激活白桥再映到夜侧。包含已学特性的递进要求，本次未接入游戏。
 - [三份原始来源](docs/sources/native_v1.2/SOURCES.md)：PRD 定规则，五关稿定内容，开发计划定技术和验收。
 - [source_manifest.json](docs/source_manifest.json)：来源哈希、旧原图身份与用户批准的新视觉基线。
 - [NATIVE_DEMO_STATUS.md](docs/NATIVE_DEMO_STATUS.md)：当前阶段、实际运行与验证范围。
