@@ -45,6 +45,10 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   v.instruments=[];v.beams=null;v.scienceSignature='';
   const config=level.science;if(!config||config.world!==v.world)return;
   const stone=mat(PALETTE[v.world].edge);
+  for(const door of config.doors||[]){
+   const cell=[door.cells.reduce((n,c)=>n+c[0],0)/door.cells.length,door.cells.reduce((n,c)=>n+c[1],0)/door.cells.length];
+   v.anchors.push({kind:'readout',id:'door-'+door.id,label:door.label,cell,height:1.2});
+  }
   for(const emitter of config.emitters||[]){
    const [x,z]=emitter.cell;box(v.root,x,.22,z,.42,.44,.42,stone);
    box(v.root,x,.59,z,.58,.24,.28,mat(0xa88d59));ring(v.root,x,.73,z,.16,GOLD);
@@ -144,7 +148,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   if(!level||disposed)return;state=next;if(raf){cancelAnimationFrame(raf);raf=0;}
   for(const v of scenes){v.dynamic=[];const body=state.body;v.player.visible=body.world===v.world;patch(v,v.player,{x:body.x,y:state.failed?-1.1:0,z:body.y});if(v.crate){v.crate.userData.pick.x=state.boxes[v.world];patch(v,v.crate,{x:state.boxes[v.world],y:0,z:level.track.y,shake:type==='push'&&state.feedback?.[v.world]?.blocked});}
    for(const target of v.targets)for(const m of ownMaterials(target)){m.emissiveIntensity=state.boxes[v.world]===level.track.targets[v.world]?1:.08;}
-   for(const d of v.doors){const occupied=!!level.science&&body.world===v.world&&body.x===d.position.x&&body.y===d.position.z;const open=doorOpen(level,state,v.world)||occupied;patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}
+   for(const d of v.doors){const occupied=!!level.science&&body.world===v.world&&body.x===d.position.x&&body.y===d.position.z;const open=doorOpen(level,state,v.world,d.position.x,d.position.z)||occupied;patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}
    updateScience(v);
    for(const b of v.bridges){const active=state.mapping===b.id;patch(v,b.g,{y:active?0:-.22,opacity:active?1:0});b.preview.visible=state.preview?.id===b.id&&!active;b.stripes.visible=active&&!!state.preview&&state.preview.id!==b.id;}
    for(const o of v.pickables)if(o.userData.bridgeId)o.visible=state.mapping===o.userData.bridgeId;

@@ -66,7 +66,7 @@ $('reduced-motion').checked = media.matches;
 media.addEventListener('change', event => { $('reduced-motion').checked = event.matches; diorama?.setReducedMotion(event.matches); });
 function goalLabels() {
   return Game.goals(level, state).map(goal => {
-    if (goal.label.startsWith('实验线路')) return { ...goal, label: level.science.scope === 'assessment' ? '与门验收' : worldName(level.science.world) + '门线路' };
+    if (goal.label.startsWith('实验线路')) return { ...goal, label: level.science.scope === 'assessment' ? '与门验收' : level.science.doors ? '后门线路' : worldName(level.science.world) + '门线路' };
     const body = goal.label.startsWith('身体');
     const label = body ? level.id === 'G5' ? '入学验收环' : '出口' : goal.label.startsWith('夜') ? level.id === 'G5' ? '夜侧校准槽' : '夜侧实验槽' : level.id === 'G1' ? '白侧实验槽' : '白侧踏板';
     return { ...goal, label };

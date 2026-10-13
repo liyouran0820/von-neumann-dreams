@@ -43,11 +43,35 @@ test('NOT光门初始受光关闭，熄灭输入后打开，撤销可恢复',()=
   G.act(l,s,'view','day');G.act(l,s,'mirror','M');assert.equal(scienceResult(l,s).signals.A,false);assert(G.doorOpen(l,s,'day'));
   G.act(l,s,'undo');assert(!G.doorOpen(l,s,'day'));
 });
-test('XOR双亮、双灭都关；任意一个亮均开',()=>{
-  const l=ACADEMY_LEVELS[3],s=G.createState(l);assert(!G.doorOpen(l,s,'night'));
-  for(const [id,want] of [['A',true],['B',false],['A',true],['B',false]]){
-    assert(G.act(l,s,'switch',id));assert.equal(G.doorOpen(l,s,'night'),want);
+test('XOR两道门联动：输入相同前门开，输入不同后门开',()=>{
+  const l=ACADEMY_LEVELS[3],s=G.createState(l);
+  const check=(front,back)=>{
+    assert.deepEqual(scienceResult(l,s).doors,{front,back});
+    for(const y of [1,2])assert.equal(G.doorOpen(l,s,'night',5,y),front);
+    for(const y of [4,5])assert.equal(G.doorOpen(l,s,'night',17,y),back);
+    assert.equal(G.doorOpen(l,s,'night'),back);
+  };
+  check(true,false);
+  for(const [id,front,back] of [['A',false,true],['B',true,false],['A',false,true],['B',true,false]]){
+    assert(G.act(l,s,'switch',id));check(front,back);
   }
+});
+test('XOR提前改变开关会关闭前门，不能绕过屏障，撤销恢复通路',()=>{
+  const l=ACADEMY_LEVELS[3],s=G.createState(l);bind(l,s,'B');
+  assert(G.findPath(l,s,9,2));assert(G.act(l,s,'switch','A'));
+  assert.equal(G.findPath(l,s,9,2),null);
+  assert.equal(G.support(l,s,'night',5,1),null);assert.equal(G.support(l,s,'night',5,2),null);
+  assert(G.act(l,s,'undo'));assert(G.findPath(l,s,9,2));
+});
+test('XOR门内关闭允许离开，但不能重新进入，撤销保留完整状态',()=>{
+  const l=ACADEMY_LEVELS[3],s=G.createState(l);bind(l,s,'B');walk(l,s,5,2);
+  assert(G.act(l,s,'switch','A'));assert.equal(G.support(l,s,'night',5,2),'floor');
+  assert.equal(G.support(l,s,'night',5,1),null);
+  assert(G.act(l,s,'move',[-1,0]));assert(!G.act(l,s,'move',[1,0]));
+  assert.deepEqual([s.body.x,s.body.y],[4,2]);
+  assert(G.act(l,s,'undo'));assert.deepEqual([s.body.x,s.body.y],[5,2]);
+  assert.deepEqual(scienceResult(l,s).doors,{front:false,back:true});
+  assert(G.act(l,s,'undo'));assert.deepEqual(scienceResult(l,s).doors,{front:true,back:false});
 });
 test('与非组合中间C与最终门Y分别正确，光门仍参与通行',()=>{
   const l=ACADEMY_LEVELS[4],s=G.createState(l);bind(l,s,'A');push(l,s,'LLRRR');
@@ -63,8 +87,11 @@ test('教学目标可组合两世界，实际门拒绝接收外世界输入',()=
 for(const l of ACADEMY_LEVELS)test(l.id+' 全逻辑课程真实行走通关',()=>{
   const s=G.createState(l);
   if(l.id==='G3'||l.id==='G5'){G.act(l,s,'view','day');G.act(l,s,'mirror','M');G.act(l,s,'view','night');}
-  if(l.id==='G4')G.act(l,s,'switch','A');
-  solve(l,s);assert(s.won);assert(!s.failed);
+  if(l.id==='G4'){
+    bind(l,s,'B');walk(l,s,9,2);G.act(l,s,'switch','A');
+    portal(l,s,9,2);portal(l,s,12,4);bind(l,s,'C');walk(l,s,18,4);
+  }else solve(l,s);
+  assert(s.won);assert(!s.failed);
 });
 test('OR课程只使用B开关的替代解通关，不强制箱子路线',()=>{
   const l=ACADEMY_LEVELS[1],s=G.createState(l);G.act(l,s,'view','day');G.act(l,s,'switch','B');

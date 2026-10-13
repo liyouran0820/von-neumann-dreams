@@ -78,7 +78,8 @@ export function scienceResult(level, state) {
     else if (input.type === 'sensor') signals[input.id] = optics.hits.includes(input.sensor);
     else throw new Error('Unknown science input');
   }
-  return { world: config.world, signals, output: evaluateCircuit(config.circuit, signals), lessonOutput: evaluateCircuit(config.lessonCircuit || config.circuit, signals), optics };
+  const doors=Object.fromEntries((config.doors||[]).map(door=>[door.id,evaluateCircuit(door.circuit,signals)]));
+  return { world: config.world, signals, output: evaluateCircuit(config.circuit, signals), lessonOutput: evaluateCircuit(config.lessonCircuit || config.circuit, signals), doors, optics };
 }
 
 export function instrumentAt(level, world, x, y) {

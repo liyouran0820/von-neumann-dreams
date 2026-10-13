@@ -10,8 +10,12 @@ export function createState(level) {
 }
 function snapshot(s){ const {history,checkpoint,...rest}=s;return copy(rest); }
 function save(s){s.history.push({state:snapshot(s),checkpoint:copy(s.checkpoint)});}
-export function doorOpen(level,s,world){
- if(level.science?.world===world&&level.science.scope!=='assessment')return scienceResult(level,s).output;
+export function doorOpen(level,s,world,x,y){
+ if(level.science?.world===world&&level.science.scope!=='assessment'){
+  const result=scienceResult(level,s);
+  if(level.science.doors&&x!==undefined){const door=level.science.doors.find(d=>d.cells.some(([a,b])=>a===x&&b===y));return door?result.doors[door.id]:false;}
+  return result.output;
+ }
  return world==='day'&&!!level.track&&s.boxes.day===level.track.targets.day;
 }
 export function support(level,s,world,x,y){
@@ -20,7 +24,7 @@ export function support(level,s,world,x,y){
  const real=level.bridges.find(b=>b.world===world&&inside(p,b));if(real)return 'real-'+real.id;
  const ghost=level.bridges.find(b=>b.world!==world&&b.id===s.mapping&&inside(p,b));if(ghost)return 'ghost-'+ghost.id;
  const tile=level.grids[world][y]?.[x];
- if(tile==='D')return doorOpen(level,s,world)||(level.science&&s.body.world===world&&s.body.x===x&&s.body.y===y)?'floor':null;
+ if(tile==='D')return doorOpen(level,s,world,x,y)||(level.science&&s.body.world===world&&s.body.x===x&&s.body.y===y)?'floor':null;
  if(tile&&'.S12'.includes(tile))return 'floor';
  if(tile==='E'&&level.id!=='G5')return 'floor';
  return null;

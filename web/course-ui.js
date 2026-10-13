@@ -16,6 +16,15 @@ function gateSymbol(kind, x, y) {
 }
 function logicCircuit(config, result) {
   const s=result.signals, kind=config.lessonGate;
+  if(config.doors){
+    const front=result.doors.front,back=result.doors.back;
+    const y=result.output;
+    let content=input('A',28,s.A)+input('B',88,s.B)+wire('M64 28H84V43H96',s.A)+wire('M64 88H84V69H96',s.B)+gateSymbol('xor',132,56)+wire('M158 56H183',y);
+    content+=`<circle cx="183" cy="56" r="3" fill="${color(y)}"/><text x="178" y="48" text-anchor="middle" style="font-size:12px">Y ${bit(y)}</text>`;
+    content+=wire('M183 56V26H192',y)+gateSymbol('not',217,26)+wire('M246 26H296',front)+wire('M183 56V86H296',back);
+    for(const [y,on,label] of [[26,front,'前门'],[86,back,'后门']])content+=`<circle cx="310" cy="${y}" r="12" fill="${on?'#d8b96c':'#263742'}" stroke="#d8b96c"/><text x="310" y="${y+5}" text-anchor="middle" fill="${on?'#14232c':'#e5ede7'}">${bit(on)}</text><text x="248" y="${y-10}" style="font-size:12px">${label}</text>`;
+    return `<svg viewBox="0 0 334 116" role="img" aria-label="异或联动：A=${bit(s.A)}，B=${bit(s.B)}，Y=${bit(y)}，前门=${bit(front)}，后门=${bit(back)}">${content}</svg>`;
+  }
   let content;
   if(kind==='nand') {
     const c=result.lessonOutput;
@@ -70,6 +79,10 @@ export function renderCourse(level, state, index) {
   const occupied = state.body.world === config.world && level.grids[config.world][state.body.y]?.[state.body.x] === 'D';
   const worldName=config.world==='night'?'夜':'白';
   $('science-output').textContent = config.scope==='assessment' ? (result.output?'验收条件已满足':'验收条件未满足') : result.output ? worldName+'门已接通' : occupied ? '门等待关闭 · 可以离开' : worldName+'门未接通';
+  if(config.doors)$('science-output').textContent=config.doors.map(door=>{
+    const waiting=!result.doors[door.id]&&state.body.world===config.world&&door.cells.some(([x,y])=>state.body.x===x&&state.body.y===y);
+    return door.label+(result.doors[door.id]?'开':waiting?'待关':'关');
+  }).join(' / ');
   $('science-output').classList.toggle('on', result.output);
   $('science-observe').hidden = state.view === config.world;
   $('science-observe').textContent='观察'+worldName+'侧 · 空格';
@@ -86,10 +99,10 @@ export function renderCourse(level, state, index) {
   $('science-mirror').disabled = frozen;
   $('science-angle').hidden = !config.lessonGate && !(config.mirrors || []).length;
   const rules={and:'两路都为 1，输出才为 1。',or:'至少一路为 1，输出就是 1。',not:'输入与输出相反：1 → 0，0 → 1。',xor:'两路不同输出 1；相同输出 0。',nand:'第二门两端都接 C，再取反一次。'};
-  $('science-angle').textContent=config.lessonGate?rules[config.lessonGate]:(result.optics.bounces.length?'入射 45° = 反射 45° · 虚线为法线':'让光线经过镜面，观察入射与反射。');
+  $('science-angle').textContent=config.doors?'两个开关共同控制两道门。':config.lessonGate?rules[config.lessonGate]:(result.optics.bounces.length?'入射 45° = 反射 45° · 虚线为法线':'让光线经过镜面，观察入射与反射。');
   const key = config.inputs.map(i => bit(result.signals[i.id])).join('');
   if (!notes[level.id] || typeof notes[level.id] !== 'object') notes[level.id] = {};
-  const record={gate:result.lessonOutput,door:result.output};
+  const record={gate:result.lessonOutput,door:result.output,...(config.doors?{front:result.doors.front}:{})};
   if (JSON.stringify(notes[level.id][key]) !== JSON.stringify(record)) {
     notes[level.id][key] = record;
     try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch { /* optional storage */ }
@@ -104,8 +117,8 @@ export function showNotebook(level) {
   if (config) {
     const ids = config.inputs.map(i => i.id), records = notes[level.id] || {};
     const rows = Array.from({length:2 ** ids.length}, (_,i) => i.toString(2).padStart(ids.length,'0'));
-    const combined=config.lessonGate==='nand';
-    $('notebook-table').innerHTML = `<thead><tr>${ids.map(id=>'<th>'+id+'</th>').join('')}${combined?'<th>与非 C</th>':''}<th>输出 Y</th></tr></thead><tbody>${rows.map(key=>{const seen=Object.hasOwn(records,key),entry=records[key];const record=typeof entry==='boolean'?{gate:entry,door:entry}:entry;return `<tr class="${seen?'observed':''}">${[...key].map(value=>'<td>'+value+'</td>').join('')}${combined?'<td>'+(seen?bit(record.gate):'—')+'</td>':''}<td>${seen?bit(record.door):'—'}</td></tr>`;}).join('')}</tbody>`;
+    const combined=config.lessonGate==='nand', paired=!!config.doors;
+    $('notebook-table').innerHTML = `<thead><tr>${ids.map(id=>'<th>'+id+'</th>').join('')}${combined?'<th>与非 C</th>':''}${paired?'<th>前门 ¬Y</th>':''}<th>${paired?'后门 Y':'输出 Y'}</th></tr></thead><tbody>${rows.map(key=>{const seen=Object.hasOwn(records,key),entry=records[key];const record=typeof entry==='boolean'?{gate:entry,door:entry}:entry;return `<tr class="${seen?'observed':''}">${[...key].map(value=>'<td>'+value+'</td>').join('')}${combined?'<td>'+(seen?bit(record.gate):'—')+'</td>':''}${paired?'<td>'+(seen&&typeof record.front==='boolean'?bit(record.front):'—')+'</td>':''}<td>${seen?bit(record.door):'—'}</td></tr>`;}).join('')}</tbody>`;
   }
   $('notebook-dialog').showModal();
 }

@@ -9,7 +9,7 @@ const courses = [
   ['与门 AND', '让夜槽 A、白槽 B 同时亮起，走到验收环。', '与门：只有全部输入都是1，输出才是1。两侧校准槽是本关的两个输入。'],
   ['或门 OR', '接通白侧任意一路输入，穿过回廊。', '或门：至少一个输入为1，输出就是1。A亮、B亮、两路都亮，都能开门。'],
   ['非门 NOT', '让白侧感应器 A 熄灭，打开非门并借桥通过。', '非门翻转输入：输入1得到0，输入0得到1。光门只是输入来源，镜面用来改变亮与灭。'],
-  ['异或门 XOR', '让夜侧 A、B 恰好一路亮起，安排双桥通行。', '异或门：两个输入不同时输出1，相同时输出0。两路都亮不会开门。'],
+  ['异或门 XOR', '安排双桥，穿过两道联动门，抵达出口。', '两个开关共同产生异或信号Y。相同时Y=0，前门开、后门关；不同时Y=1，前门关、后门开。任意一个开关都能同时改变两道门。'],
   ['与非门 NAND', '双箱归位、点亮白侧 B，用两个与非门打开通路。', '与非门把“与”的结果取反。第一门 C = A NAND B；第二门的两端都接 C，得到 C NAND C = 非C，组合后等价于与门。'],
 ];
 ACADEMY_LEVELS.forEach((level, i) => {
@@ -53,16 +53,22 @@ ACADEMY_LEVELS[2].hints = ['现在A亮着，非门输出却是0。怎样改变�
 
 for (let y = 1; y <= 5; y++) {
   const row = ACADEMY_LEVELS[3].grids.night[y];
-  ACADEMY_LEVELS[3].grids.night[y] = row.slice(0, 17) + (y === 4 || y === 5 ? 'D' : '#') + row.slice(18);
+  const cells=[...row];cells[5]=y===1||y===2?'D':'#';cells[17]=y===4||y===5?'D':'#';
+  ACADEMY_LEVELS[3].grids.night[y] = cells.join('');
 }
+const xorSignal=gate('xor',signal('A'),signal('B'));
 ACADEMY_LEVELS[3].science = {
   world: 'night', kind: 'logic', lessonGate: 'xor', formula: 'Y = A ⊕ B',
   inputs: [
     { id: 'A', type: 'switch', initial: true, cell: [8, 1], label: 'A 实验开关' },
     { id: 'B', type: 'switch', initial: true, cell: [12, 5], label: 'B 实验开关' },
-  ], circuit: gate('xor', signal('A'), signal('B')),
+  ], circuit: xorSignal,
+  doors: [
+    {id:'front',label:'前门',cells:[[5,1],[5,2]],circuit:gate('not',xorSignal)},
+    {id:'back',label:'后门',cells:[[17,4],[17,5]],circuit:xorSignal},
+  ],
 };
-ACADEMY_LEVELS[3].hints = ['异或门与刚才的或门有什么不同？试试两个开关都亮的情况。','异或要求输入不同。只留A或只留B都可以；都亮、都灭均关闭。','在夜侧关闭任意一个开关。借B到岛，经P1/P2绕墙，在安全地面换C，穿过夜门抵达出口。'];
+ACADEMY_LEVELS[3].hints = ['只改变一个开关，观察两道门是否都会回应。','开关相同时前门开，不同时后门开。可以先穿过前门，再在岛上改变任意一个输入。','保持初始双亮，借B通过前门到岛。关闭A或B，经P1/P2绕墙，在安全地面换C，通过后门到出口。'];
 
 const intermediate = gate('nand', signal('A'), signal('B'));
 ACADEMY_LEVELS[4].science = {
