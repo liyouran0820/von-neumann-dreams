@@ -1,0 +1,554 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-13",
+  "scope": "原生模块检查，不是P01阶段验收或完整玩法通过",
+  "stage_acceptance_status": "NOT_RUN",
+  "engine_version": "4.7.2.stable.official.ed1daf0bf",
+  "checks": [
+    {
+      "suite": "state-codec",
+      "status": "PASS",
+      "executed": 42,
+      "failed": 0,
+      "tested_source_commit": "b0f30ecf1d8798be8828b1c78c09a41f3c97339a",
+      "command": [
+        "/Users/liyouran/Documents/ChatGPT/BNBU_AI_PC/artifacts/tools/godot-4.7.2/Godot.app/Contents/MacOS/Godot",
+        "--headless",
+        "--path",
+        "/Users/liyouran/Documents/ChatGPT/BNBU_AI_PC",
+        "--script",
+        "res://tests/run_tests.gd",
+        "--",
+        "--suite=state-codec",
+        "--report=/Users/liyouran/Documents/ChatGPT/BNBU_AI_PC/artifacts/verification/github-upload/b0f30ec/state-codec.json"
+      ],
+      "exit_code": 0,
+      "raw_report": "artifacts/verification/github-upload/b0f30ec/state-codec.json",
+      "raw_log": "artifacts/verification/github-upload/b0f30ec/state-codec.log",
+      "report_sha256": "fd542ded8fec494a0cd88494f852179507ab7e306bdd8559f7a6c03f3a81d6ee",
+      "assertion_results": [
+        {
+          "id": "STATE-OWNERSHIP",
+          "status": "PASS"
+        },
+        {
+          "id": "STATE-CLONE-DEEP",
+          "status": "PASS"
+        },
+        {
+          "id": "STATE-SNAPSHOT-DEEP",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-INTEGER-ROUNDTRIP",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-KNOWN-FIXTURE",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-PENDING-DOOR-ROUNDTRIP",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-ROUNDTRIP-HASH",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-ORDER",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-METADATA",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-BODY",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-MAPPING",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-GHOST",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-CONTACTS",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-ACTIVE_TRANSACTION",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-SUPPORT",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-RULE_TICK",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-VIEW_WORLD",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-GOALS",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-COMPLETED",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-OBJECTS",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-DOORS",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-PENDING_CLOSE",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-OCCUPANT_IDS",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-MISSING",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-RULES",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-FLOAT_MM",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-FRACTION_MM",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-NODE",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-UNKNOWN_FIELD",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-BAD_WORLD",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-BAD_HASH",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-BAD_VECTOR",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-BAD_SCHEMA",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-NONFINITE",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-34",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-35",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-36",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-37",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-38",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-39",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-NULLABLE-STATE",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-INTEGER-BOUNDARY",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "suite": "core",
+      "status": "PASS",
+      "executed": 81,
+      "failed": 0,
+      "tested_source_commit": "bd4b70e9bf66c30bf52c73ca9d60938c31e1b37a",
+      "command": [
+        "/Users/liyouran/Documents/ChatGPT/BNBU_AI_PC/artifacts/tools/godot-4.7.2/Godot.app/Contents/MacOS/Godot",
+        "--headless",
+        "--path",
+        "/Users/liyouran/Documents/ChatGPT/BNBU_AI_PC",
+        "--script",
+        "res://tests/run_tests.gd",
+        "--",
+        "--suite=core",
+        "--report=/Users/liyouran/Documents/ChatGPT/BNBU_AI_PC/artifacts/verification/github-upload/bd4b70e/core.json"
+      ],
+      "exit_code": 0,
+      "raw_report": "artifacts/verification/github-upload/bd4b70e/core.json",
+      "raw_log": "artifacts/verification/github-upload/bd4b70e/core.log",
+      "report_sha256": "e967e0609c1ed51d1e3a91e50fd01eea2fb7f04fce0ee011aec53bcf5959e31c",
+      "assertion_results": [
+        {
+          "id": "STATE-OWNERSHIP",
+          "status": "PASS"
+        },
+        {
+          "id": "STATE-CLONE-DEEP",
+          "status": "PASS"
+        },
+        {
+          "id": "STATE-SNAPSHOT-DEEP",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-INTEGER-ROUNDTRIP",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-KNOWN-FIXTURE",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-PENDING-DOOR-ROUNDTRIP",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-ROUNDTRIP-HASH",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-ORDER",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-METADATA",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-BODY",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-MAPPING",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-GHOST",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-CONTACTS",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-ACTIVE_TRANSACTION",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-SUPPORT",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-RULE_TICK",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-VIEW_WORLD",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-GOALS",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-COMPLETED",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-OBJECTS",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-DOORS",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-PENDING_CLOSE",
+          "status": "PASS"
+        },
+        {
+          "id": "HASH-OCCUPANT_IDS",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-MISSING",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-RULES",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-FLOAT_MM",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-FRACTION_MM",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-NODE",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-UNKNOWN_FIELD",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-BAD_WORLD",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-BAD_HASH",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-BAD_VECTOR",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-BAD_SCHEMA",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-NONFINITE",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-34",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-35",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-36",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-37",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-38",
+          "status": "PASS"
+        },
+        {
+          "id": "REJECT-JSON-39",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-NULLABLE-STATE",
+          "status": "PASS"
+        },
+        {
+          "id": "CODEC-INTEGER-BOUNDARY",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-THIN-PATH",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TOUCH-LEAVE",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TOUCH-ENTER",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-NEGATIVE",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-VERTICAL",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-DIAGONAL-FIRST",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-ORDER",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-BODY-WIDTH",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-IGNORE",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TOLERANCE-590",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TOLERANCE-591",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TOLERANCE-592",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-BRIDGE-WIDTH-2500",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-BRIDGE-WIDTH-3500",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SHORE-PRIORITY",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SUPPORT-ORDER",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SHORE-NOT-GHOST",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SUPPORT-BOUNDS-[13000, 0, 3000]",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SUPPORT-BOUNDS-[15500, 2, 3000]",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SUPPORT-BOUNDS-[15500, -2, 3000]",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-WORLD",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-GHOST-INACTIVE",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-NO-STACKING",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TERRAIN-HOLE",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TERRAIN-LAND",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TERRAIN-OUTSIDE",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-BLOCKER-BOX",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-BLOCKER-PLAYER",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SWEEP-TOLERANCE-1",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SWEEP-TOLERANCE-2",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SIMULTANEOUS-IDS",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TANGENT",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-INACTIVE-BLOCKER",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SUPPORT-TOLERANCE--1",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SUPPORT-TOLERANCE-1",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-SUPPORT-COPY",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-NO-UPPER-SUPPORT",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-TOLERANCE-THICK-SHAPE",
+          "status": "PASS"
+        },
+        {
+          "id": "GEO-CONTAINED-SMALL",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "P01-3固定步与事务尚未实现，P01整体未验收",
+    "状态编解码验证结构，尚不解析跨对象引用或重建派生状态",
+    "几何接口尚未接入连续身体和五关，未完成阶段级确定性与性能验收"
+  ]
+}

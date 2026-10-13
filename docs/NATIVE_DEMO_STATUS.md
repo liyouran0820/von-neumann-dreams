@@ -10,6 +10,8 @@ P00通过：锁定Godot4.7.2标准版，空工程从干净Git归档导出arm64�
 
 原生包当前只有启动环境和运行器，尚无原生五关玩法。P01—P09、K01—K05与U01—U05未通过，不能称为最终Demo。
 
+P01 模块进度已保存：`b0f30ec` 的状态/整数JSON编解码42项检查通过；`bd4b70e` 的综合模块检查81项通过，其中几何39项。覆盖深拷贝、规范哈希、无效状态拒绝、扫掠碰撞、1毫米薄墙、支撑身份及世界隔离。详见[模块检查记录](acceptance/P01-module-checks-bd4b70e.json)。这些模块尚未接入完整玩法，P01固定步与事务部分仍待实现。
+
 ## 本机复现
 
 锁定编辑器在本工作区忽略的 `artifacts/tools/godot-4.7.2/Godot.app/Contents/MacOS/Godot`。同版本macOS模板已经准备；构建工具从官方Universal模板派生arm64切片，保留来源/派生哈希，不改版本。
@@ -33,3 +35,11 @@ python3 tools/verify.py --stage P00 --engine "$DEMO_GODOT_BIN" --window-probe --
 ## 下一阶段
 
 按P01-1状态/序列化、P01-2几何、P01-3固定步/事务推进，再进入P02。领域层不引用场景节点；只有新规则和实际测试的证据能够结案。
+
+当前已保存模块可用以下命令复核；`core`运行已实现的两个模块，不代表整个阶段：
+
+```bash
+"$DEMO_GODOT_BIN" --headless --path . --script res://tests/run_tests.gd -- --suite=state-codec
+"$DEMO_GODOT_BIN" --headless --path . --script res://tests/run_tests.gd -- --suite=geometry
+"$DEMO_GODOT_BIN" --headless --path . --script res://tests/run_tests.gd -- --suite=core
+```
