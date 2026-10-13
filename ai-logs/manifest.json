@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "archived_on": "2026-10-13",
+  "description": "团队提供的AI开发对话截图与过程摘要，原样归档；非完整对话导出",
+  "files": [
+    {
+      "path": "log.md",
+      "bytes": 17920,
+      "sha256": "5d8a44f031a85cbf81f9ee9f80386855e5bdeea5ec95640bd2a37d34e08c2d9b"
+    },
+    {
+      "path": "已粘贴 2026-10-13 下午5.45.49.png",
+      "bytes": 231362,
+      "sha256": "757f62fb9444e5c0cf26aba4055224f067563af09ca20c014d0a93fddb90b984"
+    },
+    {
+      "path": "已粘贴 2026-10-13 下午5.46.21.png",
+      "bytes": 283496,
+      "sha256": "cc1b0fe733d893fcb846fbe332f0b6657fe5d0bbdeed60b80106faca9065c51a"
+    },
+    {
+      "path": "已粘贴 2026-10-13 下午5.46.43.png",
+      "bytes": 426191,
+      "sha256": "7cad5fe7bad39e8f390c01f89fb59c5da3ba4e90cb5f49449cf26f1a37150757"
+    },
+    {
+      "path": "已粘贴 2026-10-13 下午5.46.57.png",
+      "bytes": 446971,
+      "sha256": "340464ff50ff5cd6cc36ba73cacd22f5064c4c43918ff4e49236e82cd1e25cd7"
+    },
+    {
+      "path": "已粘贴 2026-10-13 下午5.47.08.png",
+      "bytes": 316941,
+      "sha256": "8d47e04000f0cc258e315969d2328a9b059a9b86a560abf90ae6114c8527dcd9"
+    }
+  ]
+}
