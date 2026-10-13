@@ -20,8 +20,8 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  function pick(v,event){if(event.target.closest('button')||!level||disposed)return;const rect=v.host.getBoundingClientRect();pointer.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(pointer,v.camera);const hits=raycaster.intersectObjects(v.pickables,true);for(const hit of hits){let obj=hit.object;while(obj&&!obj.userData.pick)obj=obj.parent;if(obj?.userData.bridgeId&&state.mapping!==obj.userData.bridgeId)continue;if(obj?.userData.pick){const data=obj.userData.pick;onPick({world:v.world,...data});break;}}}
  try{
  for(const [world,host] of [['day',dayElement],['night',nightElement]]){
-  const p=PALETTE[world],scene=new THREE.Scene();scene.background=new THREE.Color(p.background);
-  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=world==='day'?.9:.98;renderer.domElement.style.cssText='width:100%;height:100%;display:block;touch-action:manipulation';renderer.domElement.setAttribute('aria-hidden','true');host.appendChild(renderer.domElement);
+  const p=PALETTE[world],scene=new THREE.Scene();scene.background=null;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=world==='day'?.9:.98;renderer.domElement.style.cssText='width:100%;height:100%;display:block;touch-action:manipulation';renderer.domElement.setAttribute('aria-hidden','true');host.appendChild(renderer.domElement);
   const camera=new THREE.OrthographicCamera(-10,10,10,-10,.1,160);camera.position.set(-18,27,28);camera.lookAt(0,0,0);camera.updateMatrixWorld();
   scene.add(new THREE.HemisphereLight(world==='day'?0xfffefa:0xb6d5ff,world==='day'?0x879296:0x172439,world==='day'?1.25:1.4));
   const sun=new THREE.DirectionalLight(world==='day'?0xfffdf8:0xc7deff,world==='day'?1.7:1.5);sun.position.set(-8,18,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0003;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun);scene.add(sun.target);
@@ -93,7 +93,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  const marker=v.world==='day'?0xa67c29:GOLD;
  const stone=mat(p.stone),edge=mat(p.edge),wall=mat(p.wall),pit=mat(p.pit),glass=mat(v.world==='day'?0x9dc8cd:0x719db7,{transparent:true,opacity:.4,roughness:.24,depthWrite:false}),gold=mat(marker,{emissive:marker,emissiveIntensity:.12}),track=mat(v.world==='day'?0xc3cdd0:0x303e55);
  // Background receives the cast shadow; it remains well below every pit.
- const ground=new THREE.Mesh(new THREE.PlaneGeometry(160,160),mat(p.ground));ground.rotation.x=-Math.PI/2;ground.position.set((W-1)/2,-1.65,(H-1)/2);ground.receiveShadow=true;v.root.add(ground);
+ const ground=new THREE.Mesh(new THREE.PlaneGeometry(160,160),new THREE.ShadowMaterial({color:v.world==='day'?0x34484e:0x061629,opacity:v.world==='day'?.18:.3}));ground.rotation.x=-Math.PI/2;ground.position.set((W-1)/2,-1.65,(H-1)/2);ground.receiveShadow=true;v.root.add(ground);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
   const t=rows[y][x],b=level.bridges.find(b=>inside(x,y,b)),chasm=t==='~'||'bc'.includes(t)||(t==='E'&&level.id==='G5');
   if(chasm){box(v.root,x,-1.52,y,.998,.12,.998,pit,.005);}else{

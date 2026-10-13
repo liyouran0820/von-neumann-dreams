@@ -24,6 +24,16 @@
       </section>
     </div>
     <header class="chapter-bar"><button id="open-levels" aria-label="选择学馆" title="选择学馆"></button><div><span id="chapter" class="chapter-number"></span><h1 id="title"></h1></div><button id="open-help" aria-label="操作帮助">帮助</button></header>
+    <aside id="course-panel" class="course-panel" aria-label="课程与实验" hidden>
+      <div class="course-heading"><div><p id="course-schools"></p><h2 id="course-title"></h2></div><button id="course-collapse" aria-label="收起或展开实验面板" aria-expanded="true">收起</button><button id="open-notebook">札记</button></div>
+      <div id="welcome" class="welcome"><p>欢迎，新生。完成五项入学试炼，抵达天文台。</p><button id="dismiss-welcome">开始试炼</button></div>
+      <div id="science-panel" hidden>
+        <div class="science-status"><code id="science-formula"></code><span id="science-output" role="status"></span></div>
+        <div id="science-circuit" class="science-circuit"></div>
+        <div class="science-controls"><button id="science-observe">观察白侧 · 空格</button><button id="science-switch" aria-label="切换白侧 B 开关">B 开关</button><button id="science-mirror" aria-label="转动白侧镜面 M">转动镜面 <kbd>R</kbd></button></div>
+        <p id="science-angle" class="science-angle" hidden></p>
+      </div>
+    </aside>
     <div class="zoom-tools" aria-label="缩放沙盘"><button id="zoom-out" aria-label="缩小沙盘">−</button><button id="zoom-in" aria-label="放大沙盘">＋</button></div>
     <div class="scene-caption"><span>THE MIDNIGHT ACADEMY</span><span>同一校园 · 两种回应</span></div>
     <div id="render-error" class="render-error" role="alert" hidden></div>
@@ -40,8 +50,9 @@
       </nav>
     </section>
     <dialog id="objects-dialog" class="small-dialog"><form method="dialog"><button class="dialog-close">返回</button></form><p class="eyebrow">唯一的映射</p><h2>选择真实物件</h2><div id="objects" class="object-options"></div></dialog>
-    <dialog id="levels-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">午夜学院</p><h2>继续你的夜间漫游</h2><nav id="levels" class="level-list" aria-label="学馆选择"></nav><div class="dialog-tools"><button id="reset">本关重来</button><button id="recover">恢复安全点</button><button id="clear-progress">清除通关记录</button></div></dialog>
-    <dialog id="help-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">夜白映射</p><h2>看见、联系、穿行。</h2><ol><li><b>点箱子或真实桥</b>查看预览，再用 E 激活。</li><li><b>方向键推动</b>，两端各自判断阻挡；每次一格。</li><li><b>WASD 或点地面走路</b>。站到门座后，用 F 穿门。</li><li><b>按一下空格切换观察世界</b>，再按一下切回来；身体只通过传送门改变世界。</li><li><b>Q 解除，Z 撤销</b>。虚影桥消失时，脚下会失去支撑。</li></ol><div class="help-actions"><button id="hint">给我一点提示</button><label><input type="checkbox" id="reduced-motion"> 减少动态</label></div><p id="hint-text" class="hint-text" hidden></p><details id="debug"><summary>调试状态</summary><pre id="debug-state"></pre></details></dialog>
+    <dialog id="levels-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">午夜学院</p><h2>新生入学试炼</h2><nav id="levels" class="level-list" aria-label="学馆选择"></nav><div class="dialog-tools"><button id="reset">本关重来</button><button id="recover">恢复安全点</button><button id="clear-progress">清除通关记录</button><a id="original-mode" href="?version=original">原版五关对照</a></div></dialog>
+    <dialog id="notebook-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">午夜学院 · 实验札记</p><h2 id="notebook-title"></h2><p id="notebook-note"></p><section id="notebook-results"><h3>亲手观察的结果</h3><table id="notebook-table"></table><p class="notebook-caption">— 表示尚未观察。撤销操作会保留已经记录的发现。</p></section></dialog>
+    <dialog id="help-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">夜白映射</p><h2>看见、联系、穿行。</h2><ol><li><b>点箱子或真实桥</b>查看预览，再用 E 激活。</li><li><b>方向键推动</b>，两端各自判断阻挡；每次一格。</li><li><b>WASD 或点地面走路</b>。站到门座后，用 F 穿门。</li><li><b>按一下空格切换观察世界</b>，再按一下切回来；身体只通过传送门改变世界。</li><li><b>Q 解除，Z 撤销</b>。虚影桥消失时，脚下会失去支撑。</li><li id="science-help"><b>实验课</b>：点 B 开关改变逻辑输入；点镜面或按 R 转向，观察光路与感应器。札记保存亲手观察过的结果。</li></ol><div class="help-actions"><button id="hint">给我一点提示</button><label><input type="checkbox" id="reduced-motion"> 减少动态</label></div><p id="hint-text" class="hint-text" hidden></p><details id="debug"><summary>调试状态</summary><pre id="debug-state"></pre></details></dialog>
   </main>
   <script src="./generated/app.js" defer></script>
 </body>

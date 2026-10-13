@@ -1,10 +1,14 @@
 import * as Game from './engine.js';
-import { LEVELS } from './levels.js';
+import { LEVELS as ORIGINAL_LEVELS } from './levels.js';
+import { ACADEMY_LEVELS } from './academy-levels.js';
+import { renderCourse, showNotebook, resetCourseNotes, dismissWelcome } from './course-ui.js';
 import { createDiorama } from './renderer.js';
 import { ICONS } from './icons.js';
 
 const $ = id => document.getElementById(id);
-const KEY = 'night-white-five-v1-progress';
+const originalMode = new URLSearchParams(location.search).get('version') === 'original';
+const LEVELS = originalMode ? ORIGINAL_LEVELS : ACADEMY_LEVELS;
+const KEY = originalMode ? 'night-white-five-v1-progress' : 'night-white-academy-v1-progress';
 const worldName = world => world === 'day' ? '白' : '夜';
 const objectName = id => ({ A: '实验箱', B: '第一座桥', C: '第二座桥' })[id];
 const media = matchMedia('(prefers-reduced-motion: reduce)');
@@ -32,16 +36,21 @@ function renderAnchors(world, anchors) {
     const key = anchor.kind + ':' + (anchor.id || anchor.cell.join(',')); remaining.add(key);
     let button = [...root.children].find(node => node.dataset.anchor === key);
     if (!button) {
-      button = document.createElement('button'); button.type = 'button'; button.className = 'scene-hotspot'; button.dataset.anchor = key;
+      const readout = ['readout','sensor'].includes(anchor.kind);
+      button = document.createElement(readout ? 'span' : 'button'); if (!readout) button.type = 'button'; button.className = readout ? 'scene-readout' : 'scene-hotspot'; button.dataset.anchor = key;
       button.dataset.world = world; button.dataset.kind = anchor.kind;
       if (anchor.id) button.dataset.object = anchor.id;
-      const label = anchor.kind === 'object' ? '选择' + objectName(anchor.id) : anchor.kind === 'portal' ? '走到' + (anchor.id === 'P1' ? '一号' : '二号') + '门座' : '走到出口';
+      const label = anchor.kind === 'mirror' ? '转动镜面 ' + anchor.id : anchor.kind === 'switch' ? '切换开关 ' + anchor.id : readout ? (anchor.label || anchor.id) : anchor.kind === 'object' ? '选择' + objectName(anchor.id) : anchor.kind === 'portal' ? '走到' + (anchor.id === 'P1' ? '一号' : '二号') + '门座' : '走到出口';
       button.setAttribute('aria-label', worldName(world) + '世界：' + label); button.title = label;
-      button.addEventListener('click', event => { event.stopPropagation(); handlePick({ world, kind: button.dataset.kind === 'object' ? 'object' : 'cell', id: button.dataset.object, x: Number(button.dataset.x), y: Number(button.dataset.y) }); });
+      if (!readout) button.addEventListener('click', event => { event.stopPropagation(); handlePick({ world, kind: ['object','mirror','switch'].includes(button.dataset.kind) ? button.dataset.kind : 'cell', id: button.dataset.object, x: Number(button.dataset.x), y: Number(button.dataset.y) }); });
       root.append(button);
     }
     button.dataset.x = Math.round(anchor.cell[0]); button.dataset.y = Math.round(anchor.cell[1]);
-    button.style.left = anchor.x + 'px'; button.style.top = anchor.y + 'px';
+    const offset = anchor.kind === 'mirror' || anchor.kind === 'switch' ? [24,-27] : ['sensor','readout'].includes(anchor.kind) ? [0,19] : [0,0];
+    button.style.left = (anchor.x + offset[0]) + 'px'; button.style.top = (anchor.y + offset[1]) + 'px';
+    if (['mirror','switch'].includes(anchor.kind)) { button.classList.add('instrument-hotspot'); button.innerHTML = `<b>${anchor.id}</b><small>${anchor.kind === 'mirror' ? '转动' : '开关'}</small>`; }
+    if (anchor.kind === 'readout') button.textContent = anchor.label;
+    if (anchor.kind === 'sensor') { const on=Game.scienceResult(level,state).optics.hits.includes(anchor.id); button.textContent=anchor.label+' '+(on?'1':'0');button.classList.toggle('on',on); }
     button.classList.toggle('selected', anchor.kind === 'object' && state.preview?.id === anchor.id && state.preview.world === world);
     button.disabled = state.failed || state.won;
   }
@@ -55,17 +64,20 @@ $('reduced-motion').checked = media.matches;
 media.addEventListener('change', event => { $('reduced-motion').checked = event.matches; diorama?.setReducedMotion(event.matches); });
 function goalLabels() {
   return Game.goals(level, state).map(goal => {
+    if (goal.label.startsWith('实验线路')) return { ...goal, label: '白门线路' };
     const body = goal.label.startsWith('身体');
-    const label = body ? level.id === 'G5' ? '结业环' : '出口' : goal.label.startsWith('夜') ? level.id === 'G5' ? '夜侧校准槽' : '夜侧实验槽' : level.id === 'G1' ? '白侧实验槽' : '白侧踏板';
+    const label = body ? level.id === 'G5' ? '入学验收环' : '出口' : goal.label.startsWith('夜') ? level.id === 'G5' ? '夜侧校准槽' : '夜侧实验槽' : level.id === 'G1' ? '白侧实验槽' : '白侧踏板';
     return { ...goal, label };
   });
 }
 function render(meta = {}) {
   if (state.won && !completed.includes(level.id)) { completed.push(level.id); persist(); }
-  $('chapter').textContent = String(index + 1).padStart(2, '0') + ' / 05';
+  $('chapter').textContent = (originalMode ? '空间试炼 ' : '入学试炼 ') + (index + 1) + ' / ' + LEVELS.length;
   $('title').textContent = level.name.split(' · ')[0];
   $('goal').textContent = level.goal.replace(/夜箱到6、白箱到4，身体踏上夜C桥末端验收环。/, '让两侧实验槽亮起，穿过夜侧桥上的验收环。');
-  $('levels').innerHTML = LEVELS.map((item, i) => `<button data-level="${i}" aria-current="${i === index ? 'step' : 'false'}"><span>${String(i + 1).padStart(2, '0')}</span><strong>${item.name.split(' · ')[0]}</strong><small>${completed.includes(item.id) ? '已抵达' : item.name.split(' · ')[1]}</small></button>`).join('');
+  $('levels').innerHTML = LEVELS.map((item, i) => `<button data-level="${i}" aria-current="${i === index ? 'step' : 'false'}"><span>${String(i + 1).padStart(2, '0')}</span><strong>${item.name.split(' · ')[0]}</strong><small>${completed.includes(item.id) ? '课程通过' : item.academy?.title || item.name.split(' · ')[1]}</small></button>`).join('');
+  renderCourse(level, state, index);
+  $('science-help').hidden = !level.science;
   for (const world of ['day', 'night']) {
     $(world + '-world').classList.toggle('inactive', state.view !== world);
     $(world + '-world').setAttribute('aria-hidden', String(state.view !== world));
@@ -102,9 +114,9 @@ function render(meta = {}) {
   document.querySelectorAll('[data-push]').forEach(button => button.disabled = frozen || state.mapping !== 'A');
   $('message').textContent = message;
   $('failure').hidden = !state.failed; $('completion').hidden = !state.won;
-  $('complete-title').textContent = index === 4 ? '天文台亮起，夜间课程完成。' : level.name.split(' · ')[0] + '已点亮。';
+  $('complete-title').textContent = level.academy?.completion || (index === 4 ? '天文台亮起，夜间课程完成。' : level.name.split(' · ')[0] + '已点亮。');
   $('next').hidden = index === 4;
-  $('debug-state').textContent = JSON.stringify({ level: level.id, body: state.body, view: state.view, boxes: state.boxes, mapping: state.mapping, preview: state.preview, failed: state.failed, won: state.won, history: state.history.length, observationEvents }, null, 2);
+  $('debug-state').textContent = JSON.stringify({ level: level.id, body: state.body, view: state.view, boxes: state.boxes, mapping: state.mapping, preview: state.preview, failed: state.failed, won: state.won, history: state.history.length, observationEvents, science:Game.scienceResult(level,state) }, null, 2);
   diorama?.update(state, meta);
   diorama?.setActiveWorld(state.view);
 }
@@ -112,6 +124,7 @@ function readableMessage(type, before, accepted) {
   if (state.failed) return '支撑消失了，随时可以撤回。';
   if (state.won) return '你的安排，让两侧连成了一条路。';
   if (type === 'push') return accepted ? ['night', 'day'].map(world => worldName(world) + '侧' + (state.feedback?.[world]?.blocked ? '受阻' : '移动一格')).join(' · ') : state.message;
+  if (type === 'mirror' || type === 'switch') return accepted ? (type === 'mirror' ? '镜面已转动，光路已更新。' : 'B 开关已改变，沿线路观察输出。') : '先用空格观察白侧实验台。';
   if (type === 'activate') return state.preview ? state.message : '映射已生效。';
   if (type === 'unlink') return before.mapping === 'A' ? '联系已解除，真实箱子的位置留下了。' : '联系已解除，虚影消失。';
   if (type === 'view') return state.view === state.body.world ? '现在可以移动身体。' : '观察另一侧，身体仍在' + worldName(state.body.world) + '世界。';
@@ -138,6 +151,7 @@ function chooseObject(id, world) {
 function handlePick(pick) {
   if (state.failed || state.won || document.querySelector('dialog[open]')) return;
   if (pick.world !== state.view) return;
+  if (pick.kind === 'mirror' || pick.kind === 'switch') { action(pick.kind, pick.id); return; }
   if (pick.kind === 'object') { chooseObject(pick.id, pick.world); return; }
   focusWorld(pick.world);
   if (pick.world !== state.body.world) { message = '身体仍在' + worldName(state.body.world) + '侧；穿门才能过去。'; render(); return; }
@@ -155,6 +169,7 @@ function handlePick(pick) {
 function load(i) {
   walking++; index = i; level = LEVELS[i]; state = Game.createState(level); hint = 0; lastAction = '';
   observationEvents.length = 0;
+  document.body.classList.remove('course-collapsed'); $('course-collapse').setAttribute('aria-expanded','true');$('course-collapse').textContent='收起';
   message = level.track ? '先点实验箱，查看两侧的映射。' : '比较两侧的桥，点真实桥查看预览。';
   $('hint-text').hidden = true; $('hint-text').textContent = ''; $('hint').textContent = '给我一点提示';
   for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close();
@@ -176,9 +191,18 @@ $('body-view').onclick = () => focusWorld(state.body.world);
 $('mapping-status').onclick = () => { walking++; $('objects-dialog').showModal(); };
 $('open-levels').onclick = () => { walking++; $('levels-dialog').showModal(); };
 $('open-help').onclick = () => { walking++; $('help-dialog').showModal(); };
+$('open-notebook').onclick = () => { walking++; showNotebook(level); };
+$('dismiss-welcome').onclick = dismissWelcome;
+$('science-observe').onclick = () => focusWorld(level.science.world);
+$('science-switch').onclick = () => action('switch','B');
+$('science-mirror').onclick = () => action('mirror','M');
+$('course-collapse').onclick = () => { const collapsed=document.body.classList.toggle('course-collapsed');$('course-collapse').setAttribute('aria-expanded',String(!collapsed));$('course-collapse').textContent=collapsed?'展开':'收起'; };
+$('original-mode').href = originalMode ? '?' : '?version=original';
+$('original-mode').textContent = originalMode ? '回到学院新版' : '原版五关对照';
+$('levels-dialog').querySelector('h2').textContent = originalMode ? '原版空间试炼' : '新生入学试炼';
 $('reset').onclick = () => load(index); $('replay').onclick = () => load(index);
 $('recover').onclick = () => { $('levels-dialog').close(); action('recover'); };
-$('clear-progress').onclick = () => { completed = []; persist(); load(0); };
+$('clear-progress').onclick = () => { completed = []; persist(); if(!originalMode)resetCourseNotes();load(0); };
 $('next').onclick = () => load(Math.min(4, index + 1));
 $('hint').onclick = () => { hint = Math.min(hint + 1, level.hints.length); $('hint-text').hidden = false; $('hint-text').textContent = level.hints.slice(0, hint).join('\n'); $('hint').textContent = hint === level.hints.length ? '全部提示已展开' : '再给一点提示'; };
 $('zoom-in').onclick = () => diorama?.zoom(.12); $('zoom-out').onclick = () => diorama?.zoom(-.12);
@@ -189,6 +213,7 @@ document.querySelector('[data-push="right"]').innerHTML = icon('arrowUp', 90);
 window.addEventListener('keydown', event => {
   if (event.ctrlKey || event.metaKey || event.altKey || document.querySelector('dialog[open]') || event.target.matches('input,textarea,select')) return;
   if (event.code === 'Space') { event.preventDefault(); event.stopPropagation(); if (!event.repeat) toggleObservation('keyboard-toggle'); return; }
+  if (event.code === 'KeyR' && level.science?.mirrors?.length) { event.preventDefault(); if(!event.repeat)action('mirror','M');return; }
   const key = event.key.toLowerCase();
   const moves = { w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0] };
   const pushes = { arrowleft: 'left', arrowright: 'right', arrowup: 'up', arrowdown: 'down' };
