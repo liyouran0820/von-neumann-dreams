@@ -39,3 +39,34 @@ test('安全快照不自动校准或补桥，撤销恢复身体/观察/箱位/�
 
 test('G2 身体过白门后撤掉踏板接触，仍能从P2抵达夜出口',()=>{const[l,s]=setup(1);bind(l,s,'A');push(l,s,'RR');portal(l,s,3,3);walk(l,s,8,3);push(l,s,'R');assert(!G.doorOpen(l,s,'day'));assert.equal(G.support(l,s,'day',6,3),null);portal(l,s,9,3);walk(l,s,10,3);assert(s.won);assert.equal(s.boxes.day,5);});
 test('固定桥允许与永久地面合法接触，拒绝墙/玻璃/箱轨穿插且保留旧映射',()=>{const[l,s]=setup(3);bind(l,s,'B');G.select(l,s,'C','day');for(const tile of ['.','#','=','-','A']){const altered=structuredClone(l);const row=altered.grids.night[4];altered.grids.night[4]=row.slice(0,14)+tile+row.slice(15);assert.equal(G.canActivate(altered,s),tile==='.');if(tile!=='.'){assert(!G.act(altered,s,'activate'));assert.equal(s.mapping,'B');}}});
+
+for (const i of [1,4]) test(`${LEVELS[i].id} 门洞内移开箱子不掉落，离开即关门，撤销还原占用`,()=>{
+ const [l,s]=setup(i),doorX=i===1?6:11;
+ bind(l,s,'A');push(l,s,i===1?'RR':'R');
+ if(i===4)bind(l,s,'B');
+ portal(l,s,i===1?3:9,3);
+ if(i===4)bind(l,s,'A');
+ walk(l,s,doorX,3);
+ push(l,s,'R');
+ assert.equal(s.boxes.day,5);
+ assert.equal(G.goals(l,s).find(g=>g.label.startsWith('白')).ok,false);
+ assert.equal(s.failed,false);
+ assert.equal(G.support(l,s,'day',doorX,3),'floor');
+ assert.equal(G.doorOpen(l,s,'day'),true);
+ assert.equal(G.doorOpen(l,s,'night'),false);
+ assert(G.act(l,s,'move',[1,0]));
+ assert.equal(G.doorOpen(l,s,'day'),false);
+ assert.equal(G.findPath(l,s,doorX-1,3),null);
+ const beforeBlocked=structuredClone(s);
+ assert.equal(G.act(l,s,'move',[-1,0]),false);
+ assert.deepEqual(s.body,beforeBlocked.body);
+ assert.equal(s.history.length,beforeBlocked.history.length);
+ assert(G.act(l,s,'undo'));
+ assert.deepEqual(s.body,{world:'day',x:doorX,y:3});
+ assert.equal(G.doorOpen(l,s,'day'),true);
+ assert.equal(s.failed,false);
+ assert(G.act(l,s,'undo'));
+ assert.equal(s.boxes.day,4);
+ assert(G.act(l,s,'move',[1,0]));
+ assert.equal(G.doorOpen(l,s,'day'),true);
+});

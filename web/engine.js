@@ -7,7 +7,13 @@ export function createState(level) {
 }
 function snapshot(s){ const {history,checkpoint,...rest}=s;return copy(rest); }
 function save(s){s.history.push({state:snapshot(s),checkpoint:copy(s.checkpoint)});}
-export function doorOpen(level,s,world){return world==='day'&&!!level.track&&s.boxes.day===level.track.targets.day;}
+export function doorOpen(level,s,world){
+ if(world!=='day'||!level.track)return false;
+ // A body in the doorway physically prevents closure. This is derived from
+ // current occupancy, not a latched switch; leaving closes an unpowered door.
+ const occupied=s.body.world===world&&level.grids[world][s.body.y]?.[s.body.x]==='D';
+ return s.boxes.day===level.track.targets.day||occupied;
+}
 export function support(level,s,world,x,y){
  const p={x,y};
  const real=level.bridges.find(b=>b.world===world&&inside(p,b));if(real)return 'real-'+real.id;

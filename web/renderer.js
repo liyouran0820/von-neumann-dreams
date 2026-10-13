@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { doorOpen } from './engine.js';
 
 // Logical coordinates map directly to X/Z; the walkable surface is Y=0.
 // White stone stays neutral under soft light; cooler edges separate walls and paths.
@@ -86,7 +87,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   if(!level||disposed)return;state=next;if(raf){cancelAnimationFrame(raf);raf=0;}
   for(const v of scenes){v.dynamic=[];const body=state.body;v.player.visible=body.world===v.world;patch(v,v.player,{x:body.x,y:state.failed?-1.1:0,z:body.y});if(v.crate){v.crate.userData.pick.x=state.boxes[v.world];patch(v,v.crate,{x:state.boxes[v.world],y:0,z:level.track.y,shake:type==='push'&&state.feedback?.[v.world]?.blocked});}
    for(const target of v.targets)for(const m of ownMaterials(target)){m.emissiveIntensity=state.boxes[v.world]===level.track.targets[v.world]?1:.08;}
-   for(const d of v.doors){const open=v.world==='day'&&state.boxes?.day===level.track?.targets.day;patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}
+   for(const d of v.doors){const open=doorOpen(level,state,v.world);patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}
    for(const b of v.bridges){const active=state.mapping===b.id;patch(v,b.g,{y:active?0:-.22,opacity:active?1:0});b.preview.visible=state.preview?.id===b.id&&!active;b.stripes.visible=active&&!!state.preview&&state.preview.id!==b.id;}
    for(const o of v.pickables)if(o.userData.bridgeId)o.visible=state.mapping===o.userData.bridgeId;
   }

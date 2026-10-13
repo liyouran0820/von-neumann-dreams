@@ -12,6 +12,7 @@ let completed = [];
 try { const saved = JSON.parse(localStorage.getItem(KEY) || '[]'); if (Array.isArray(saved)) completed = saved.filter(id => LEVELS.some(level => level.id === id)); } catch { /* 存储可选。 */ }
 let index = 0, level = LEVELS[0], state = Game.createState(level), hint = 0, walking = 0, lastAction = '', diorama;
 let message = '先点任意一侧的实验箱，查看映射。';
+let pendingReset = null;
 const observationEvents = [];
 function toggleObservation(kind) {
   walking++;
@@ -176,9 +177,27 @@ $('body-view').onclick = () => focusWorld(state.body.world);
 $('mapping-status').onclick = () => { walking++; $('objects-dialog').showModal(); };
 $('open-levels').onclick = () => { walking++; $('levels-dialog').showModal(); };
 $('open-help').onclick = () => { walking++; $('help-dialog').showModal(); };
-$('reset').onclick = () => load(index); $('replay').onclick = () => load(index);
+function requestReset(kind) {
+  walking++;
+  pendingReset = kind;
+  const clear = kind === 'progress';
+  $('reset-title').textContent = clear ? '清除全部通关记录？' : '重新开始本关？';
+  $('reset-description').textContent = clear ? '通关记录和本关进展将被清除，并返回第一关。此操作不能撤销。' : '本关的箱子、映射、检查点和撤销历史将恢复到起点；已通关记录保留。';
+  $('reset-confirm').textContent = clear ? '确认清除' : '确认重来';
+  $('levels-dialog').close();
+  $('reset-dialog').returnValue = 'cancel';
+  $('reset-dialog').showModal();
+}
+$('reset-dialog').addEventListener('close', () => {
+  const kind = pendingReset;
+  pendingReset = null;
+  if (!kind || $('reset-dialog').returnValue !== 'confirm') return;
+  if (kind === 'progress') { completed = []; persist(); load(0); }
+  else load(index);
+});
+$('reset').onclick = () => requestReset('level'); $('replay').onclick = () => load(index);
 $('recover').onclick = () => { $('levels-dialog').close(); action('recover'); };
-$('clear-progress').onclick = () => { completed = []; persist(); load(0); };
+$('clear-progress').onclick = () => requestReset('progress');
 $('next').onclick = () => load(Math.min(4, index + 1));
 $('hint').onclick = () => { hint = Math.min(hint + 1, level.hints.length); $('hint-text').hidden = false; $('hint-text').textContent = level.hints.slice(0, hint).join('\n'); $('hint').textContent = hint === level.hints.length ? '全部提示已展开' : '再给一点提示'; };
 $('zoom-in').onclick = () => diorama?.zoom(.12); $('zoom-out').onclick = () => diorama?.zoom(-.12);
