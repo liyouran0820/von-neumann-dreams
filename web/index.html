@@ -1,8 +1,48 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>夜白映射 · 午夜学院</title><link rel="stylesheet" href="./style.css"></head><body>
-<header><a class="brand" href="#">午夜学院 <span>夜白映射</span></a><nav id="levels" aria-label="学院导览"></nav></header>
-<main><section class="heading"><div><span id="chapter" class="eyebrow"></span><h1 id="title"></h1><p id="goal"></p></div><button id="help">操作 / 提示</button></section>
-<section id="intro" class="intro"><strong>同一个推动，两边各自回应。</strong><span>点真实物件预览 → 激活映射 → 左右推动。WASD / 点地面走路。V观察，F穿门。</span><button id="begin">进入庭院</button></section>
-<div class="workspace"><section class="scene"><div class="scene-top"><div id="status"></div><button id="view">切换观察 V</button><button id="body-view">返回身体视角</button></div><div id="board"></div><div id="message" role="status" aria-live="polite"></div><div class="legend"><span>实面：齐平桥</span><span>虚线：预览，不承重</span><span>斜纹：替换后消失</span><span>玻璃 / 墙：不可穿过</span></div><div class="movement"><span>走路</span><button data-move="0,-1" aria-label="向上走">↑</button><button data-move="-1,0" aria-label="向左走">←</button><button data-move="0,1" aria-label="向下走">↓</button><button data-move="1,0" aria-label="向右走">→</button><button id="teleport">穿门 F</button></div></section>
-<aside><section class="panel"><h2>另一端 <span id="other-title"></span></h2><div id="mini"></div><div id="feedback"></div></section><section class="panel"><h2 id="mapping"></h2><div id="objects"></div><p id="preview-status"></p><div class="actions"><button id="activate">激活映射 E</button><button id="cancel-preview">取消预览</button><button id="unlink">解除 Q</button></div><div class="push"><button data-push="left">← 推动</button><button data-push="right">推动 →</button></div></section><section class="panel"><h2>公开目标</h2><ul id="goals"></ul></section></aside></div>
-<footer><button id="undo">撤销 Z</button><button id="recover">恢复安全点</button><button id="reset">整关重置</button><button id="hint">查看提示 H1</button><button id="clear-progress">清除记录并重玩</button></footer><section id="help-panel" class="panel" hidden><p>WASD 走路；方向键推动映射箱。点地面自动寻路，点真实箱 / 桥预览。V 只切观察；在 P1 / P2 上按 F 才改变身体世界。E 激活，Q 解除，Z 撤销。另一世界观察期间可远程映射与推动。</p><p id="hint-text"></p></section><section id="completion" class="completion" hidden><strong id="complete-title"></strong><button id="next">前往下一处</button><button id="replay">重新试玩</button></section></main><script type="module" src="./app.js"></script></body></html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#172238">
+  <title>夜白映射 · 午夜学院</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="experience">
+    <div id="worlds" class="worlds">
+      <section class="world day" id="day-world" aria-label="白世界沙盘">
+        <div id="day-scene" class="scene-host"></div>
+        <div id="day-hotspots" class="hotspots"></div>
+        <div class="world-heading"><button data-focus-world="day" class="world-name"><span class="world-symbol">白</span><span>白世界<small>DAYLIGHT</small></span></button><div class="world-tags"><span class="body-tag" id="day-body">身体所在</span><span class="focus-tag" id="day-focus">观察中</span></div></div>
+        <p id="day-feedback" class="world-feedback" aria-live="polite"></p>
+      </section>
+      <section class="world night" id="night-world" aria-label="夜世界沙盘">
+        <div id="night-scene" class="scene-host"></div>
+        <div id="night-hotspots" class="hotspots"></div>
+        <div class="world-heading"><button data-focus-world="night" class="world-name"><span class="world-symbol">夜</span><span>夜世界<small>NIGHTFALL</small></span></button><div class="world-tags"><span class="body-tag" id="night-body">身体所在</span><span class="focus-tag" id="night-focus">观察中</span></div></div>
+        <p id="night-feedback" class="world-feedback" aria-live="polite"></p>
+      </section>
+    </div>
+    <header class="chapter-bar"><button id="open-levels" aria-label="选择学馆" title="选择学馆"></button><div><span id="chapter" class="chapter-number"></span><h1 id="title"></h1></div><button id="open-help" aria-label="操作帮助">帮助</button></header>
+    <div class="zoom-tools" aria-label="同时缩放两侧"><button id="zoom-out" aria-label="缩小两侧沙盘">−</button><button id="zoom-in" aria-label="放大两侧沙盘">＋</button></div>
+    <div class="scene-caption"><span>THE MIDNIGHT ACADEMY</span><span>同一校园 · 两种回应</span></div>
+    <div id="render-error" class="render-error" role="alert" hidden></div>
+    <section class="bottom-hud" aria-label="游戏操作">
+      <div class="quest-strip"><p id="goal"></p><ul id="goals" aria-label="公开目标"></ul></div>
+      <div class="context-row"><button id="mapping-status" class="mapping-status" aria-label="选择可映射物件"></button><p id="message" role="status" aria-live="polite"></p><button id="body-view" class="context-button" hidden>返回身体视角</button></div>
+      <section id="selection-card" class="selection-card" hidden><div><strong id="selection-name"></strong><p id="preview-status"></p></div><button id="confirm-preview" class="gold-action">激活映射 <kbd>E</kbd></button><button id="cancel-preview" aria-label="取消预览">取消</button></section>
+      <section id="failure" class="result-card" hidden><strong>脚下的支撑消失了</strong><button id="failure-undo">撤销这一步</button><button id="failure-recover">返回安全点</button></section>
+      <section id="completion" class="result-card completion" hidden><strong id="complete-title"></strong><button id="next">继续探索</button><button id="replay">重新试玩</button></section>
+      <nav class="keybar" aria-label="键盘与点击操作">
+        <div class="key-group movement-group"><span class="key-label">走路</span><div class="keys"><button data-move="0,-1" class="keycap" aria-label="向上走 W">W</button><button data-move="-1,0" class="keycap" aria-label="向左走 A">A</button><button data-move="0,1" class="keycap" aria-label="向下走 S">S</button><button data-move="1,0" class="keycap" aria-label="向右走 D">D</button></div></div>
+        <div class="key-group"><button id="view" class="key-action" aria-label="切换观察 V"><kbd>V</kbd><span>观察</span></button><button id="activate" class="key-action" aria-label="激活映射 E"><kbd>E</kbd><span>映射</span></button><button id="unlink" class="key-action" aria-label="解除映射 Q"><kbd>Q</kbd><span>解除</span></button><button id="teleport" class="key-action" aria-label="穿门 F"><kbd>F</kbd><span>穿门</span></button><button id="undo" class="key-action" aria-label="撤销 Z"><kbd>Z</kbd><span>撤销</span></button></div>
+        <div class="key-group push-group"><span class="key-label">推箱</span><div class="keys"><button data-push="left" class="keycap" aria-label="向左推箱"></button><button data-push="right" class="keycap" aria-label="向右推箱"></button></div></div>
+      </nav>
+    </section>
+    <dialog id="objects-dialog" class="small-dialog"><form method="dialog"><button class="dialog-close">返回</button></form><p class="eyebrow">唯一的映射</p><h2>选择真实物件</h2><div id="objects" class="object-options"></div></dialog>
+    <dialog id="levels-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">午夜学院</p><h2>继续你的夜间漫游</h2><nav id="levels" class="level-list" aria-label="学馆选择"></nav><div class="dialog-tools"><button id="reset">本关重来</button><button id="recover">恢复安全点</button><button id="clear-progress">清除通关记录</button></div></dialog>
+    <dialog id="help-dialog"><form method="dialog"><button class="dialog-close">返回游戏</button></form><p class="eyebrow">夜白映射</p><h2>看见、联系、穿行。</h2><ol><li><b>点箱子或真实桥</b>查看预览，再用 E 激活。</li><li><b>方向键推动</b>，两端各自判断阻挡；每次一格。</li><li><b>WASD 或点地面走路</b>。站到门座后，用 F 穿门。</li><li><b>V 切换观察焦点</b>，身体只通过传送门改变世界。</li><li><b>Q 解除，Z 撤销</b>。虚影桥消失时，脚下会失去支撑。</li></ol><div class="help-actions"><button id="hint">给我一点提示</button><label><input type="checkbox" id="reduced-motion"> 减少动态</label></div><p id="hint-text" class="hint-text" hidden></p><details id="debug"><summary>调试状态</summary><pre id="debug-state"></pre></details></dialog>
+  </main>
+  <script src="./generated/app.js" defer></script>
+</body>
+</html>

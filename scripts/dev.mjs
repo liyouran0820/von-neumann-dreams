@@ -2,12 +2,18 @@ import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { bundleGame } from './bundle.mjs';
 
 const root = path.resolve(fileURLToPath(new URL('../web/', import.meta.url)));
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml' };
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://localhost');
+    if (url.pathname === '/generated/app.js') {
+      const bundle = await bundleGame();
+      res.writeHead(200, { 'Content-Type': types['.js'], 'Cache-Control': 'no-store' });
+      res.end(bundle.outputFiles[0].text); return;
+    }
     const relative = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
     const file = path.resolve(root, '.' + relative);
     if (!file.startsWith(root + path.sep) && file !== root) throw new Error('invalid path');

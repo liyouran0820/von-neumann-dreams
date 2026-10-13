@@ -14,6 +14,7 @@ build/
 out/
 coverage/
 .vite/
+web/generated/
 playwright-report/
 test-results/
 tmp/
@@ -29,3 +30,10 @@ tmp/
 .env
 .env.*
 !.env.example
+
+# Native engine imports, SDKs and verification artifacts
+.godot/
+artifacts/
+.native-tools/
+*.mp4
+*.mov
