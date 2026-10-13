@@ -8,7 +8,7 @@
 
 当前按用户的开发计划 v1.2 迁移到 **Godot 4.7.2 / Forward+ / Metal / macOS arm64**。P00 原生启动、测试运行器与干净导出已通过；P01状态与几何模块已保存，81项模块检查通过。原生五关玩法、完整视觉和真人验收尚未完成。
 
-当前成果已合并到 `main`。进度以 [原生状态](docs/NATIVE_DEMO_STATUS.md)、[差距审查](docs/requirements_gap_analysis.md) 和 [验收登记](docs/acceptance/registry.json) 为准，旧网页结果不转标原生通过。
+本轮在 `codex/logic-optics-labs` 将逻辑与光学融入五关入学试炼：回廊学习AND/NOT，断桥馆操作镜面和感应器，天文台组合光路与电路。具体范围、验证和回溯方法见 [逻辑与光学版](docs/ACADEMY_LOGIC_OPTICS.md)。原生进度仍以 [原生状态](docs/NATIVE_DEMO_STATUS.md) 为准，网页结果不转标原生通过。
 
 ## 原生运行与验证
 
@@ -22,9 +22,11 @@ python3 tools/verify.py --stage P00 --engine "$DEMO_GODOT_BIN" --window-probe --
 
 没有独立导出证据时，以上阶段报告会保留未执行项。只有全部必需检查通过才能记 PASS；空套件和未来能力不伪装通过。构建从已提交的干净源码归档产生，详情见原生状态文档。
 
-## 历史网页试验
+## 网页试玩与版本对照
 
-网页五关保存在 `66fb648`，Three.js 双世界立体呈现试验保存在 `74ab81d`。现有 [本地网页预览](http://127.0.0.1:5173/) 已按最新要求改为单世界显示、点按 Space 往返切换和柔白配色，保留旧离散规则。详见 [交互修订](docs/UI_INTERACTION_AMENDMENT.md)；原生实现和验收另行推进。
+打开 [本地网页预览](http://127.0.0.1:5173/) 进入新版五项入学试炼。点按Space切换世界，点击B开关改变逻辑输入，点击镜面或按R转向；札记记录已观察到的结果。选馆菜单提供[原版五关对照](http://127.0.0.1:5173/?version=original)，两版进度独立。
+
+完整旧版已打标签 `codex/pre-logic-optics-20261013`，指向 `560ed6f`。原网页五关 `66fb648`、双视图试验 `74ab81d` 也继续保留。新版遵守已批准的[单世界交互](docs/UI_INTERACTION_AMENDMENT.md)，源码与旧版对照规则同时留存。
 
 ```bash
 npm ci
@@ -50,7 +52,7 @@ Node.js 20+；Three.js 与 esbuild 版本锁定，无运行时 CDN。构建输�
 
 ## Git
 
-远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。当前成果入口为 [`main`](https://github.com/liyouran0820/von-neumann-dreams/tree/main)。2026-10-13按用户要求将开发分支 `codex/godot-plan-v1-2` 的 `7915359` 快进合并到主分支，保留完整开发历史。此前远程 `7e0581e` 新增的三份设计原文与 `docs/sources/native_v1.2/` 归档逐字节一致。
+远程：[liyouran0820/von-neumann-dreams](https://github.com/liyouran0820/von-neumann-dreams)。`main` 保留改造前的 `560ed6f`；逻辑与光学版在独立分支 `codex/logic-optics-labs` 分阶段提交。此前已按用户要求将原生开发分支的 `7915359` 整合进main，完整历史和三份设计原文保留。
 
 旧刻轨版本 `f4705f7`、指令交换 `480d261`、首版 `eb63a22` 和设计历史均保留。缓存、SDK、导出包和完整录像 / 日志进入 Git 忽略目录。
 
