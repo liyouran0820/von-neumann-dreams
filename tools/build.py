@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+from prepare_arm64_template import prepare
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -39,6 +40,10 @@ def main():
             with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
                 tar.extractall(checkout, filter="data")
             stamp = {"tested_source_commit": commit, "engine_version": "4.7.2.stable.official.ed1daf0bf", "baseline_hash": hashlib.sha256((checkout / 'docs/acceptance_baseline.json').read_bytes()).hexdigest(), "reference_hash": json.loads((checkout / 'docs/acceptance_baseline.json').read_text())['reference_sha256'], "package_stage": "P00 bootstrap only"}
+            template_source = Path.home() / 'Library/Application Support/Godot/export_templates/4.7.2.stable/macos.zip'
+            template_target = checkout / '.native-tools/macos-arm64.zip'
+            report['template_provenance'] = prepare(template_source, template_target)
+            (template_target.parent / '.gdignore').touch()
             (checkout / "build_info.json").write_text(json.dumps(stamp, ensure_ascii=False, indent=2) + '\n')
             for args_list in [[engine, "--headless", "--editor", "--path", checkout, "--import", "--quit"], [engine, "--headless", "--path", checkout, "--export-debug", args.preset, output]]:
                 result = command(args_list, checkout); report['commands'].append(result)
