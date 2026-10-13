@@ -58,6 +58,20 @@
         "Tab观察焦点",
         "按住空格临时观察"
       ]
+    },
+    {
+      "id": "level-design-v2.0",
+      "date": "2026-10-14",
+      "document": "关卡设计v2.0.md",
+      "requirements": [
+        "仅删除原第六关，保留其余十三关并顺延编号",
+        "第四关融入第二关错位校准，双门采用XOR与AND",
+        "移除不必要建筑和独立平台，扩大齐平活动区域",
+        "第五关只有一对真实物体，两个世界各一个压板，用推力传递与独立阻挡同时接通AND，再激活白桥并映到夜侧",
+        "已学特性后续解谜不能过于简单"
+      ],
+      "fifth_level_cross_world_and": "本关专用的明确修订；其余物理电路仍采用本世界输入",
+      "implemented_in_game": false
     }
   ],
   "supplemental_documents": [
@@ -67,7 +81,18 @@
       "repository_path": "docs/sources/academy_v1.1/夜白映射_五关关卡设计.md",
       "sha256": "d64174917053cbb81d69dd39e7d4804fc374b22c0f8bfc2ceb2effd335613188",
       "lines": 745
+    },
+    {
+      "id": "mapping-level-set-v1.1",
+      "actual_name": "MAPPING_LEVEL_SET_V1.md",
+      "repository_path": "docs/sources/mapping_v1/MAPPING_LEVEL_SET_V1.md",
+      "source_path": "/Users/hej18/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files/wxid_vjyy7b839rl222_6934/temp/drag/MAPPING_LEVEL_SET_V1.md",
+      "sha256": "702abf5ba4793793d18d43ee80a8fd576de2cc8d926e16a479b37708f0a97836",
+      "lines": 691,
+      "source_record": "docs/sources/mapping_v1/SOURCES.md",
+      "source_claims_reproduced": false
     }
   ],
-  "current_web_spec": "docs/LOGIC_GATES_CURRICULUM.md"
+  "current_web_spec": "docs/LOGIC_GATES_CURRICULUM.md",
+  "current_level_design": "关卡设计v2.0.md"
 }

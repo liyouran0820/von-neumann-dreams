@@ -1,0 +1,349 @@
+{
+  "scope": "临时独立格点设计模型；不驱动游戏；不宣称十三关全量或连续物理通过",
+  "document_sha256": "90f32f7781b973ce72a40896d826b313ec1dd7367a35eadac4731a6bdffe1beb",
+  "model_sha256": "33a28b75b1d59288b27317d97ee1bb39b96ae9655e9ba419a446bc4b98a44f79",
+  "checks": [
+    {
+      "name": "02 轨道有限搜索及两个反事实",
+      "status": "PASS",
+      "details": {
+        "start": [
+          4,
+          4
+        ],
+        "goal": [
+          3,
+          1
+        ],
+        "shortest_directions": [
+          -1,
+          -1,
+          -1,
+          -1,
+          1
+        ],
+        "visited_before_goal": 10,
+        "equal_displacement": "NO_SOLUTION",
+        "ban_state": [
+          2,
+          0
+        ],
+        "ban_state_result": "NO_SOLUTION"
+      }
+    },
+    {
+      "name": "04 轨道有限搜索及两个反事实",
+      "status": "PASS",
+      "details": {
+        "start": [
+          4,
+          4
+        ],
+        "goal": [
+          3,
+          1
+        ],
+        "shortest_directions": [
+          -1,
+          -1,
+          -1,
+          -1,
+          1
+        ],
+        "visited_before_goal": 10,
+        "equal_displacement": "NO_SOLUTION",
+        "ban_state": [
+          2,
+          0
+        ],
+        "ban_state_result": "NO_SOLUTION"
+      }
+    },
+    {
+      "name": "05 轨道有限搜索及两个反事实",
+      "status": "PASS",
+      "details": {
+        "start": [
+          4,
+          4
+        ],
+        "goal": [
+          5,
+          2
+        ],
+        "shortest_directions": [
+          -1,
+          -1,
+          -1,
+          -1,
+          1,
+          1
+        ],
+        "visited_before_goal": 15,
+        "equal_displacement": "NO_SOLUTION",
+        "ban_state": [
+          3,
+          0
+        ],
+        "ban_state_result": "NO_SOLUTION"
+      }
+    },
+    {
+      "name": "AND OR XOR NAND 四组真值",
+      "status": "PASS",
+      "details": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          0,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "NOT 真值",
+      "status": "PASS",
+      "details": [
+        1,
+        0
+      ]
+    },
+    {
+      "name": "04 双门、白配重搬运和两次穿行参考回放",
+      "status": "PASS",
+      "details": {
+        "body": [
+          "N",
+          11,
+          3
+        ],
+        "real_boxes": {
+          "KN": [
+            "N",
+            2,
+            3
+          ],
+          "KW": [
+            "W",
+            6,
+            4
+          ]
+        },
+        "A": [
+          3,
+          1
+        ],
+        "active": "A",
+        "signals": {
+          "a": 1,
+          "b": 1,
+          "c": 1,
+          "d": 1,
+          "YN": 0,
+          "YW": 1
+        },
+        "actions_including_walk": 25
+      }
+    },
+    {
+      "name": "05 一对真实物体、持续AND与条件桥参考回放",
+      "status": "PASS",
+      "details": {
+        "body": [
+          "N",
+          11,
+          3
+        ],
+        "real_boxes": {},
+        "A": [
+          5,
+          2
+        ],
+        "active": "B",
+        "signals": {
+          "a": 1,
+          "b": 1,
+          "Y": 1
+        },
+        "actions_including_walk": 19
+      }
+    },
+    {
+      "name": "05 桥上解除立即失去支撑",
+      "status": "PASS",
+      "details": {
+        "body": [
+          "N",
+          8,
+          3
+        ],
+        "active": null
+      }
+    },
+    {
+      "name": "10 XOR与后AND的配重搬运参考回放",
+      "status": "PASS",
+      "details": {
+        "body": [
+          "N",
+          11,
+          3
+        ],
+        "real_boxes": {
+          "K1": [
+            "N",
+            8,
+            2
+          ],
+          "K2": [
+            "N",
+            4,
+            2
+          ]
+        },
+        "A": [
+          4,
+          4
+        ],
+        "active": null,
+        "signals": {
+          "a": 0,
+          "b": 1,
+          "c": 1,
+          "Y": 1,
+          "Z": 1
+        },
+        "actions_including_walk": 19
+      }
+    },
+    {
+      "name": "11 安全上岸、换B与b供电参考回放",
+      "status": "PASS",
+      "details": {
+        "body": [
+          "N",
+          10,
+          3
+        ],
+        "real_boxes": {
+          "K": [
+            "N",
+            4,
+            3
+          ]
+        },
+        "A": [
+          4,
+          4
+        ],
+        "active": "B",
+        "signals": {
+          "a": 0,
+          "b": 1,
+          "Y": 1
+        },
+        "actions_including_walk": 17
+      }
+    },
+    {
+      "name": "11 始终留在宽板输入a的替代回放",
+      "status": "PASS",
+      "details": {
+        "body": [
+          "N",
+          10,
+          3
+        ],
+        "real_boxes": {
+          "K": [
+            "N",
+            3,
+            3
+          ]
+        },
+        "A": [
+          4,
+          4
+        ],
+        "active": "B",
+        "signals": {
+          "a": 1,
+          "b": 0,
+          "Y": 1
+        },
+        "actions_including_walk": 19
+      }
+    },
+    {
+      "name": "11 合并下岸后的向下搬运新路线回放",
+      "status": "PASS",
+      "details": {
+        "body": [
+          "N",
+          10,
+          3
+        ],
+        "real_boxes": {
+          "K": [
+            "N",
+            4,
+            3
+          ]
+        },
+        "A": [
+          4,
+          4
+        ],
+        "active": "B",
+        "signals": {
+          "a": 0,
+          "b": 1,
+          "Y": 1
+        },
+        "actions_including_walk": 17
+      }
+    },
+    {
+      "name": "11 直接左推得到11，身体失去H支撑",
+      "status": "PASS",
+      "details": {
+        "failure": "EXPECTED_SUPPORT_LOSS",
+        "snapshot_restore": "PASS"
+      }
+    },
+    {
+      "name": "11 初态直接换B，身体和K仍依赖H",
+      "status": "PASS",
+      "details": {
+        "failure": "EXPECTED_SUPPORT_LOSS",
+        "snapshot_restore": "PASS"
+      }
+    }
+  ]
+}
