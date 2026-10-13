@@ -605,8 +605,10 @@
       "id": "P00-1",
       "title": "scaffold/export",
       "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
-      "status": "NOT_RUN",
-      "evidence": []
+      "status": "FAIL",
+      "evidence": [
+        "docs/defects/P00-EXPORT-001.md"
+      ]
     },
     {
       "id": "P00-2",
@@ -1090,8 +1092,10 @@
       "id": "P00",
       "title": "P00",
       "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
-      "status": "NOT_RUN",
-      "evidence": []
+      "status": "FAIL",
+      "evidence": [
+        "docs/defects/P00-EXPORT-001.md"
+      ]
     },
     {
       "id": "P01",
@@ -1230,8 +1234,10 @@
       "id": "A00",
       "title": "A00",
       "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
-      "status": "NOT_IMPLEMENTED",
-      "evidence": [],
+      "status": "FAIL",
+      "evidence": [
+        "docs/defects/P00-EXPORT-001.md"
+      ],
       "expected_items": [
         "从干净检出可导入并启动空工程；可导出并打开最小 macOS 包。",
         "运行器分别执行一个已知成功断言和一个故意失败断言；成功返回 0，失败返回非零且报告明确。",

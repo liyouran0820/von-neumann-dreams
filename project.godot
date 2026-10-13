@@ -26,6 +26,7 @@ rendering_device/fallback_to_opengl3=false
 rendering_device/fallback_to_d3d12=false
 anti_aliasing/quality/msaa_3d=2
 scaling_3d/scale=1.0
+textures/vram_compression/import_etc2_astc=true
 
 [input]
 
