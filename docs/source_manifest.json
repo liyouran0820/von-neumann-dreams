@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "夜白映射_PRD.md",
+      "actual_name": "夜白映射_PRD(1).md",
+      "repository_path": "docs/sources/native_v1.2/夜白映射_PRD.md",
+      "sha256": "954301c43117595598d8e345a671244324892a42a421d5b6674d5389df69eff9",
+      "lines": 492
+    },
+    {
+      "id": "夜白映射_五关关卡设计.md",
+      "actual_name": "夜白映射_五关关卡设计(2).md",
+      "repository_path": "docs/sources/native_v1.2/夜白映射_五关关卡设计.md",
+      "sha256": "fcd70bf5577d83481d86044145a4fe36311e02c50d569c302ca5a8181ae209d2",
+      "lines": 651
+    },
+    {
+      "id": "夜白映射_Demo开发计划.md",
+      "actual_name": "夜白映射_Demo开发计划.md",
+      "repository_path": "docs/sources/native_v1.2/夜白映射_Demo开发计划.md",
+      "sha256": "5fb57007eec5eec75168463a23c17edf507ebb47fcf5b442d4b5801fc31519f7",
+      "lines": 1008
+    }
+  ],
+  "reference": {
+    "expected_sha256": "6550d6df4f229096265943e20abbd2121ede0fd217257d9ac1cafb6a2d7a82b7",
+    "expected_size": [
+      1672,
+      941
+    ],
+    "supplied_sha256": "84949b06d212237b82fbc386d83a377ab6633302384e7cf7a2ce7a605246716b",
+    "supplied_path": "参考资料/用户上传_1000x572_84949b06.png",
+    "baseline_status": "PASS",
+    "reason": "用户于2026-10-13明确确认已上传1000x572图片作为新的正式视觉基线；原计划身份保留为历史。",
+    "baseline_id": "visual-reference-v1.1",
+    "approval": "将已上传图片确认为新的视觉基线；可以，这个就好",
+    "accepted_sha256": "84949b06d212237b82fbc386d83a377ab6633302384e7cf7a2ce7a605246716b",
+    "accepted_size": [
+      1000,
+      572
+    ]
+  },
+  "historical_web_commit": "66fb648",
+  "web_diorama_wip_commit": "74ab81d"
+}

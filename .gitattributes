@@ -1,2 +1,3 @@
 # Preserve exact Markdown source snapshots, including intentional hard line breaks.
 docs/sources/*.md whitespace=-blank-at-eol
+docs/sources/native_v1.2/*.md whitespace=-blank-at-eol

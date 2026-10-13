@@ -1,0 +1,36 @@
+{
+  "id": "macbook-air-m4-16gb-20261013",
+  "model": "MacBook Air",
+  "model_identifier": "Mac16,12",
+  "soc": "Apple M4",
+  "cpu_cores": 10,
+  "ram_gb": 16,
+  "architecture": "arm64",
+  "os": "macOS 27.0",
+  "os_build": "26A5416b",
+  "power": "AC Power",
+  "battery": "100%, charged",
+  "display_logical_mode": "1470 x 956 @ 60Hz",
+  "display_native_report": "2560 x 1664 Retina",
+  "display_backing_pixels_report": "2940 x 1912",
+  "performance_resolution": [
+    1920,
+    1080
+  ],
+  "layout_resolutions": [
+    [
+      1280,
+      720
+    ],
+    [
+      1920,
+      1080
+    ],
+    [
+      2560,
+      1440
+    ]
+  ],
+  "metal_actual_run": "NOT_RUN",
+  "serials_recorded": false
+}

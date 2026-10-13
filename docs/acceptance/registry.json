@@ -1,0 +1,1300 @@
+{
+  "schema_version": 1,
+  "baseline_id": "native-demo-1.2-reference-amendment-1",
+  "allowed_statuses": [
+    "PASS",
+    "FAIL",
+    "NOT_RUN",
+    "BLOCKED",
+    "NOT_IMPLEMENTED"
+  ],
+  "source_plan_sha256": "5fb57007eec5eec75168463a23c17edf507ebb47fcf5b442d4b5801fc31519f7",
+  "entries": [
+    {
+      "id": "H01",
+      "title": "H01",
+      "expected": "玩家能够区分观察切换、物体映射和身体穿行",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "可执行交互测试，以及未参与开发的玩家对三种动作的解释"
+    },
+    {
+      "id": "H02",
+      "title": "H02",
+      "expected": "同向推动、两端独立阻挡和位置偏差具有可预测性",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "PRD T01—T08、T16 全部通过；至少 4/5 名试玩者能解释一端受阻时另一端继续移动"
+    },
+    {
+      "id": "H03",
+      "title": "H03",
+      "expected": "实体虚影、单组替换和真实状态保留能够形成稳定规则",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "PRD T09—T14、T17—T19 全部通过；至少 4/5 名试玩者能区分预览与实体虚影，并预测解除后的结果"
+    },
+    {
+      "id": "H04",
+      "title": "H04",
+      "expected": "上述规则可以支持需要推理的组合玩法",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "G1—G5 接入后，至少 3/5 名试玩者不使用第三层具体操作提示完成 G5，并能说明位差、真实状态留存、临时支撑与身体路线的因果关系"
+    },
+    {
+      "id": "H05",
+      "title": "H05",
+      "expected": "玩家能低成本尝试并恢复，系统能够继续扩展",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "完整撤销、检查点、重置、外部内容加载、存档和构建验收全部通过"
+    },
+    {
+      "id": "H06",
+      "title": "H06",
+      "expected": "前端能达到示例图的空间、材质、光照和操作界面标准",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "U01—U05 及 V01—V12 全部通过；五关实际运行截图、动态录像与性能报告来自同一构建"
+    },
+    {
+      "id": "I01",
+      "title": "I01",
+      "expected": "两世界引用同一份基础地形定义；建筑差异不能偷偷修改基础地形",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I02",
+      "title": "I02",
+      "expected": "`body_world` 与 `view_world` 是两个独立字段；观察切换不移动身体",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I03",
+      "title": "I03",
+      "expected": "每件真实物体有稳定 ID；真实配对必须互指、跨世界且一对一；损坏配置报错",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I04",
+      "title": "I04",
+      "expected": "稳定状态和每次事务提交时，激活映射组数为 0 或 1；实体虚影数为 0 或 1",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I05",
+      "title": "I05",
+      "expected": "推动是一条玩家主动命令；关联两端各接收一次；受阻结果互不否决",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I06",
+      "title": "I06",
+      "expected": "重力、局部碰撞响应、机关事件不产生跨世界推动命令",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I07",
+      "title": "I07",
+      "expected": "预览不占名额、不移动物体、不生成实体；失败激活不改变玩法状态",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I08",
+      "title": "I08",
+      "expected": "真实物体解除后保留；虚影解除后其碰撞、支撑与机关接触同时消失",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I09",
+      "title": "I09",
+      "expected": "传送只改变玩家身体与观察位置；物体和映射保持；出口受阻不传送",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I10",
+      "title": "I10",
+      "expected": "所有机关连接仅引用所属世界；整体目标查询两世界不能充当跨世界电路",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I11",
+      "title": "I11",
+      "expected": "撤销、重置和检查点恢复均恢复完整状态，并使碰撞与显示同步",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "I12",
+      "title": "I12",
+      "expected": "解法与结果不依赖渲染帧率、显示哪一世界或对象创建顺序",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "T01",
+      "title": "T01",
+      "expected": "观察切换不改身体世界/位置/机关",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "状态差分 + 键鼠录像"
+    },
+    {
+      "id": "T02",
+      "title": "T02",
+      "expected": "未映射近身推动仅影响本地；未映射远程推动被拒绝",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "前后哈希/位置"
+    },
+    {
+      "id": "T03",
+      "title": "T03",
+      "expected": "绑定原真实身份、不新增虚影、不改坐标",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "ID/数量/姿态断言"
+    },
+    {
+      "id": "T04",
+      "title": "T04",
+      "expected": "夜端受阻，白端仍正常推进",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "两端路径、结果与分发次数"
+    },
+    {
+      "id": "T05",
+      "title": "T05",
+      "expected": "白端受阻，夜端仍正常推进",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "两端路径、结果与分发次数"
+    },
+    {
+      "id": "T06",
+      "title": "T06",
+      "expected": "双端受阻，无穿墙或累积异常，有反馈",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "重复输入后位置 + 录像"
+    },
+    {
+      "id": "T07",
+      "title": "T07",
+      "expected": "位差解除后保留，再绑定原对象",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "连续状态快照"
+    },
+    {
+      "id": "T08",
+      "title": "T08",
+      "expected": "任一视角可查询/操作远端，无遮挡限制",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "远端/视觉遮挡负向夹具 + 真实输入"
+    },
+    {
+      "id": "T09",
+      "title": "T09",
+      "expected": "只生成一个实体虚影，形状/移动/支撑/接触一致",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "复制属性与支撑/机关断言"
+    },
+    {
+      "id": "T10",
+      "title": "T10",
+      "expected": "非法生成拒绝，旧映射完整保留",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "冲突矩阵 + 失败玩法哈希"
+    },
+    {
+      "id": "T11",
+      "title": "T11",
+      "expected": "预览不占位，替换原子化，始终至多一组",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "每次提交不变量记录"
+    },
+    {
+      "id": "T12",
+      "title": "T12",
+      "expected": "真物体保留，真实接触机关持续有效",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "位置/存在性/门状态"
+    },
+    {
+      "id": "T13",
+      "title": "T13",
+      "expected": "虚影实体/碰撞/支撑/接触删除，真实源保留",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "多索引清理与机关重算"
+    },
+    {
+      "id": "T14",
+      "title": "T14",
+      "expected": "站在虚影上解除可见掉落，并撤销或完整恢复",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "有窗口录像 + 快照哈希"
+    },
+    {
+      "id": "T15",
+      "title": "T15",
+      "expected": "成功穿行保留映射/箱位，出口受阻保持旧状态",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "成功/失败两分支"
+    },
+    {
+      "id": "T16",
+      "title": "T16",
+      "expected": "重力与局部碰撞不成为跨世界主动推动",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "命令计数 + 本地运动日志"
+    },
+    {
+      "id": "T17",
+      "title": "T17",
+      "expected": "跨替换/传送撤销完整恢复",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "每步哈希 + 派生状态一致性"
+    },
+    {
+      "id": "T18",
+      "title": "T18",
+      "expected": "重置、切关与重玩无对象/碰撞/映射残留",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "100 次循环与计数/内存"
+    },
+    {
+      "id": "T19",
+      "title": "T19",
+      "expected": "本地踏板只作用本地设施，跨世界配置拒绝",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "合法运行 + 非法内容校验"
+    },
+    {
+      "id": "T20",
+      "title": "T20",
+      "expected": "整体条件、身体出口和配置的实际支撑要求均满足才完成",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "正/负目标组合 + HUD + 支撑提供者"
+    },
+    {
+      "id": "X01",
+      "title": "X01",
+      "expected": "损坏/非互指/同世界/多重配对",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "加载拒绝，不能生成虚影替代"
+    },
+    {
+      "id": "X02",
+      "title": "X02",
+      "expected": "预览后状态改变",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "确认重新校验，不沿用过期预览"
+    },
+    {
+      "id": "X03",
+      "title": "X03",
+      "expected": "四种映射类型替换",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "旧虚影排除规则、真实保留与唯一组数均正确"
+    },
+    {
+      "id": "X04",
+      "title": "X04",
+      "expected": "按键重复、按钮与键盘同一时刻触发",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "去重/输入策略明确，不能一次输入产生双倍推动"
+    },
+    {
+      "id": "X05",
+      "title": "X05",
+      "expected": "推动路径中有薄墙/物体/玩家",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "扫掠截停，不能因终点空闲而穿越"
+    },
+    {
+      "id": "X06",
+      "title": "X06",
+      "expected": "固定结构/实体虚影近身操作",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "固定物拒绝推动，合法移动虚影使用相同规则"
+    },
+    {
+      "id": "X07",
+      "title": "X07",
+      "expected": "快照可变引用与运动中撤销",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "无引用污染，恢复完整操作前状态"
+    },
+    {
+      "id": "X08",
+      "title": "X08",
+      "expected": "门关闭时实体占用",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "不夹穿、不产生隐形锁存；占用清除后关闭"
+    },
+    {
+      "id": "X09",
+      "title": "X09",
+      "expected": "存档损坏/版本未知/写入中断",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "原文件保留，可解释恢复，上一份有效文件未丢失"
+    },
+    {
+      "id": "X10",
+      "title": "X10",
+      "expected": "日志失败与卸载",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "不改玩法，停止会话后无挂起输入或日志回调"
+    },
+    {
+      "id": "X11",
+      "title": "X11",
+      "expected": "30/60/120 FPS 和人为帧抖动",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "同规则步输入最终哈希一致，无漏判/重复输入"
+    },
+    {
+      "id": "X12",
+      "title": "X12",
+      "expected": "新内容与未知形状/谓词",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "合法扩展只改数据；不支持的数据明确拒绝"
+    },
+    {
+      "id": "X13",
+      "title": "X13",
+      "expected": "五关坐标与图层转换",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "格中心→X/Z、两世界共同沟壑、箱轨范围、整件桥身份和 E 非地板全部与设计相符"
+    },
+    {
+      "id": "X14",
+      "title": "X14",
+      "expected": "指定虚影支撑的目标谓词",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "夜 C 当前虚影为正例；白真实 C、其他源虚影、永久地面、失效支撑为负例，无关卡 ID 特判"
+    },
+    {
+      "id": "X15",
+      "title": "X15",
+      "expected": "G5 验收环边缘和掉落时序",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "两侧正常走过全宽均可完成；脚底未进入、岸边擦碰、观察世界到达、解除后坠落均不误完成"
+    },
+    {
+      "id": "X16",
+      "title": "X16",
+      "expected": "完成状态与会话交接",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "成功后保留支撑/映射，结算不坠落、不接受破坏支撑的输入；五关连续切换无残留"
+    },
+    {
+      "id": "X17",
+      "title": "X17",
+      "expected": "五关独立逻辑复验与机制删除",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "五关可解；十项关键机制删除/改动后按设计不可解；G5 先 B 后 A 的合法顺序仍可解"
+    },
+    {
+      "id": "V01",
+      "title": "双视图与语义",
+      "expected": "默认左白右夜、宽度各 50%（分隔线外最多 2 px 舍入差），双世界一直可见；身体、焦点、映射身份分别显示。Tab/点击只改焦点，身体不复制、不传送",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "各关双视图截图、连续切焦点录像、状态差分；点击/长按/失焦负向测试"
+    },
+    {
+      "id": "V02",
+      "title": "等距镜头与取景",
+      "expected": "两侧正交、相机旋转/尺度/取景中心相同；朝向符合第 3.6 节。地图外轮廓完整、有效操作区域在安全区内；1080p 角色轮廓至少 18 px 高，关键身份标记至少 14 px",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "相机参数报告、G1—G5 两侧对应地标投影对照、像素测量；不能靠挪动物体满足"
+    },
+    {
+      "id": "V03",
+      "title": "模块模型完成度",
+      "expected": "每类必需模型有统一倒角、完整顶面/侧面和尺寸比例；地板有细分/厚度、沟壑有深度；角色为可辨人形。最终不存在默认占位方块、缺失模型或未统一材质",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "资源清单、实际运行近景/整景；源资源或生成参数与权威形状尺寸核对"
+    },
+    {
+      "id": "V04",
+      "title": "冷暖配色与表面",
+      "expected": "白侧米白暖灰、夜侧深蓝灰；均保留地面/墙层次，石质哑光、细格线、低视觉噪声。两世界身份不用纯颜色判断",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "五关原图并排对照、各世界标题/纹样/身份符号、颜色 profile；不得用全白/全黑省略层次"
+    },
+    {
+      "id": "V05",
+      "title": "光照与阴影",
+      "expected": "两侧主光方向一致、软投影存在，墙角/箱底/脚底有接触层次；夜侧路径可读，发光不吞掉边缘。4× MSAA、100% 渲染比例与固定曝光在采集和性能测试均启用",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "光照/质量配置、同构建截图与运动录像；锯齿闪烁、阴影痤疮、漏光或无阴影直接失败"
+    },
+    {
+      "id": "V06",
+      "title": "真实/预览/虚影",
+      "expected": "真实桥为实体材质；预览断续且明确未激活；虚影有连续青色边界、可站立顶面与支撑反馈；旧虚影消失预告清晰。五关两种生成方向均正确",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "G3/G4/G5 的预览→激活→解除/替换录像与支撑日志；淡成不可读线框、状态混淆或残留碰撞失败"
+    },
+    {
+      "id": "V07",
+      "title": "玻璃、机关与连线",
+      "expected": "玻璃可透视但边界/柱体足够清楚；箱槽、踏板、门状态与本地逻辑一致。任何灯线/符号不暗示未存在的跨世界电路；透明表面没有排序闪烁或接缝穿模",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "有效/受阻/解除状态截图与录像、机关状态差分；不能仅录静止玻璃"
+    },
+    {
+      "id": "V08",
+      "title": "玩家与空间可读性",
+      "expected": "白色简化角色与石箱不同，脚底对齐实际位置，只在身体世界出现；行走、站立、穿门、掉落均可读。模型/墙体/界面不遮掉重要支撑或把装饰变路线",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "各关身体路线录像、G5 桥末端全宽/岸边负向图、支撑与碰撞核对"
+    },
+    {
+      "id": "V09",
+      "title": "UI 主题与排版",
+      "expected": "底部深色半透明条、描边圆角键帽、统一中文字体和分组；状态、提示、暂停、设置、确认、札记、结算均同主题。1080p 正文≥16 px、键字≥20 px、命中区≥44×44 px、文字对比≥4.5:1",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "全部面板/控件样式清单、字号/命中区/对比报告与原图对照；默认控件混用或只展示键帽失败"
+    },
+    {
+      "id": "V10",
+      "title": "操作与动态反馈",
+      "expected": "默认/悬停/焦点/按下/禁用/错误状态齐全；键鼠及点击入口效果一致。选择、推动、双端受阻、非法生成、解除、换组、撤销、穿门均即时、具体反馈；仍满足 100 ms 反馈门槛",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "真实键鼠/按钮两条回放、逐事件时间与录像；UI 穿透、重复命令、长按卡住、无原因禁用失败"
+    },
+    {
+      "id": "V11",
+      "title": "分辨率与缩放",
+      "expected": "1920×1080、1280×720、2560×1440 均保持双视图、主题与安全区；字号/点击区域按可读 UI 尺寸布局。无拉伸、裁字、控件重叠、重要目标被盖、两侧不一致缩放；窗口缩放后命中仍正确",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "三种分辨率的五关截图、窗口缩放和边缘点击录像；720p/1440p 是布局测试，不替代 1080p 性能门槛"
+    },
+    {
+      "id": "V12",
+      "title": "五关一致性与真实性",
+      "expected": "五关和全部必需 UI/反馈达到同一标准；截图与录像来自可运行导出包，不是背景贴图、离线效果图或后期美化。每项与同一源码、内容、质量 profile 关联",
+      "source": "开发计划v1.2",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": [],
+      "evidence_requirement": "U05 完整证据目录、文件哈希、固定采集回放、原图并排检查表；漏关/漏状态不得结案"
+    },
+    {
+      "id": "P00-1",
+      "title": "scaffold/export",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "P00-2",
+      "title": "baseline/tests",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "P01-1",
+      "title": "state/codec",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P01-2",
+      "title": "geometry",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P01-3",
+      "title": "clock/transactions",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P02-1",
+      "title": "world presentation",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P02-2",
+      "title": "body/view control",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P02-3",
+      "title": "selection/basic controls",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P03-1",
+      "title": "real binding",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P03-2",
+      "title": "push resolver",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P03-3",
+      "title": "nearby input/unbind",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P04-1",
+      "title": "ghost entity",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P04-2",
+      "title": "legality/preview",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P04-3",
+      "title": "replacement/lifecycle",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P05-1",
+      "title": "local contacts/doors",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P05-2",
+      "title": "portal safety",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P06-1",
+      "title": "history",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P06-2",
+      "title": "checkpoints/failure",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P06-3",
+      "title": "reset/unload",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P07-1",
+      "title": "level schema/loader",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P07-2",
+      "title": "goals/lifecycle",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P07-3",
+      "title": "hints/progress/settings",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P08-1",
+      "title": "visual build/profile freeze",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P08-2",
+      "title": "recording/replay",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P08-3",
+      "title": "export/performance",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P09-1",
+      "title": "five-level candidate regression",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P09-2",
+      "title": "playtest evidence/report",
+      "expected": "本子项实现并通过对应阶段验收；保留被测提交与证据",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K01-A01",
+      "title": "G1必验项1",
+      "expected": "白箱可以在夜箱受阻时继续移动，且每次只移动一格。",
+      "source": "五关设计 3.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K01-A02",
+      "title": "G1必验项2",
+      "expected": "围栏阻止身体近身推箱，但不阻止任一视角远程绑定。",
+      "source": "五关设计 3.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K01-A03",
+      "title": "G1必验项3",
+      "expected": "仅夜槽亮或仅身体到E均不能通关。",
+      "source": "五关设计 3.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K01-A04",
+      "title": "G1必验项4",
+      "expected": "白箱推到6或7后，白目标灯灭；没有“曾经经过就算完成”。",
+      "source": "五关设计 3.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K01-A05",
+      "title": "G1必验项5",
+      "expected": "首次接触时，玩家能分清身体位置与观察世界。",
+      "source": "五关设计 3.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K02-A01",
+      "title": "G2必验项1",
+      "expected": "夜墙没有可绕过的顶部、底部或箱轨通道。",
+      "source": "五关设计 4.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K02-A02",
+      "title": "G2必验项2",
+      "expected": "白门只响应白踏板；夜墙不随白踏板发生变化。",
+      "source": "五关设计 4.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K02-A03",
+      "title": "G2必验项3",
+      "expected": "P1与P2是两组独立的跨世界配对，不能P1直接传到P2。",
+      "source": "五关设计 4.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K02-A04",
+      "title": "G2必验项4",
+      "expected": "切换观察两次不能移动身体；穿门后映射和箱位保留。",
+      "source": "五关设计 4.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K02-A05",
+      "title": "G2必验项5",
+      "expected": "解除A后箱子仍压板，门继续打开；撤销解除可完整恢复绑定。",
+      "source": "五关设计 4.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K03-A01",
+      "title": "G3必验项1",
+      "expected": "两世界沟壑位置完全一致；差异来自夜真实桥和夜墙。",
+      "source": "五关设计 5.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K03-A02",
+      "title": "G3必验项2",
+      "expected": "身体不使用虚影桥就不能完成路线；夜真实桥不能绕过夜墙。",
+      "source": "五关设计 5.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K03-A03",
+      "title": "G3必验项3",
+      "expected": "预览不可站立；激活后的桥全宽均可站立，桥岸连接无隐形缝隙。",
+      "source": "五关设计 5.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K03-A04",
+      "title": "G3必验项4",
+      "expected": "固定桥无法方向推动，虚影不能作为源再生一座桥。",
+      "source": "五关设计 5.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K03-A05",
+      "title": "G3必验项5",
+      "expected": "删除虚影不影响夜真实桥；传送门不会携带或复制桥。",
+      "source": "五关设计 5.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K04-A01",
+      "title": "G4必验项1",
+      "expected": "任何时刻至多一座夜虚影桥；预览不会提前删除当前桥。",
+      "source": "五关设计 6.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K04-A02",
+      "title": "G4必验项2",
+      "expected": "两组传送门都在中央岛，没有起点直达白世界或白终点返回夜终点的门。",
+      "source": "五关设计 6.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K04-A03",
+      "title": "G4必验项3",
+      "expected": "白真实桥可供探索，但不能把身体直接送到夜出口。",
+      "source": "五关设计 6.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K04-A04",
+      "title": "G4必验项4",
+      "expected": "夜中央墙接到上下边界；不能贴墙绕过。",
+      "source": "五关设计 6.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K04-A05",
+      "title": "G4必验项5",
+      "expected": "换组可以在多处永久地面安全执行，所有符合规则的顺序都接受。",
+      "source": "五关设计 6.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K04-A06",
+      "title": "G4必验项6",
+      "expected": "恢复岛上检查点时，桥、身体世界和当前位置一并恢复。",
+      "source": "五关设计 6.4",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K05-A01",
+      "title": "G5必验项1",
+      "expected": "校准序列准确为`(3,3)→(3,2)→(3,1)→(4,2)→(5,3)→(6,4)`。",
+      "source": "五关设计 7.8",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K05-A02",
+      "title": "G5必验项2",
+      "expected": "只向右推、只先后经过两目标，均不能通过最终验收。",
+      "source": "五关设计 7.8",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K05-A03",
+      "title": "G5必验项3",
+      "expected": "白门关闭时，x=11从上边界到玻璃隔断完全切断白岛左右通路；不能经白B/C或实验带绕行。",
+      "source": "五关设计 7.8",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K05-A04",
+      "title": "G5必验项4",
+      "expected": "白桥通往的白世界两端没有传送门，不能直接到夜验收区。",
+      "source": "五关设计 7.8",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K05-A05",
+      "title": "G5必验项5",
+      "expected": "目标检查包含身体世界、脚底中心和夜C虚影支撑；切观察、坠落延迟、白真实C、岸边碰撞体擦入都不能误通关。",
+      "source": "五关设计 7.8",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K05-A06",
+      "title": "G5必验项6",
+      "expected": "验收环覆盖C末端全宽；支架、图标、装饰不提供额外地板。",
+      "source": "五关设计 7.8",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K05-A07",
+      "title": "G5必验项7",
+      "expected": "A→B、B→C替换后，两箱位置、白板接触和白门状态保持正确。",
+      "source": "五关设计 7.8",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K05-A08",
+      "title": "G5必验项8",
+      "expected": "先B后A的合法路线正常通过；缺目标的玩家可以到对岸整理后返回。",
+      "source": "五关设计 7.8",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "KG-A01",
+      "title": "五关全局验收",
+      "expected": "正常规则下五关连贯通关，没有额外隐藏条件。",
+      "source": "五关设计11",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "KG-A02",
+      "title": "五关全局验收",
+      "expected": "所有身体路线均与本文地图一致；不会借镜头、箱轨、装饰支架或白世界边路跳过关键结构。",
+      "source": "五关设计11",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "KG-A03",
+      "title": "五关全局验收",
+      "expected": "三种动作——观察、映射、穿行——视觉与输入反馈清楚区分。",
+      "source": "五关设计11",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "KG-A04",
+      "title": "五关全局验收",
+      "expected": "任意真实绑定解除后保留位置；任意虚影解除后移除实际碰撞。",
+      "source": "五关设计11",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "KG-A05",
+      "title": "五关全局验收",
+      "expected": "新映射预览不破坏旧状态；非法生成保留旧映射。",
+      "source": "五关设计11",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "KG-A06",
+      "title": "五关全局验收",
+      "expected": "关键失败能撤销或恢复完整检查点，不用整关重来学习一个规则。",
+      "source": "五关设计11",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "KG-A07",
+      "title": "五关全局验收",
+      "expected": "G5验收在支撑更新后执行，覆盖桥末端全宽，接受合法换序。",
+      "source": "五关设计11",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "KG-A08",
+      "title": "五关全局验收",
+      "expected": "完成一次5人盲测，按具体卡点修订；未测试的手感与乐趣不写成已验证结论。",
+      "source": "五关设计11",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P00",
+      "title": "P00",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "P01",
+      "title": "P01",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P02",
+      "title": "P02",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P03",
+      "title": "P03",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P04",
+      "title": "P04",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P05",
+      "title": "P05",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P06",
+      "title": "P06",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P07",
+      "title": "P07",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P08",
+      "title": "P08",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "P09",
+      "title": "P09",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "U01",
+      "title": "U01",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "U02",
+      "title": "U02",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "U03",
+      "title": "U03",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "U04",
+      "title": "U04",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "U05",
+      "title": "U05",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K01",
+      "title": "K01",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K02",
+      "title": "K02",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K03",
+      "title": "K03",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K04",
+      "title": "K04",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "K05",
+      "title": "K05",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A00",
+      "title": "A00",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A01",
+      "title": "A01",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A02",
+      "title": "A02",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A03",
+      "title": "A03",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A04",
+      "title": "A04",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A05",
+      "title": "A05",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A06",
+      "title": "A06",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A07",
+      "title": "A07",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A08",
+      "title": "A08",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    },
+    {
+      "id": "A09",
+      "title": "A09",
+      "expected": "来源对应阶段全部出口满足，未覆盖子项不得算通过",
+      "status": "NOT_IMPLEMENTED",
+      "evidence": []
+    }
+  ]
+}
