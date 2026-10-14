@@ -10,7 +10,8 @@
     "dev": "node scripts/dev.mjs",
     "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.mjs",
-    "verify:puzzles": "node scripts/verify-puzzles.mjs"
+    "verify:puzzles": "node scripts/verify-puzzles.mjs",
+    "verify:v2": "node scripts/verify-v2-levels.mjs"
   },
   "dependencies": {
     "three": "0.186.1"
