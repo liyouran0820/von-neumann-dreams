@@ -232,3 +232,5 @@
 - 重新构建并更新同一dist/server-upload-v2/index.html，SHA-256为afb5aec279c91b5da04c551939f201483247b7e7cc7fc393dc03445ba5b8b0d3。直接打开文件或上传后的根地址即进入最新十三关，包含01 A/B双靶AND和02 C/Y双AND。
 - 98项自动检查通过；实际Chrome验证无参数静态入口和file入口均为1/13，最新01/02节点正确、外部资源依赖0、菜单切旧五关及刷新保持、切回2.0及刷新保持。开发5174无参数仍为1/5，显式version=v2仍为1/13，脚本错误0。验证脚本保存在tests/browser/verify-exported-index.mjs。
 - 用户5174试玩服务保留，临时静态验证服务与测试Chrome在测试后清理。本轮没有上传服务器或修改部署配置。
+
+- 为避免复用旧文件页，另交付同哈希的新路径dist/server-upload-v2-13/index.html；两份均默认直接进入2.0十三关。
