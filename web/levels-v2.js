@@ -42,12 +42,19 @@ export const V2_LEVELS=[];
 for(const n of [1,2]) {
  const l=base(n,n===1?'双生标本':'回声不返',[3,0],[7,1],union(rect(1,5,0,3),[[6,1],[7,1]]));
  pair(l,range(2,n===1?3:6),range(n===1?2:0,n===1?5:6),n===1?2:4);
- l.entities.push(weight('K','night',[3,1]));l.walls.night=col(6,0,3).filter(c=>c[1]!==1);
- l.science.circuits=[circuit('AND','night',[target('a','A_N',[3,7]),plate('b','night',[3,2])],[node('Y','and','a','b')],'Y')];
+ l.walls.night=col(6,0,3).filter(c=>c[1]!==1);
+ if(n===1){
+  const c=circuit('双靶AND','night',[target('A','A_N',[3,7]),target('B','A_W',[4,7])],[node('Y','and','A','B')],'Y');
+  c.crossWorld={inputs:['A','B'],output:'Y',door:'D'};l.science.circuits=[c];
+ }else{
+  l.entities.push(weight('K','night',[3,1]));
+  const c=circuit('双靶与压板','night',[target('a','A_N',[3,7]),target('w','A_W',[1,7]),plate('b','night',[3,2])],[node('C','and','a','w'),node('Y','and','C','b')],'Y');
+  c.crossWorld={inputs:['a','w'],output:'C',door:'D'};l.science.circuits=[c];
+ }
  l.doors=[door('D','night',[6,1],'Y','与门')];
- l.requirements=[position('A_N',[3,7],'夜侧轨靶'),position('A_W',[n===1?4:1,7],'白侧轨靶')];
- l.goal=n===1?'让两侧轨靶亮起，用配重保持与门。':'让夜箱到3、白箱到1，用配重保持与门。';
- l.hints=n===1?['门的两路输入都需要保持。','配重留在板上，夜止挡会改变位差。','向下推K；映A，向右两次，再穿与门。']:['白靶亮过，夜靶还缺什么？','越过已经点亮的目标，为回程准备位差。','K压板；映A左四次、右一次，再走出口。'];V2_LEVELS.push(l);
+ l.requirements=[position('A_N',[3,7],n===1?'夜靶 A':'夜侧轨靶'),position('A_W',[n===1?4:1,7],n===1?'白靶 B':'白侧轨靶')];
+ l.goal=n===1?'让夜靶A、白靶B同时亮起，打开AND门。':'夜靶a与白靶w先合成C，再由C与压板b打开AND门。';
+ l.hints=n===1?['A来自夜箱到3，B来自白箱到4。','夜箱被止挡挡住时，白箱仍能继续移动。','映A，向右两次至夜3／白4，再穿门。']:['第一道AND合并夜靶a与白靶w，第二道AND合并C与压板b。','K保持b；越过已亮目标，为回程准备位差。','向下推K压板；映A左四次、右一次至夜3／白1，再走出口。'];V2_LEVELS.push(l);
 }
 {
  const l=base(3,'借道',[1,3],[10,3],union(rect(1,3,1,5),rect(5,11,1,5)),rect(3,9,1,5));
@@ -127,7 +134,7 @@ for(const n of [8,9]) {
  l.goal='到中庭后补齐条件，利用两级与非门并换映白桥。';l.hints=['轨靶与受光先进入哪个节点？','过前桥前保留一个条件为0，到中庭再补齐。','K压板，A到2且镜面朝/；到中庭转镜，最后换B。'];V2_LEVELS.push(l);
 }
 // Grid is a presentation/legacy optics envelope; walk/pits remain authoritative.
-const lessonTitles=['AND 与独立阻挡','AND 与逆向校准','身体穿行','XOR / AND','双世界 AND','NOT 与光幕','双侧 NOT','AND 与重新显影','双AND与两端约束','XOR → AND','OR → XOR','NAND','AND → NAND'];
+const lessonTitles=['AND 与独立阻挡','双AND与逆向校准','身体穿行','XOR / AND','双世界 AND','NOT 与光幕','双侧 NOT','AND 与重新显影','双AND与两端约束','XOR → AND','OR → XOR','NAND','AND → NAND'];
 for(const l of V2_LEVELS) {
  l.academy.title=lessonTitles[l.number-1];
  l.grids={};l.bridges=[];

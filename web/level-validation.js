@@ -23,13 +23,22 @@ export function validateLevel(level) {
   for(const i of c.inputs){
    need(!inputIds.has(i.id)&&!outputs.has(i.id),'duplicate global input');inputIds.add(i.id);
    const world=i.world||entitySpec(level,i.entity)?.world||c.world;
-   if(world!==c.world)need(level.id==='V2-05'&&c.crossWorld?.inputs.includes(i.id),'illegal cross-world circuit');
+   if(world!==c.world)need(['V2-01','V2-02','V2-05'].includes(level.id)&&c.crossWorld?.inputs.includes(i.id),'illegal cross-world circuit');
    if(i.type==='target')need(entitySpec(level,i.entity)&&coord(i.cell),'unknown target');
    else if(i.type==='contact')need(i.cells.length&&i.cells.every(coord),'invalid plate');
    else need(i.type==='sensor'&&level.science.optics[world]?.sensors.some(s=>s.id===i.sensor),'unknown sensor');
   }
   for(const n of c.nodes){need(!outputs.has(n.id)&&!inputIds.has(n.id),'duplicate global output');outputs.add(n.id);}
-  if(c.crossWorld)need(level.id==='V2-05'&&c.world==='day'&&c.inputs.length===2&&c.inputs[0].entity==='A_N'&&c.inputs[1].entity==='A_W'&&c.nodes.length===1&&c.nodes[0].op==='and'&&c.output==='Y'&&c.crossWorld.bridge==='B'&&level.groups.B.condition==='Y','cross-world whitelist mismatch');
+  if(c.crossWorld){
+   const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+   const track=(i,id,entity,cell)=>i?.id===id&&i.type==='target'&&i.entity===entity&&eq(i.cell,cell)&&(!i.world||i.world===entitySpec(level,entity)?.world);
+   const and=(n,id,args)=>n?.id===id&&n.op==='and'&&eq(n.args.map(a=>a.signal),args);
+   const door=level.doors.find(d=>d.id==='D'),nightDoor=c.world==='night'&&c.output==='Y'&&door?.world==='night'&&door.signal==='Y'&&eq(door.cells,[[6,1]]);
+   const first=level.id==='V2-01'&&nightDoor&&c.inputs.length===2&&track(c.inputs[0],'A','A_N',[3,7])&&track(c.inputs[1],'B','A_W',[4,7])&&c.nodes.length===1&&and(c.nodes[0],'Y',['A','B'])&&eq(c.crossWorld.inputs,['A','B'])&&c.crossWorld.output==='Y'&&c.crossWorld.door==='D'&&!c.crossWorld.bridge;
+   const second=level.id==='V2-02'&&nightDoor&&c.inputs.length===3&&track(c.inputs[0],'a','A_N',[3,7])&&track(c.inputs[1],'w','A_W',[1,7])&&c.inputs[2].id==='b'&&c.inputs[2].type==='contact'&&c.inputs[2].world==='night'&&eq(c.inputs[2].cells,[[3,2]])&&c.nodes.length===2&&and(c.nodes[0],'C',['a','w'])&&and(c.nodes[1],'Y',['C','b'])&&eq(c.crossWorld.inputs,['a','w'])&&c.crossWorld.output==='C'&&c.crossWorld.door==='D'&&!c.crossWorld.bridge;
+   const fifth=level.id==='V2-05'&&c.world==='day'&&c.inputs.length===2&&track(c.inputs[0],'a','A_N',[5,2])&&track(c.inputs[1],'b','A_W',[2,2])&&c.nodes.length===1&&and(c.nodes[0],'Y',['a','b'])&&c.output==='Y'&&eq(c.crossWorld.inputs,['a','b'])&&c.crossWorld.output==='Y'&&c.crossWorld.bridge==='B'&&!c.crossWorld.door&&level.groups.B.condition==='Y';
+   need(first||second||fifth,'cross-world whitelist mismatch');
+  }
  }
  const all=new Set([...inputIds,...outputs]);
  for(const d of level.doors)need(all.has(d.signal)&&d.cells.every(p=>hasCell(level.walk[d.world],...p)),'invalid door');

@@ -18,7 +18,7 @@ export function executeRoute(level,route,state=Game.createState(level)) {
  return {state,actions};
 }
 export const REFERENCE_ROUTES=[
- [['move','D'],['bind','A','night'],['push','RR'],['walk',7,1]],
+ [['bind','A','night'],['push','RR'],['walk',7,1]],
  [['move','D'],['bind','A','night'],['push','LLLLR'],['walk',7,1]],
  [['portal',3,3],['portal',9,3],['walk',10,3]],
  [['move','D'],['portal',6,3],['walk',6,1],['move','DD'],['bind','A','night'],['push','LLLLR'],['portal',10,3],['walk',11,3]],

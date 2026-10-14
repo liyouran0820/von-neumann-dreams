@@ -46,7 +46,7 @@ const alternatives=[
  [11,[['mirror','M1'],['walk',7,3]]],
  [12,[['move','D'],['mirror','M'],['walk',6,3],['bind','A','night'],['push','R'],['bind','B','day'],['walk',11,3]]],
 ];
-const payload=mode==='goals'?[1,3].map(i=>{const route=structuredClone(routes[i]);route.find(a=>a[0]==='push')[1]=i===1?'L':'LLL';return {index:i,id:levels[i].id+'-dual-goals',steps:uiSteps(levels[i],route,false),fix:i===1?'LLLR':'LR'};}):mode==='alternatives'?alternatives.map(([i,r],n)=>({index:i,id:levels[i].id+'-alt'+n,steps:uiSteps(levels[i],r)})):levels.map((l,i)=>({index:i,id:l.id,steps:uiSteps(l,routes[i])}));
+const payload=mode==='goals'?[1,3].map(i=>{const route=structuredClone(routes[i]);route.find(a=>a[0]==='push')[1]=i===1?'L':'LLL';if(i===1)route.pop();const steps=uiSteps(levels[i],route,false),fix=i===1?'LLLR':'LR',finish=i===1?uiSteps(levels[i],[...route,['push',fix],['walk',7,1]]).slice(steps.length+fix.length):[];return {index:i,id:levels[i].id+'-dual-goals',steps,fix,finish,atExit:i!==1};}):mode==='alternatives'?alternatives.map(([i,r],n)=>({index:i,id:levels[i].id+'-alt'+n,steps:uiSteps(levels[i],r)})):levels.map((l,i)=>({index:i,id:l.id,steps:uiSteps(l,routes[i])}));
 const origin=process.env.DEMO_UI_ORIGIN||'http://127.0.0.1:5174';
 const code=`async () => {
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -64,9 +64,10 @@ const code=`async () => {
   }
   if(route.fix){
    if(await page.locator('#completion').isVisible())throw Error(route.id+' completed with missing target');
-   if(!await page.locator('#goals [data-goal="2"].satisfied').isVisible()||await page.locator('#goals li:not(.satisfied)').count()!==1)throw Error(route.id+' partial target mismatch');
+   if(await page.locator('#goals [data-goal="2"].satisfied').isVisible()!==route.atExit||await page.locator('#goals li:not(.satisfied)').count()!==(route.atExit?1:2))throw Error(route.id+' partial target mismatch');
    await page.screenshot({path:'output/playwright/'+route.id+'-incomplete.png'});
    for(const ch of route.fix)await page.keyboard.press(ch==='L'?'ArrowLeft':'ArrowRight');
+   for(const step of route.finish)await page.keyboard.press(step.key);
   }
   if(!await page.locator('#completion').isVisible())throw Error(route.id+' actual UI did not complete: '+await page.locator('#message').textContent());
   results.push({id:route.id,status:'PASS',inputs:route.steps.length});
