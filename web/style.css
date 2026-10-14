@@ -16,3 +16,16 @@
 #science-switches{display:flex;gap:8px;flex-wrap:wrap}.science-status code{white-space:normal;overflow-wrap:anywhere;line-height:1.45;min-width:0}.science-status span{flex-shrink:0}
 .science-controls button{min-height:44px}
 @media(max-width:450px){.world-heading{gap:8px}.world-tags{position:absolute;top:34px;left:0;flex-direction:row;align-items:center;margin:0;gap:4px}.body-tag,.focus-tag{padding:2px 6px}}
+
+/* New campaigns reuse the existing dialog, stone/gold palette and touch sizes. */
+.catalog-options{display:flex;gap:8px;margin:16px 0}.catalog-options button{min-height:44px;flex:1}.catalog-options [aria-pressed="true"]{border-color:var(--gold,#d8b96c);color:var(--gold,#d8b96c)}
+.circuit-world{font-size:12px;color:#a5b8bd;padding:6px 0}.science-circuit:has(.circuit-world){max-height:360px;overflow-y:auto;scrollbar-width:thin}.science-circuit:has(.circuit-world) svg{display:block;max-height:100px;width:100%}#science-switches button{min-width:44px;min-height:44px}#notebook-results{overflow-x:auto}.level-list{max-height:52vh;overflow-y:auto}
+
+@media(max-width:600px){.science-circuit:has(.circuit-world){max-height:170px}}
+
+.campaign-v2 .instrument-hotspot{min-width:44px;min-height:44px}
+
+#science-switches button.selected{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+
+.campaign-v2 .world-tags,.campaign-v2 .body-tag,.campaign-v2 .focus-tag{white-space:nowrap;flex-shrink:0}
+.campaign-v2.course-collapsed #science-panel:not([hidden]){display:block!important}.campaign-v2.course-collapsed .science-circuit{display:none}.campaign-v2.course-collapsed .science-status{margin-top:8px}.campaign-v2.course-collapsed .science-controls{margin-top:8px}

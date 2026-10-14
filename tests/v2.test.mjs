@@ -10,6 +10,15 @@ const act=(l,s,t,a)=>assert(G.act(l,s,t,a),`${l.id}: ${t} ${s.message}`);
 const bind=(l,s,id,world='day')=>{act(l,s,'view',{world,recordHistory:false});assert(G.select(l,s,id,world));act(l,s,'activate');};
 const move=(l,s,dx,dy)=>{act(l,s,'view',{world:s.body.world,recordHistory:false});act(l,s,'move',[dx,dy]);};
 for(const [i,l] of V2_LEVELS.entries())test(l.id+' 通过正式命令入口完成参考路线',()=>{const {state}=executeRoute(l,REFERENCE_ROUTES[i]);assert(state.won&&!state.failed);});
+for(const n of [2,4])test(`第${n}关门开并到出口仍需夜白双箱同时到靶，允许出口旁继续校准`,()=>{
+ const l=V2_LEVELS[n-1],route=structuredClone(REFERENCE_ROUTES[n-1]);route.find(a=>a[0]==='push')[1]=n===2?'L':'LLL';
+ const {state}=executeRoute(l,route);assert(G.goals(l,state).at(-1).ok);assert(!state.won&&!state.failed);
+ const signals=G.scienceResult(l,state).signals;assert(n===2?signals.Y:signals.W);
+ assert.equal(G.goals(l,state).filter(g=>g.ok).length,2);
+ for(const d of n===2?'LLLR':'LR')act(l,state,'push',d==='L'?'left':'right');
+ assert.deepEqual(state.entities.A_N,[3,7]);assert.deepEqual(state.entities.A_W,[1,7]);assert(state.won);
+ if(n===4)assert(!G.scienceResult(l,state).signals.N); // The door behind may close.
+});
 test('内容校验拒绝非法跨世界接线、未登记特例、环路和未知版本',()=>{
  assert(validateLevels(V2_LEVELS));assert.equal(V2_LEVELS.length,13);
  const a=structuredClone(V2_LEVELS[0]);a.science.circuits[0].inputs[1].world='day';assert.throws(()=>validateLevel(a),/cross-world/);
@@ -78,4 +87,16 @@ test('待关闭门中的真配重可以移出，人物不能接替进入已关�
 test('重复确认G保留位差；明确解除后才按本体位置检查重新生成',()=>{
  const [l,s]=setup(6);bind(l,s,'G');move(l,s,1,0);act(l,s,'push','left');assert.deepEqual(s.entities.G_W,[4,1]);assert.deepEqual(s.entities.G_N,[5,1]);
  assert(G.canActivate(l,s));act(l,s,'activate');assert.deepEqual(s.entities.G_N,[5,1]);act(l,s,'unlink');assert(!G.canActivate(l,s)); // Body at the new spawn cell4.
+});
+for(const n of [8,9])test(`第${n}关轨靶与配重压板独立产生AND四种真实输入`,()=>{
+ for(const b of [false,true])for(const target of [false,true]){
+  const [l,s]=setup(n);
+  if(b)executeRoute(l,[['walk',2,2],['move','U'],['walk',1,3]],s);
+  if(target)executeRoute(l,[['bind','G'],['push',n===8?'RRR':'RRRR'],['unlink'],['activate']],s);
+  const r=G.scienceResult(l,s);assert.equal(r.signals.p,target);assert.equal(r.signals.b,b);assert.equal(r.signals.Y1,b&&target);assert.equal(G.doorOpen(l,s,'night',4,1),b&&target);
+  if(n===9){
+   assert(!r.signals.Y2);
+   if(target){act(l,s,'push','right');act(l,s,'push','right');const next=G.scienceResult(l,s);assert(!next.signals.p&&next.signals.q);assert(!next.signals.Y1);assert.equal(next.signals.Y2,b);assert.equal(G.doorOpen(l,s,'night',9,1),b);}
+  }
+ }
 });

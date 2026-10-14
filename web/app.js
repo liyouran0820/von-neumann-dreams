@@ -1,32 +1,30 @@
 import * as Game from './engine.js';
-import { LEVELS as ORIGINAL_LEVELS } from './levels.js';
-import { ACADEMY_LEVELS } from './academy-levels.js';
-import { OPTICS_LEVELS } from './optics-levels.js';
-import { renderCourse, showNotebook, resetCourseNotes, dismissWelcome } from './course-ui.js';
+import { CATALOGS, catalogFor, readProgress, writeProgress } from './level-catalog.js';
+import { renderCourse, showNotebook, resetCourseNotes, dismissWelcome, setCourseCatalog } from './course-ui.js';
 import { createDiorama } from './renderer.js';
 import { ICONS } from './icons.js';
 
 const $ = id => document.getElementById(id);
-const originalMode = new URLSearchParams(location.search).get('version') === 'original';
-const opticsMode = new URLSearchParams(location.search).get('version') === 'optics';
-const LEVELS = originalMode ? ORIGINAL_LEVELS : opticsMode ? OPTICS_LEVELS : ACADEMY_LEVELS;
-const KEY = originalMode ? 'night-white-five-v1-progress' : opticsMode ? 'night-white-academy-v1-progress' : 'night-white-logic-gates-v1-progress';
+let catalog = catalogFor(new URLSearchParams(location.search).get('version'));
+let originalMode=catalog.id==='original', opticsMode=catalog.id==='optics', LEVELS=catalog.levels, KEY=catalog.progressKey;
 const worldName = world => world === 'day' ? '白' : '夜';
-const objectName = id => ({ A: '实验箱', B: '第一座桥', C: '第二座桥' })[id];
+const objectName = id => level.schemaVersion===2 ? id+' · '+(level.groups[id]?.label||'物件') : ({ A: '实验箱', B: '第一座桥', C: '第二座桥' })[id];
+let focusedMirror=null, focusedSource=0;
 const media = matchMedia('(prefers-reduced-motion: reduce)');
-let completed = [];
-try { const saved = JSON.parse(localStorage.getItem(KEY) || '[]'); if (Array.isArray(saved)) completed = saved.filter(id => LEVELS.some(level => level.id === id)); } catch { /* 存储可选。 */ }
+let persistence;try{persistence=localStorage;}catch{/* optional persistence */}
+let completed=readProgress(persistence,catalog);
+setCourseCatalog(catalog);
 let index = 0, level = LEVELS[0], state = Game.createState(level), hint = 0, walking = 0, lastAction = '', diorama;
 let message = '先点任意一侧的实验箱，查看映射。';
 let pendingReset = null;
 function toggleObservation() {
-  walking++;
+  walking++;focusedMirror=null;
   Game.act(level, state, 'view', { world: Game.other(state.view), recordHistory: false });
   lastAction = 'observe';
   message = state.view === state.body.world ? '已回到身体所在的世界。' : '身体留在' + worldName(state.body.world) + '侧，按空格切回。';
   render({ instant: true });
 }
-function persist() { try { localStorage.setItem(KEY, JSON.stringify(completed)); } catch { /* 无存储也可玩。 */ } }
+function persist() { writeProgress(persistence,catalog,completed); }
 function icon(name, rotation = 0) {
   return `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:rotate(${rotation}deg)">${ICONS[name].map(d => `<path d="${d}"/>`).join('')}</svg>`;
 }
@@ -50,7 +48,8 @@ function renderAnchors(world, anchors) {
     button.style.left = (anchor.x + offset[0]) + 'px'; button.style.top = (anchor.y + offset[1]) + 'px';
     if (['mirror','switch'].includes(anchor.kind)) { button.classList.add('instrument-hotspot'); button.innerHTML = `<b>${anchor.id}</b><small>${anchor.kind === 'mirror' ? '转动' : '开关'}</small>`; }
     if (anchor.kind === 'readout') button.textContent = anchor.label;
-    if (anchor.kind === 'sensor') { const on=Game.scienceResult(level,state).optics.hits.includes(anchor.id); button.textContent=anchor.label+' '+(on?'1':'0');button.classList.toggle('on',on); }
+    if(anchor.signal)button.textContent=anchor.label+' '+(Game.scienceResult(level,state).signals[anchor.signal]?'1':'0');
+    if (anchor.kind === 'sensor') { const result=Game.scienceResult(level,state),on=(result.opticsByWorld?.[world]||result.optics).hits.includes(anchor.id); button.textContent=anchor.label+' '+(on?'1':'0');button.classList.toggle('on',on); }
     button.classList.toggle('selected', anchor.kind === 'object' && state.preview?.id === anchor.id && state.preview.world === world);
     button.disabled = state.failed || state.won;
   }
@@ -63,6 +62,7 @@ try {
 $('reduced-motion').checked = media.matches;
 media.addEventListener('change', event => { $('reduced-motion').checked = event.matches; diorama?.setReducedMotion(event.matches); });
 function goalLabels() {
+  if(level.schemaVersion===2)return Game.goals(level,state).map(g=>({...g,label:g.label.startsWith('身体')?'出口':g.label}));
   return Game.goals(level, state).map(goal => {
     if (goal.label.startsWith('实验线路')) return { ...goal, label: level.science.scope === 'assessment' ? '与门验收' : level.science.doors ? '后门线路' : worldName(level.science.world) + '门线路' };
     const body = goal.label.startsWith('身体');
@@ -71,13 +71,17 @@ function goalLabels() {
   });
 }
 function render(meta = {}) {
+  document.body.classList.toggle('campaign-v2',level.schemaVersion===2);
   if (state.won && !completed.includes(level.id)) { completed.push(level.id); persist(); }
-  $('chapter').textContent = (originalMode ? '空间试炼 ' : '入学试炼 ') + (index + 1) + ' / ' + LEVELS.length;
+  $('chapter').textContent = (catalog.id==='v2'?'2.0试炼 ':originalMode ? '空间试炼 ' : '入学试炼 ') + (index + 1) + ' / ' + LEVELS.length;
   $('title').textContent = level.name.split(' · ')[0];
+  $('catalogs').innerHTML=['academy','v2'].map(id=>`<button data-catalog="${id}" aria-pressed="${catalog.id===id}">${CATALOGS[id].name}</button>`).join('');
   $('goal').textContent = level.goal.replace(/夜箱到6、白箱到4，身体踏上夜C桥末端验收环。/, '让两侧实验槽亮起，穿过夜侧桥上的验收环。');
   $('levels').innerHTML = LEVELS.map((item, i) => `<button data-level="${i}" aria-current="${i === index ? 'step' : 'false'}"><span>${String(i + 1).padStart(2, '0')}</span><strong>${item.name.split(' · ')[0]}</strong><small>${completed.includes(item.id) ? '课程通过' : item.academy?.title || item.name.split(' · ')[1]}</small></button>`).join('');
   renderCourse(level, state, index);
+  if(level.schemaVersion===2){const mirrors=(level.science.optics[state.view]?.mirrors||[]).filter(m=>m.rotatable);if(!mirrors.some(m=>m.id===focusedMirror))focusedMirror=mirrors[0]?.id||null;for(const b of document.querySelectorAll('[data-mirror]')){b.classList.toggle('selected',b.dataset.mirror===focusedMirror);b.setAttribute('aria-current',String(b.dataset.mirror===focusedMirror));}}
   $('science-help').hidden = !level.science;
+  $('v2-mechanic-help').hidden=level.schemaVersion!==2;
   for (const world of ['day', 'night']) {
     $(world + '-world').classList.toggle('inactive', state.view !== world);
     $(world + '-world').setAttribute('aria-hidden', String(state.view !== world));
@@ -86,14 +90,14 @@ function render(meta = {}) {
     $(world + '-body').textContent = state.body.world === world ? '身体所在' : '身体在' + worldName(state.body.world) + '侧';
     $(world + '-focus').hidden = state.view !== world;
     document.querySelector(`[data-focus-world="${world}"]`).setAttribute('aria-pressed', String(state.view === world));
-    const feedback = state.feedback?.[world];
-    $(world + '-feedback').textContent = lastAction === 'push' && feedback ? feedback.blocked ? '止挡 · 推力已作用' : '沿轨道移动一格' : '';
+    const feedback = level.schemaVersion===2?Object.values(state.feedback||{}).find(f=>f.world===world):state.feedback?.[world];
+    $(world + '-feedback').textContent = ['push','move'].includes(lastAction) && feedback ? feedback.blocked ? '止挡 · 推力已作用' : '沿轨道移动一格' : '';
     $(world + '-feedback').classList.toggle('blocked', Boolean(feedback?.blocked));
   }
   $('body-view').hidden = true;
   $('view').setAttribute('aria-pressed', String(state.view !== state.body.world));
   $('mapping-status').innerHTML = icon('link') + `<span>${state.mapping ? objectName(state.mapping) + ' · 1/1' : '映射 · 0/1'}</span>`;
-  const options = [ ...(level.track ? [{ id: 'A', world: state.view }] : []), ...level.bridges.filter(bridge => bridge.world === state.view) ];
+  const options = Game.mappingSources(level,state);
   $('objects').innerHTML = options.map(object => `<button data-select-object="${object.id}" data-source-world="${object.world}"><span>${worldName(object.world)}世界</span><strong>${objectName(object.id)}</strong></button>`).join('');
   $('goals').innerHTML = goalLabels().map((goal, i) => `<li class="${goal.ok ? 'satisfied' : ''}${goal.required === false ? ' optional' : ''}" data-goal="${i}" aria-label="${goal.label}${goal.ok ? '已满足' : '未满足'}"><i></i><span>${goal.label}</span></li>`).join('');
   $('selection-card').hidden = !state.preview || state.failed || state.won;
@@ -103,25 +107,29 @@ function render(meta = {}) {
     const oldBridge = level.bridges.find(bridge => bridge.id === state.mapping);
     if (oldBridge && state.preview.id !== state.mapping) description += '原来的虚影桥将消失。';
     if (!Game.canActivate(level, state)) description = '生成区域受阻，当前映射保留。';
+    if(level.schemaVersion===2){const g=level.groups[state.preview.id];description=g.kind==='pair'?'连接两件真箱，当前位置保留。':g.kind==='bridge'?'在另一侧生成实体桥。':'从本体当前位置生成实体虚影。';if(state.preview.id===state.mapping)description='联系已激活，物体位置保持。';const old=level.groups[state.mapping];if(old&&old.kind!=='pair'&&state.preview.id!==state.mapping)description+='当前虚影将消失。';if(!Game.canActivate(level,state)){description='生成处被占用，原映射保持。';if(g.condition){const c=level.science.circuits.find(c=>c.crossWorld?.bridge===g.id),signals=Game.scienceResult(level,state).signals;const missing=(c?.inputs||[]).filter(i=>!signals[i.id]).map(i=>(i.world||level.entities.find(e=>e.id===i.entity)?.world)==='night'?'夜侧压板':'白侧压板');if(missing.length)description=missing.join('、')+'尚未接通，原映射保持。';}}}
     $('preview-status').textContent = description;
   }
   const frozen = state.failed || state.won;
-  $('activate').disabled = $('confirm-preview').disabled = !Game.canActivate(level, state) || frozen;
+  $('activate').disabled = frozen||(!Game.canActivate(level,state)&&!(level.schemaVersion===2&&options.length));
+  $('confirm-preview').disabled = !Game.canActivate(level, state) || frozen;
   $('unlink').disabled = !state.mapping || frozen;
   $('undo').disabled = !state.history.length;
   $('teleport').disabled = frozen || state.view !== state.body.world || !level.portals.some(([x, y]) => x === state.body.x && y === state.body.y);
   document.querySelectorAll('[data-move]').forEach(button => button.disabled = frozen || state.view !== state.body.world);
-  document.querySelectorAll('[data-push]').forEach(button => button.disabled = frozen || state.mapping !== 'A');
+  document.querySelectorAll('[data-push]').forEach(button => button.disabled = frozen || !Game.canPushMapping(level,state));
   $('message').textContent = message;
   $('failure').hidden = !state.failed; $('completion').hidden = !state.won;
-  $('complete-title').textContent = level.academy?.completion || (index === 4 ? '天文台亮起，夜间课程完成。' : level.name.split(' · ')[0] + '已点亮。');
-  $('next').hidden = index === 4;
+  $('complete-title').textContent = level.academy?.completion || (index === LEVELS.length-1 ? '夜间课程完成。' : level.name.split(' · ')[0] + '已点亮。');
+  $('next').hidden = index === LEVELS.length-1;
+  $('failure').querySelector('strong').textContent=state.fallen?.some(id=>id!=='body')?'配重失去支撑':'脚下的支撑消失了';
   diorama?.update(state, meta);
   diorama?.setActiveWorld(state.view);
 }
 function readableMessage(type, before, accepted) {
   if (state.failed) return '支撑消失了，随时可以撤回。';
   if (state.won) return '你的安排，让两侧连成了一条路。';
+  if(level.schemaVersion===2&&['push','move'].includes(type)&&accepted&&state.feedback)return Object.values(state.feedback).map(f=>worldName(f.world)+'侧'+(f.blocked?'受阻，推力已作用':'物体移动一格')).join(' · ');
   if (type === 'push') return accepted ? ['night', 'day'].map(world => worldName(world)+'侧'+(state.feedback?.[world]?.blocked?'受阻，推力已作用':'移动一格')).join(' · ') : state.message;
   if (type === 'mirror' || type === 'switch') return accepted ? (type === 'mirror' ? '镜面已转动，观察光输入与逻辑输出。' : '开关已改变，沿线路观察输出。') : '先用空格切到实验器材所在世界。';
   if (type === 'activate') return state.preview ? state.message : '映射已生效。';
@@ -134,6 +142,7 @@ function readableMessage(type, before, accepted) {
   return '';
 }
 function action(type, arg, fromPath = false) {
+  if(type==='activate'&&level.schemaVersion===2&&!state.preview&&!state.lastSource){const sources=Game.mappingSources(level,state);if(sources.length)Game.select(level,state,sources[focusedSource%sources.length].id,state.view);}
   if (!fromPath) walking++;
   const before = { mapping: state.mapping, world: state.body.world };
   const accepted = Game.act(level, state, type, arg);
@@ -150,7 +159,7 @@ function chooseObject(id, world) {
 function handlePick(pick) {
   if (state.failed || state.won || document.querySelector('dialog[open]')) return;
   if (pick.world !== state.view) return;
-  if (pick.kind === 'mirror' || pick.kind === 'switch') { action(pick.kind, pick.id); return; }
+  if (pick.kind === 'mirror' || pick.kind === 'switch') { if(pick.kind==='mirror')focusedMirror=pick.id;action(pick.kind, pick.id); return; }
   if (pick.kind === 'object') { chooseObject(pick.id, pick.world); return; }
   focusWorld(pick.world);
   if (pick.world !== state.body.world) { message = '身体仍在' + worldName(state.body.world) + '侧；穿门才能过去。'; render(); return; }
@@ -166,16 +175,18 @@ function handlePick(pick) {
   })();
 }
 function load(i) {
-  walking++; index = i; level = LEVELS[i]; state = Game.createState(level); hint = 0; lastAction = '';
-  document.body.classList.remove('course-collapsed'); $('course-collapse').setAttribute('aria-expanded','true');$('course-collapse').textContent='收起';
-  message = level.track ? '先点实验箱，查看两侧的映射。' : '比较两侧的桥，点真实桥查看预览。';
+  walking++; if(i<0||i>=LEVELS.length)return; focusedMirror=null;focusedSource=0;index = i; level = LEVELS[i]; state = Game.createState(level); hint = 0; lastAction = '';
+  const collapsed=level.schemaVersion===2&&matchMedia('(max-width:720px)').matches&&level.science.circuits.reduce((n,c)=>n+c.nodes.length,0)>1;document.body.classList.toggle('course-collapsed',collapsed);$('course-collapse').setAttribute('aria-expanded',String(!collapsed));$('course-collapse').textContent=collapsed?'展开':'收起';
+  message = level.schemaVersion===2?'':level.track ? '先点实验箱，查看两侧的映射。' : '比较两侧的桥，点真实桥查看预览。';
   $('hint-text').hidden = true; $('hint-text').textContent = ''; $('hint').textContent = '给我一点提示';
   for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close();
   diorama?.setLevel(level, state); render({ instant: true });
 }
 document.addEventListener('click', event => {
   const button = event.target.closest('button'); if (!button) return;
-  if (button.dataset.level !== undefined) load(Number(button.dataset.level));
+  if(button.dataset.catalog){switchCatalog(button.dataset.catalog);}
+  else if(button.dataset.mirror){focusedMirror=button.dataset.mirror;action('mirror',button.dataset.mirror);}
+  else if (button.dataset.level !== undefined) load(Number(button.dataset.level));
   else if (button.dataset.selectObject) { $('objects-dialog').close(); chooseObject(button.dataset.selectObject, button.dataset.sourceWorld); }
   else if (button.dataset.signal) action('switch', button.dataset.signal);
   else if (button.dataset.focusWorld) focusWorld(button.dataset.focusWorld);
@@ -195,12 +206,18 @@ $('dismiss-welcome').onclick = dismissWelcome;
 $('science-observe').onclick = () => focusWorld(level.science.world);
 $('science-mirror').onclick = () => action('mirror','M');
 $('course-collapse').onclick = () => { const collapsed=document.body.classList.toggle('course-collapsed');$('course-collapse').setAttribute('aria-expanded',String(!collapsed));$('course-collapse').textContent=collapsed?'展开':'收起'; };
-$('levels-dialog').querySelector('h2').textContent = originalMode ? '原版空间试炼' : '新生入学试炼';
+$('levels-dialog').querySelector('h2').textContent = catalog.name;
+function switchCatalog(id){
+  walking++;catalog=catalogFor(id);LEVELS=catalog.levels;KEY=catalog.progressKey;originalMode=catalog.id==='original';opticsMode=catalog.id==='optics';completed=readProgress(persistence,catalog);setCourseCatalog(catalog);
+  const url=new URL(location.href);if(catalog.id==='academy')url.searchParams.delete('version');else url.searchParams.set('version',catalog.id);history.replaceState(null,'',url);
+  $('levels-dialog').querySelector('h2').textContent=catalog.name;load(0);
+}
 function requestReset(kind) {
   walking++;
   pendingReset = kind;
   const clear = kind === 'progress';
-  $('reset-title').textContent = clear ? '清除当前版本的通关记录？' : '重新开始本关？';
+  $('reset-dialog').dataset.catalog=catalog.id;
+  $('reset-title').textContent = clear ? '清除'+catalog.name+'的通关记录？' : '重新开始本关？';
   $('reset-description').textContent = clear ? (originalMode ? '当前版本的通关记录和本关进展将被清除，并返回第一关。此操作不能撤销。' : '当前版本的通关记录、实验札记和本关进展将被清除，并返回第一关。此操作不能撤销。') : '本关的箱子、映射、检查点和撤销历史将恢复到起点；已通关记录保留。';
   $('reset-confirm').textContent = clear ? '确认清除' : '确认重来';
   $('levels-dialog').close();
@@ -217,7 +234,7 @@ $('reset-dialog').addEventListener('close', () => {
 $('reset').onclick = () => requestReset('level'); $('replay').onclick = () => load(index);
 $('recover').onclick = () => { $('levels-dialog').close(); action('recover'); };
 $('clear-progress').onclick = () => requestReset('progress');
-$('next').onclick = () => load(Math.min(4, index + 1));
+$('next').onclick = () => load(Math.min(LEVELS.length-1, index + 1));
 $('hint').onclick = () => { hint = Math.min(hint + 1, level.hints.length); $('hint-text').hidden = false; $('hint-text').textContent = level.hints.slice(0, hint).join('\n'); $('hint').textContent = hint === level.hints.length ? '全部提示已展开' : '再给一点提示'; };
 $('zoom-in').onclick = () => diorama?.zoom(.12); $('zoom-out').onclick = () => diorama?.zoom(-.12);
 $('reduced-motion').onchange = event => diorama?.setReducedMotion(event.target.checked);
@@ -227,6 +244,9 @@ document.querySelector('[data-push="right"]').innerHTML = icon('arrowUp', 90);
 window.addEventListener('keydown', event => {
   if (event.ctrlKey || event.metaKey || event.altKey || document.querySelector('dialog[open]') || event.target.matches('input,textarea,select')) return;
   if (event.code === 'Space') { event.preventDefault(); event.stopPropagation(); if (!event.repeat) toggleObservation(); return; }
+  if(level.schemaVersion===2&&event.code==='Tab'){event.preventDefault();const sources=Game.mappingSources(level,state);if(sources.length){focusedSource=(focusedSource+1)%sources.length;chooseObject(sources[focusedSource].id,state.view);}return;}
+  if(level.schemaVersion===2&&['Digit1','Digit2'].includes(event.code)){const mirrors=(level.science.optics[state.view]?.mirrors||[]).filter(m=>m.rotatable);focusedMirror=mirrors[Number(event.key)-1]?.id;render({instant:true});return;}
+  if(level.schemaVersion===2&&event.code==='KeyR'){event.preventDefault();const mirrors=(level.science.optics[state.view]?.mirrors||[]).filter(m=>m.rotatable);if(!event.repeat&&mirrors.length)action('mirror',mirrors.find(m=>m.id===focusedMirror)?.id||mirrors[0].id);return;}
   if (event.code === 'KeyR' && level.science?.mirrors?.length) { event.preventDefault(); if(!event.repeat)action('mirror','M');return; }
   const key = event.key.toLowerCase();
   const moves = { w: [0, -1], a: [-1, 0], s: [0, 1], d: [1, 0] };

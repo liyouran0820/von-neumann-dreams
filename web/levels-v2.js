@@ -86,14 +86,17 @@ for(const n of [8,9]) {
  const l=base(n,n===8?'第二次显影':'两堵墙',[1,3],n===8?[7,1]:[10,1],n===8?union(rect(1,3,0,4),[[4,1]],rect(5,7,0,4)):union(rect(1,3,0,4),[[4,1]],rect(5,8,0,4),[[9,1]],rect(10,11,0,4)));
  movable(l,n===8?[2,3,5,6]:[2,3,5,6,7,8],n===8?range(2,6):[2,3,4,5,6,8],2,3,'rail');
  l.walls.night=col(4,0,4).filter(c=>c[1]!==1);if(n===9)l.walls.night.push(...col(9,0,4).filter(c=>c[1]!==1));
- l.science.circuits=[circuit('轨靶','night',[target('p','G_N',[n===8?5:6,3]),...(n===9?[target('q','G_N',[8,3])]:[])],[],n===8?'p':'q')];
- l.doors=[door('D1','night',[4,1],'p','入口门'),...(n===9?[door('D2','night',[9,1],'q','出口门')]:[])];
- l.goal=n===8?'让虚影在本体的新位置重新出现。':'先重新显影，再让另一端止挡改变位差。';
- l.hints=n===8?['本体已越过虚影前的止挡。','重新生成会从本体当前位置开始。','推三次至白5／夜3，Q解除再E映G，穿门。']:['两堵墙分别挡住不同端。','本体到不了8，虚影可以继续。','推四次至白6／夜3，解除重映；过入口后推影至8。'];V2_LEVELS.push(l);
+ l.entities.push(weight('K','night',[2,1]));
+ l.science.circuits=[circuit(n===8?'AND':'双AND','night',[target('p','G_N',[n===8?5:6,3]),plate('b','night',[2,0]),...(n===9?[target('q','G_N',[8,3])]:[])],[node('Y1','and','p','b'),...(n===9?[node('Y2','and','q','b')]:[])],n===8?'Y1':'Y2')];
+ l.doors=[door('D1','night',[4,1],'Y1','入口与门'),...(n===9?[door('D2','night',[9,1],'Y2','出口与门')]:[])];
+ l.goal=n===8?'压板b保持接通，重生虚影至轨靶p，令AND开门。':'保持压板b；用重生与两端止挡先后接通两道AND门。';
+ l.hints=n===8?['门接AND：p是夜影到5，b是压板占位。','旧影过不了墙；Q解除后，E从白本体当前位置重生。','把K推到上方b板；映G向右推三次至白5／夜3，Q后E，再穿门。']:['入口Y1=p AND b，出口Y2=q AND b；p在6，q在8。','压板用K保持；先让本体越过夜4，再让夜影越过白7。','K推上方b板；映G右推四次，Q后E在6重生；过入口，再右推夜影至8。'];V2_LEVELS.push(l);
 }
 {
- const l=base(10,'只留一路',[2,3],[11,3],union(rect(1,5,1,5),[[6,3]],rect(7,9,1,5),[[10,3]],rect(11,12,2,4)));
+ const floor=union(rect(1,5,1,5),[[6,3]],rect(7,9,1,5),[[10,3]],rect(11,12,2,4));
+ const l=base(10,'只留一路',[2,3],[11,3],floor,structuredClone(floor));
  l.entities.push(weight('K1','night',[2,2]),weight('K2','night',[4,2]));l.walls.night=union(col(6,1,5).filter(c=>c[1]!==3),col(10,1,5).filter(c=>c[1]!==3));
+ l.walls.day=structuredClone(l.walls.night);
  l.science.circuits=[circuit('XOR与AND','night',[plate('a','night',[2,2]),plate('b','night',[4,2]),plate('c','night',[8,2])],[node('Y','xor','a','b'),node('Z','and','Y','c')],'Z')];
  l.doors=[door('D1','night',[6,3],'Y','异或门'),door('D2','night',[10,3],'Z','与门')];
  l.goal='留下恰好一路，把移出的配重运到后方压板。';l.hints=['前门打开以后，后门还缺什么？','撤离的配重可以继续使用。','留一箱在原板，另一箱经前门送到(8,2)。'];V2_LEVELS.push(l);
@@ -107,7 +110,8 @@ for(const n of [8,9]) {
  l.goal='先把自己和配重移到永久地面，再完成输入交接。';l.hints=['双路亮时，谁还依赖脚下的H？','先把K和身体都送到连续岸地。','K搬到(4,2)，人在(5,1)换B，再把K推到压板。'];V2_LEVELS.push(l);
 }
 {
- const l=base(12,'两盏灯',[2,3],[7,3],union(rect(1,5,1,4),[[6,3],[7,3]]));l.walls.night=col(6,1,4).filter(c=>c[1]!==3);
+ const floor=union(rect(1,5,1,4),[[6,3],[7,3]]);
+ const l=base(12,'两盏灯',[2,3],[7,3],floor,structuredClone(floor));l.walls.night=col(6,1,4).filter(c=>c[1]!==3);l.walls.day=structuredClone(l.walls.night);
  const a=light([1,1],[2,1],[2,4],'a',true,'\\',[[2,0]]),b=light([3,1],[4,1],[4,4],'b',true,'\\',[[4,0]]);
  a.mirrors[0].id='M1';b.mirrors[0].id='M2';l.science.optics.night={height:1.6,emitters:[...a.emitters,...b.emitters],mirrors:[...a.mirrors,...b.mirrors],sensors:[...a.sensors,...b.sensors],absorbers:[...a.absorbers,...b.absorbers]};
  l.science.circuits=[circuit('NAND','night',[sensor('a','night','a'),sensor('b','night','b')],[node('Y','nand','a','b')],'Y')];l.doors=[door('D','night',[6,3],'Y','与非门')];
@@ -123,7 +127,7 @@ for(const n of [8,9]) {
  l.goal='到中庭后补齐条件，利用两级与非门并换映白桥。';l.hints=['轨靶与受光先进入哪个节点？','过前桥前保留一个条件为0，到中庭再补齐。','K压板，A到2且镜面朝/；到中庭转镜，最后换B。'];V2_LEVELS.push(l);
 }
 // Grid is a presentation/legacy optics envelope; walk/pits remain authoritative.
-const lessonTitles=['AND 与独立阻挡','AND 与逆向校准','身体穿行','XOR / AND','双世界 AND','NOT 与光幕','双侧 NOT','重新显影','两端约束','XOR → AND','OR → XOR','NAND','AND → NAND'];
+const lessonTitles=['AND 与独立阻挡','AND 与逆向校准','身体穿行','XOR / AND','双世界 AND','NOT 与光幕','双侧 NOT','AND 与重新显影','双AND与两端约束','XOR → AND','OR → XOR','NAND','AND → NAND'];
 for(const l of V2_LEVELS) {
  l.academy.title=lessonTitles[l.number-1];
  l.grids={};l.bridges=[];
