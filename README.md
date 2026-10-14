@@ -86,6 +86,8 @@ npm run verify:v2
 npm run build
 ```
 
+单文件上传2.0：运行`npm run build -- --default-version=v2`，上传生成的`dist/index.html`，打开文件或服务器根地址即可进入十三关。普通`npm run build`保持默认旧五关；导出文件仍可从菜单切换旧关，显式版本查询参数优先。
+
 Node.js 20+；Three.js 与 esbuild 版本锁定，无运行时 CDN。构建输出保持 Git 忽略。该网页呈现版本未完成全关视觉验收；详见 [网页试验记录](docs/WEB_DIORAMA_WIP.md)。
 
 ## 需求与文档

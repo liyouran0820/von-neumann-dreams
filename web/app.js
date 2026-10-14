@@ -5,7 +5,8 @@ import { createDiorama } from './renderer.js';
 import { ICONS } from './icons.js';
 
 const $ = id => document.getElementById(id);
-let catalog = catalogFor(new URLSearchParams(location.search).get('version'));
+const defaultCatalog=catalogFor(document.documentElement.dataset.defaultVersion);
+let catalog = catalogFor(new URLSearchParams(location.search).get('version')||defaultCatalog.id);
 let originalMode=catalog.id==='original', opticsMode=catalog.id==='optics', LEVELS=catalog.levels, KEY=catalog.progressKey;
 const worldName = world => world === 'day' ? '白' : '夜';
 const objectName = id => level.schemaVersion===2 ? id+' · '+(level.groups[id]?.label||'物件') : ({ A: '实验箱', B: '第一座桥', C: '第二座桥' })[id];
@@ -209,7 +210,7 @@ $('course-collapse').onclick = () => { const collapsed=document.body.classList.t
 $('levels-dialog').querySelector('h2').textContent = catalog.name;
 function switchCatalog(id){
   walking++;catalog=catalogFor(id);LEVELS=catalog.levels;KEY=catalog.progressKey;originalMode=catalog.id==='original';opticsMode=catalog.id==='optics';completed=readProgress(persistence,catalog);setCourseCatalog(catalog);
-  const url=new URL(location.href);if(catalog.id==='academy')url.searchParams.delete('version');else url.searchParams.set('version',catalog.id);history.replaceState(null,'',url);
+  const url=new URL(location.href);if(catalog.id===defaultCatalog.id)url.searchParams.delete('version');else url.searchParams.set('version',catalog.id);history.replaceState(null,'',url);
   $('levels-dialog').querySelector('h2').textContent=catalog.name;load(0);
 }
 function requestReset(kind) {
