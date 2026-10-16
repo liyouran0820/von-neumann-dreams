@@ -37,3 +37,7 @@ artifacts/
 .native-tools/
 *.mp4
 *.mov
+
+# Local browser validation sessions and full visual artifacts
+.playwright-cli/
+output/playwright/

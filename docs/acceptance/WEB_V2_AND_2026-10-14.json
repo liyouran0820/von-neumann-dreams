@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "status": "CANDIDATE_PENDING_INDEPENDENT_PLAYTEST",
+  "scope": "01/02用户指定接线修订与完整网页回归；不继承旧设计模型的新稿PASS",
+  "code_commit": "1388b62926c633a1c894faefa387d34be462ae35",
+  "branch": "codex/level-plan-v2",
+  "previous_code_commit": "d4f42a363ccead3f847fb23d4082cc9d0c0da990",
+  "previous_acceptance": "docs/acceptance/WEB_V2_2026-10-14.json",
+  "design_sha256": "f85e0bd95f732a4670c534017fd98db5535d441690a2d1aaddf58debbfd70861",
+  "source_sha256": {
+    "web/levels-v2.js": "4454921b91b86ddc9569db359ebcf295b14c707bd2a7f8252fa0e1729e8818b7",
+    "web/level-validation.js": "6bff88c510bffecfb20858c7496dd8b968917bc356232481970633e0eeb3a178",
+    "scripts/verify-v2-levels.mjs": "c76cad39f8965df00ff3851065c6a8f89e993d17d50d8456b8bf08493307b963",
+    "tests/v2.test.mjs": "5e72b536934da38e6d1595d5a83453c8c1a161c2346f86f4be97db4ed6d93d86",
+    "tests/browser/v2-ui-routes.mjs": "a65d672f84f59c6cad9d08a5a4b39c0c307f1ee662086ba20cdb6b638a573152",
+    "tests/browser/v2-opening-checks.mjs": "3278cd5200f752539c2f118944db8c35ee5dee9d6a213da45a907ec53903cc5e"
+  },
+  "requirements": [
+    "第一关删除夜普通配重K及旧b板，白靶B与夜靶A真实接AND",
+    "第二关保留K压b板，C=a AND w，Y=C AND b，其中w为白侧轨靶",
+    "01/02/05跨世界输入须匹配批准实体、坐标、实际节点与指定输出，其他关仍禁止"
+  ],
+  "checks": [
+    {
+      "command": "npm test",
+      "status": "PASS",
+      "total": 98,
+      "legacy": 66,
+      "v2": 32,
+      "failed": 0
+    },
+    {
+      "command": "npm run verify:v2",
+      "status": "PASS",
+      "levels": 13,
+      "entry": "真实Game.act和合法寻路，无注入状态通关"
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS",
+      "inline_equals_generated": true
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS"
+    }
+  ],
+  "browser": {
+    "environment": "本Mac隔离Chrome会话night-v2，Playwright CLI，真实键盘/按钮",
+    "routes": [
+      {
+        "id": "V2-01",
+        "status": "PASS",
+        "inputs": 9
+      },
+      {
+        "id": "V2-02",
+        "status": "PASS",
+        "inputs": 12
+      },
+      {
+        "id": "V2-03",
+        "status": "PASS",
+        "inputs": 11
+      },
+      {
+        "id": "V2-04",
+        "status": "PASS",
+        "inputs": 28
+      },
+      {
+        "id": "V2-05",
+        "status": "PASS",
+        "inputs": 23
+      },
+      {
+        "id": "V2-06",
+        "status": "PASS",
+        "inputs": 13
+      },
+      {
+        "id": "V2-07",
+        "status": "PASS",
+        "inputs": 13
+      },
+      {
+        "id": "V2-08",
+        "status": "PASS",
+        "inputs": 22
+      },
+      {
+        "id": "V2-09",
+        "status": "PASS",
+        "inputs": 30
+      },
+      {
+        "id": "V2-10",
+        "status": "PASS",
+        "inputs": 19
+      },
+      {
+        "id": "V2-11",
+        "status": "PASS",
+        "inputs": 20
+      },
+      {
+        "id": "V2-12",
+        "status": "PASS",
+        "inputs": 7
+      },
+      {
+        "id": "V2-13",
+        "status": "PASS",
+        "inputs": 21
+      },
+      {
+        "id": "G1",
+        "status": "PASS",
+        "inputs": 11
+      },
+      {
+        "id": "G2",
+        "status": "PASS",
+        "inputs": 15
+      },
+      {
+        "id": "G3",
+        "status": "PASS",
+        "inputs": 17
+      },
+      {
+        "id": "G4",
+        "status": "PASS",
+        "inputs": 28
+      },
+      {
+        "id": "G5",
+        "status": "PASS",
+        "inputs": 30
+      },
+      {
+        "id": "G1",
+        "status": "PASS",
+        "inputs": 11
+      },
+      {
+        "id": "G2",
+        "status": "PASS",
+        "inputs": 15
+      },
+      {
+        "id": "G3",
+        "status": "PASS",
+        "inputs": 14
+      },
+      {
+        "id": "G4",
+        "status": "PASS",
+        "inputs": 27
+      },
+      {
+        "id": "G5",
+        "status": "PASS",
+        "inputs": 29
+      },
+      {
+        "id": "G1",
+        "status": "PASS",
+        "inputs": 11
+      },
+      {
+        "id": "G2",
+        "status": "PASS",
+        "inputs": 18
+      },
+      {
+        "id": "G3",
+        "status": "PASS",
+        "inputs": 17
+      },
+      {
+        "id": "G4",
+        "status": "PASS",
+        "inputs": 27
+      },
+      {
+        "id": "G5",
+        "status": "PASS",
+        "inputs": 30
+      },
+      {
+        "id": "V2-07-alt0",
+        "status": "PASS",
+        "inputs": 16
+      },
+      {
+        "id": "V2-11-alt1",
+        "status": "PASS",
+        "inputs": 22
+      },
+      {
+        "id": "V2-11-alt2",
+        "status": "PASS",
+        "inputs": 20
+      },
+      {
+        "id": "V2-12-alt3",
+        "status": "PASS",
+        "inputs": 6
+      },
+      {
+        "id": "V2-13-alt4",
+        "status": "PASS",
+        "inputs": 21
+      },
+      {
+        "id": "V2-02-dual-goals",
+        "status": "PASS",
+        "inputs": 4
+      },
+      {
+        "id": "V2-04-dual-goals",
+        "status": "PASS",
+        "inputs": 26
+      }
+    ],
+    "total": 35,
+    "opening": {
+      "first": [
+        "Y=0，A=0，B=0",
+        "Y=0，A=1，B=0",
+        "Y=1，A=1，B=1",
+        "Y=0，A=0，B=1"
+      ],
+      "second": [
+        "C=0，a=0，w=0",
+        "Y=0，C=0，b=0",
+        "C=1，a=1，w=1",
+        "Y=0，C=1，b=0",
+        "Y=1，C=1，b=1",
+        "Y=0，C=1，b=0",
+        "Y=0，C=0，b=1"
+      ],
+      "mobile": [
+        {
+          "level": 1,
+          "width": 390,
+          "height": 844,
+          "status": "PASS"
+        },
+        {
+          "level": 2,
+          "width": 390,
+          "height": 844,
+          "status": "PASS"
+        },
+        {
+          "level": 1,
+          "width": 320,
+          "height": 740,
+          "status": "PASS"
+        },
+        {
+          "level": 2,
+          "width": 320,
+          "height": 740,
+          "status": "PASS"
+        }
+      ],
+      "scriptErrors": [],
+      "status": "PASS"
+    },
+    "scope": "01真实四输入/白靶B/删除标记，02两级节点/配重/缺靶关门/撤销与4组窄屏；三套旧关与关键替代解重新回放"
+  },
+  "performance_and_motion": "本轮未修改动效、光学、渲染、样式或旧关数据；性能与动效仅引用previous_acceptance的对应历史提交结果，没有改标本轮重测",
+  "unexecuted": [
+    "独立3—5位新玩家理解/乐趣/难度测试",
+    "原生或真实手机验收",
+    "远程推送/发布、生产部署"
+  ],
+  "artifacts": {
+    "raw": "output/playwright/（Git忽略）",
+    "opening_sha256": "33f7420eff58c0e22d1539f50bb780d39ffc6a3e62550577024b2e265937abe2",
+    "screenshots": [
+      "output/playwright/v2-first-white-B.png",
+      "output/playwright/v2-second-two-AND.png"
+    ],
+    "build": "dist/index.html / web/generated/app.js（Git忽略）"
+  }
+}

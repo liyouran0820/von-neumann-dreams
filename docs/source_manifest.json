@@ -69,10 +69,21 @@
         "移除不必要建筑和独立平台，扩大齐平活动区域",
         "第五关只有一对真实物体，两个世界各一个压板，用推力传递与独立阻挡同时接通AND，再激活白桥并映到夜侧",
         "已学特性后续解谜不能过于简单",
-        "把当前版本的镜面反射光源设计融合进2.0关卡，不需要专门设计该机制的教学关"
+        "把当前版本的镜面反射光源设计融合进2.0关卡，不需要专门设计该机制的教学关",
+        "试玩反馈：第八、九关接入实际AND逻辑门并明确通关提示",
+        "第二、第四关的双箱目标指夜白对应真实箱A，须同时到位再判胜",
+        "第一关删除夜侧配重和旧b压板；白靶改为B输入，与夜靶A接AND",
+        "第二关保留推配重：夜靶a与白靶w先AND为C，再由C与夜压板b AND为Y"
       ],
-      "fifth_level_cross_world_and": "本关专用的明确修订；其余物理电路仍采用本世界输入",
-      "implemented_in_game": false
+      "fifth_level_cross_world_and": "第五关专用的明确修订；第一、二关为后续追加的登记特例，其他物理电路采用本世界输入",
+      "implemented_in_game": true,
+      "implementation_status": "网页候选，工程检查通过；独立玩家试玩、原生与发布未验收",
+      "implementation_document": "docs/V2_DEMO_STATUS.md",
+      "cross_world_circuit_exceptions": [
+        "V2-01双靶AND至夜门",
+        "V2-02双靶AND为C，再与夜b板AND至夜门",
+        "V2-05夜白双板AND至白桥"
+      ]
     },
     {
       "id": "development-plan-v2.0",
@@ -86,7 +97,9 @@
         "新关卡、新机制的UI外观设计语言与原先版本保持一致"
       ],
       "implementation_basis": "以现有可玩网页作为本计划的增量基础，保留原关卡集，新增独立十三关；原生迁移另行记录",
-      "implemented_in_game": false
+      "implemented_in_game": true,
+      "implementation_status": "网页候选，工程检查通过；独立玩家试玩、原生与发布未验收",
+      "implementation_document": "docs/V2_DEMO_STATUS.md"
     }
   ],
   "supplemental_documents": [
@@ -108,7 +121,8 @@
       "source_claims_reproduced": false
     }
   ],
-  "current_web_spec": "docs/LOGIC_GATES_CURRICULUM.md",
+  "current_web_spec": "docs/V2_DEMO_STATUS.md",
   "current_level_design": "关卡设计v2.0.md",
-  "current_incremental_development_plan": "开发计划v2.0.md"
+  "current_incremental_development_plan": "开发计划v2.0.md",
+  "default_web_spec": "docs/LOGIC_GATES_CURRICULUM.md"
 }

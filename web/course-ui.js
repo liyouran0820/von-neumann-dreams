@@ -1,6 +1,7 @@
 import { scienceResult } from './science.js';
 const $ = id => document.getElementById(id);
-const NOTES_KEY = new URLSearchParams(location.search).get('version') === 'optics' ? 'night-white-academy-v1-notes' : 'night-white-logic-gates-v1-notes';
+let NOTES_KEY = new URLSearchParams(location.search).get('version') === 'optics' ? 'night-white-academy-v1-notes' : 'night-white-logic-gates-v1-notes';
+let welcomeKey='academy-welcomed';
 let notes = {};
 let welcomed = false;
 try { welcomed = sessionStorage.getItem('academy-welcomed') === 'yes'; } catch { /* optional storage */ }
@@ -64,7 +65,7 @@ function circuit(config, result) {
 export function renderCourse(level, state, index) {
   const course = level.academy, config = level.science;
   document.body.classList.toggle('academy', !!course);
-  document.body.classList.toggle('has-science', !!config);
+  document.body.classList.toggle('has-science',level.schemaVersion===2?!!config?.circuits.length:!!config);
   $('course-panel').hidden = !course;
   if (!course) return;
   $('course-title').textContent = course.title;
@@ -73,6 +74,7 @@ export function renderCourse(level, state, index) {
   $('course-panel').classList.toggle('optics-course', config?.kind === 'optics');
   $('science-panel').hidden = !config;
   if (!config) return;
+  if(level.schemaVersion===2){renderV2Course(level,state);return;}
   const result = scienceResult(level, state);
   $('science-formula').textContent = config.formula;
   $('science-circuit').innerHTML = circuit(config, result);
@@ -115,6 +117,7 @@ export function showNotebook(level) {
   const config = level.science;
   $('notebook-results').hidden = !config;
   if (config) {
+    if(level.schemaVersion===2){showV2Notebook(level);$('notebook-dialog').showModal();return;}
     const ids = config.inputs.map(i => i.id), records = notes[level.id] || {};
     const rows = Array.from({length:2 ** ids.length}, (_,i) => i.toString(2).padStart(ids.length,'0'));
     const combined=config.lessonGate==='nand', paired=!!config.doors;
@@ -124,9 +127,40 @@ export function showNotebook(level) {
 }
 export function resetCourseNotes() {
   notes = {}; welcomed = false;
-  try { localStorage.removeItem(NOTES_KEY); sessionStorage.removeItem('academy-welcomed'); } catch { /* optional storage */ }
+  try { if(NOTES_KEY)localStorage.removeItem(NOTES_KEY); sessionStorage.removeItem(welcomeKey); } catch { /* optional storage */ }
 }
-export function dismissWelcome() { welcomed = true; try { sessionStorage.setItem('academy-welcomed','yes'); } catch { /* optional storage */ } $('welcome').hidden = true; }
+export function dismissWelcome() { welcomed = true; try { sessionStorage.setItem(welcomeKey,'yes'); } catch { /* optional storage */ } $('welcome').hidden = true; }
+export function setCourseCatalog(catalog){
+ NOTES_KEY=catalog.notesKey;welcomeKey=catalog.welcomeKey;notes={};welcomed=false;
+ try{welcomed=sessionStorage.getItem(welcomeKey)==='yes';const value=JSON.parse(localStorage.getItem(NOTES_KEY)||'{}');if(value&&typeof value==='object')notes=catalog.id==='v2'?(value.format===1&&value.catalog==='v2'?value.levels||{}:{}):value;}catch{/* optional storage */}
+ $('welcome').querySelector('p').textContent=catalog.id==='v2'?'十三项试炼，继续探索夜白之间。':'欢迎，新生。完成五项入学试炼，抵达天文台。';
+}
+function renderV2Course(level,state){
+ const config=level.science,result=scienceResult(level,state);$('welcome').hidden=true;
+ $('science-panel').hidden=!config.circuits.length;if(!config.circuits.length)return;
+ $('science-formula').textContent=config.circuits.map(c=>c.id).join(' · ');
+ $('science-circuit').innerHTML=config.circuits.map(c=>{
+  const r=result.circuits.find(r=>r.id===c.id),nodes=c.nodes.length?c.nodes:[{id:c.output,op:null,args:[{signal:c.output}]}];
+  return `<div class="circuit-world">${c.world==='night'?'夜':'白'}侧${c.crossWorld?' · N／W':''}</div>`+nodes.map(n=>{
+   const inputList=n.args.map(a=>a.signal),on=r.signals[n.id];let content='';
+   for(let i=0;i<inputList.length;i++){const y=inputList.length===1?56:i?88:28;content+=input(inputList[i],y,r.signals[inputList[i]])+wire(`M64 ${y}H156V${inputList.length===1?56:i?69:43}H190`,r.signals[inputList[i]]);}
+   content+=(n.op?gateSymbol(n.op,217,56):'')+wire('M246 56H292',on)+`<circle cx="310" cy="56" r="13" fill="${on?'#d8b96c':'#263742'}"/><text x="310" y="61" text-anchor="middle">${bit(on)}</text><text x="310" y="92" text-anchor="middle">${n.id}</text>`;
+   return `<svg viewBox="0 0 334 110" role="img" aria-label="${n.id}=${bit(on)}，${inputList.map(id=>id+'='+bit(r.signals[id])).join('，')}">${content}</svg>`;
+  }).join('');
+ }).join('');
+ $('science-output').textContent=level.doors.length?level.doors.map(d=>{const on=result.signals[d.signal],occupied=(state.body.world===d.world&&d.cells.some(([x,y])=>x===state.body.x&&y===state.body.y))||level.entities.some(e=>e.world===d.world&&d.cells.some(([x,y])=>state.entities[e.id]?.[0]===x&&state.entities[e.id]?.[1]===y));return d.label+(on?'开':occupied?'待关':'关');}).join(' / '):'输出 '+bit(result.output);
+ $('science-output').classList.toggle('on',result.output);$('science-observe').hidden=true;$('science-mirror').hidden=true;$('science-angle').hidden=true;
+ const mirrors=(config.optics[state.view]?.mirrors||[]).filter(m=>m.rotatable);
+ $('science-switches').innerHTML=mirrors.map(m=>`<button data-mirror="${m.id}"${state.failed||state.won?' disabled':''} aria-label="转动${m.id}镜面">${m.id} · ${state.science.mirrors[m.id]}</button>`).join('');
+ notes[level.id]||={};for(const c of config.circuits){const r=result.circuits.find(r=>r.id===c.id),key=c.inputs.map(i=>bit(r.signals[i.id])).join('');notes[level.id][c.id]||={};notes[level.id][c.id][key]=r.signals;}
+ try{localStorage.setItem(NOTES_KEY,JSON.stringify({format:1,catalog:'v2',levels:notes}));}catch{/* optional storage */}
+}
+function showV2Notebook(level){
+ $('notebook-table').innerHTML=level.science.circuits.map(c=>{
+  const records=notes[level.id]?.[c.id]||{},ids=c.inputs.map(i=>i.id),outputs=c.nodes.map(n=>n.id),rows=Array.from({length:2**ids.length},(_,i)=>i.toString(2).padStart(ids.length,'0'));
+  return `<tbody><tr><th colspan="${ids.length+outputs.length}">${c.id}</th></tr><tr>${[...ids,...outputs].map(id=>'<th>'+id+'</th>').join('')}</tr>${rows.map(key=>'<tr>'+[...key].map(v=>'<td>'+v+'</td>').join('')+outputs.map(id=>'<td>'+(records[key]?bit(records[key][id]):'—')+'</td>').join('')+'</tr>').join('')}</tbody>`;
+ }).join('');
+}
 new ResizeObserver(() => {
   document.documentElement.style.setProperty('--course-bottom', ($('course-panel').getBoundingClientRect().bottom + 12) + 'px');
 }).observe($('course-panel'));

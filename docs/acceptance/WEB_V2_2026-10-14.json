@@ -1,0 +1,1162 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "status": "CANDIDATE_PENDING_INDEPENDENT_PLAYTEST",
+  "scope": "网页十三关增量候选；工程检查与用户直接试玩反馈，非原生或完整独立体验验收",
+  "base_commit": "fb17ac776e2f09e6a4ecec0a23b54dad0847fa19",
+  "code_commit": "d4f42a363ccead3f847fb23d4082cc9d0c0da990",
+  "branch": "codex/level-plan-v2",
+  "remote_release": "NOT_EXECUTED",
+  "base_design_sha256": "bcb1d62ab681976a87a8b11ce9e377b318a84617d774a5156c392c3a3cae4fef",
+  "current_design_sha256": "977bdefb882cfb9538a09ae45173c55f209536d0a36e634cf924c997044607d2",
+  "source_sha256": {
+    "web/levels-v2.js": "cf89b46343ba915ebd40357b0b14388a74e0863100bf8883630a5c6d1390519a",
+    "web/engine.js": "23d49906046a2d929573c76242ae7706c59b812b35a3921c2d6955ce55daf54d",
+    "web/science.js": "f593d3717f2cfe00950bf3e81fdfb372f119b861d720ae8d7cd43cf5c2a0faf5",
+    "web/entities.js": "abcc4b78d9a73d1ba7a541a992f41d7b9bd9aae5bb64188c78832a7108d8b83c",
+    "web/level-catalog.js": "0f037c955411f16d9b9d25e80107918a372dca2f28111f429997de30b2573649",
+    "web/level-validation.js": "e53eca1e96ed3572d5054f3815ee9f3e2be600cb41fd89ffb21dd4d153917c5a",
+    "web/app.js": "b04b149463df25f9b52bb1387940de4d907de30ce5b23beef6769d47f4827477",
+    "web/renderer.js": "06ae3a6bcdd266d76f079a64a8b078db7af89b3ff137cc4573c258481a86fb34",
+    "web/course-ui.js": "e4ef87f3469ed9e044f321528cd35f2658eabf4d2c149c7d98a6efa14599ff97",
+    "web/style.css": "90793fefb9946f865875c7042a8d08a23c7f2224628f86530941c2650bfb06c9",
+    "web/index.html": "1da54a7fd6421dd06e1084613d9dead2f41034caee2162895fe5576292a66a11",
+    "web/motion.js": "bbb388b5423664560e9ae295fdef8f50e89a31cab2a48e78b06e5093dba99a12",
+    "scripts/verify-v2-levels.mjs": "3a4df4528f9d60642e40011c3284c80eb668d4edd3c2ac4d5c0253209990b071",
+    "tests/v2.test.mjs": "3772c2d9097b3bc07d6c70978894781f3ea4921a811837d631cbac791ee4e2e4"
+  },
+  "checks": [
+    {
+      "command": "npm test",
+      "status": "PASS",
+      "tests": 96,
+      "legacy": 66,
+      "v2": 30,
+      "failed": 0
+    },
+    {
+      "command": "npm run verify:v2",
+      "status": "PASS",
+      "levels": 13,
+      "entry": "Game.act；合法寻路，无注入状态通关"
+    },
+    {
+      "command": "npm run verify:puzzles",
+      "status": "PASS",
+      "levels": 5
+    },
+    {
+      "command": "npm run build",
+      "status": "PASS",
+      "inline_script_matches_generated": true
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS"
+    }
+  ],
+  "browser": {
+    "environment": "此Apple Silicon Mac，隔离Chrome会话night-v2，Playwright CLI，实际键盘/按钮输入",
+    "routes": [
+      {
+        "id": "V2-01",
+        "status": "PASS",
+        "inputs": 9
+      },
+      {
+        "id": "V2-02",
+        "status": "PASS",
+        "inputs": 12
+      },
+      {
+        "id": "V2-03",
+        "status": "PASS",
+        "inputs": 11
+      },
+      {
+        "id": "V2-04",
+        "status": "PASS",
+        "inputs": 28
+      },
+      {
+        "id": "V2-05",
+        "status": "PASS",
+        "inputs": 23
+      },
+      {
+        "id": "V2-06",
+        "status": "PASS",
+        "inputs": 13
+      },
+      {
+        "id": "V2-07",
+        "status": "PASS",
+        "inputs": 13
+      },
+      {
+        "id": "V2-08",
+        "status": "PASS",
+        "inputs": 22
+      },
+      {
+        "id": "V2-09",
+        "status": "PASS",
+        "inputs": 30
+      },
+      {
+        "id": "V2-10",
+        "status": "PASS",
+        "inputs": 19
+      },
+      {
+        "id": "V2-11",
+        "status": "PASS",
+        "inputs": 20
+      },
+      {
+        "id": "V2-12",
+        "status": "PASS",
+        "inputs": 7
+      },
+      {
+        "id": "V2-13",
+        "status": "PASS",
+        "inputs": 21
+      },
+      {
+        "id": "G1",
+        "status": "PASS",
+        "inputs": 11
+      },
+      {
+        "id": "G2",
+        "status": "PASS",
+        "inputs": 15
+      },
+      {
+        "id": "G3",
+        "status": "PASS",
+        "inputs": 17
+      },
+      {
+        "id": "G4",
+        "status": "PASS",
+        "inputs": 28
+      },
+      {
+        "id": "G5",
+        "status": "PASS",
+        "inputs": 30
+      },
+      {
+        "id": "G1",
+        "status": "PASS",
+        "inputs": 11
+      },
+      {
+        "id": "G2",
+        "status": "PASS",
+        "inputs": 15
+      },
+      {
+        "id": "G3",
+        "status": "PASS",
+        "inputs": 14
+      },
+      {
+        "id": "G4",
+        "status": "PASS",
+        "inputs": 27
+      },
+      {
+        "id": "G5",
+        "status": "PASS",
+        "inputs": 29
+      },
+      {
+        "id": "G1",
+        "status": "PASS",
+        "inputs": 11
+      },
+      {
+        "id": "G2",
+        "status": "PASS",
+        "inputs": 18
+      },
+      {
+        "id": "G3",
+        "status": "PASS",
+        "inputs": 17
+      },
+      {
+        "id": "G4",
+        "status": "PASS",
+        "inputs": 27
+      },
+      {
+        "id": "G5",
+        "status": "PASS",
+        "inputs": 30
+      },
+      {
+        "id": "V2-07-alt0",
+        "status": "PASS",
+        "inputs": 16
+      },
+      {
+        "id": "V2-11-alt1",
+        "status": "PASS",
+        "inputs": 22
+      },
+      {
+        "id": "V2-11-alt2",
+        "status": "PASS",
+        "inputs": 20
+      },
+      {
+        "id": "V2-12-alt3",
+        "status": "PASS",
+        "inputs": 6
+      },
+      {
+        "id": "V2-13-alt4",
+        "status": "PASS",
+        "inputs": 21
+      },
+      {
+        "id": "V2-02-dual-goals",
+        "status": "PASS",
+        "inputs": 8
+      },
+      {
+        "id": "V2-04-dual-goals",
+        "status": "PASS",
+        "inputs": 26
+      }
+    ],
+    "total": 35,
+    "page_errors": [],
+    "responsive": [
+      {
+        "width": 1280,
+        "height": 800,
+        "level": 5,
+        "scroll": 1280,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": []
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "level": 8,
+        "scroll": 1280,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": []
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "level": 9,
+        "scroll": 1280,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": []
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "level": 12,
+        "scroll": 1280,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": [
+          {
+            "w": 58.078125,
+            "h": 44,
+            "x": 47,
+            "right": 105.078125
+          },
+          {
+            "w": 59.890625,
+            "h": 44,
+            "x": 113.078125,
+            "right": 172.96875
+          }
+        ]
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "level": 13,
+        "scroll": 1280,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": [
+          {
+            "w": 52.125,
+            "h": 44,
+            "x": 47,
+            "right": 99.125
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "level": 5,
+        "scroll": 390,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": []
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "level": 8,
+        "scroll": 390,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": []
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "level": 9,
+        "scroll": 390,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": []
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "level": 12,
+        "scroll": 390,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": [
+          {
+            "w": 52.03125,
+            "h": 44,
+            "x": 31,
+            "right": 83.03125
+          },
+          {
+            "w": 53.703125,
+            "h": 44,
+            "x": 91.03125,
+            "right": 144.734375
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "level": 13,
+        "scroll": 390,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": [
+          {
+            "w": 46.46875,
+            "h": 44,
+            "x": 31,
+            "right": 77.46875
+          }
+        ]
+      },
+      {
+        "width": 320,
+        "height": 740,
+        "level": 5,
+        "scroll": 320,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": []
+      },
+      {
+        "width": 320,
+        "height": 740,
+        "level": 8,
+        "scroll": 320,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": []
+      },
+      {
+        "width": 320,
+        "height": 740,
+        "level": 9,
+        "scroll": 320,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": []
+      },
+      {
+        "width": 320,
+        "height": 740,
+        "level": 12,
+        "scroll": 320,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": [
+          {
+            "w": 48.03125,
+            "h": 44,
+            "x": 27,
+            "right": 75.03125
+          },
+          {
+            "w": 49.703125,
+            "h": 44,
+            "x": 83.03125,
+            "right": 132.734375
+          }
+        ]
+      },
+      {
+        "width": 320,
+        "height": 740,
+        "level": 13,
+        "scroll": 320,
+        "canvases": 2,
+        "visibleWorlds": 1,
+        "mirrors": [
+          {
+            "w": 44,
+            "h": 44,
+            "x": 27,
+            "right": 71
+          }
+        ]
+      }
+    ],
+    "mixed_switches": [
+      {
+        "i": 0,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 40,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 1,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 2,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 3,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 4,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 5,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 6,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 7,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 8,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 9,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 10,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 11,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 12,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 13,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 14,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 15,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 16,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 17,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 18,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 19,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 20,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 21,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 22,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 23,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 24,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 25,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 26,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 27,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      },
+      {
+        "i": 28,
+        "catalog": "academy",
+        "hotspots": 12,
+        "night": {
+          "objects": 575,
+          "geometries": 57,
+          "textures": 3,
+          "calls": 1022
+        },
+        "day": {
+          "objects": 570,
+          "geometries": 46,
+          "textures": 3,
+          "calls": 1047
+        }
+      },
+      {
+        "i": 29,
+        "catalog": "v2",
+        "hotspots": 12,
+        "night": {
+          "objects": 191,
+          "geometries": 55,
+          "textures": 3,
+          "calls": 271
+        },
+        "day": {
+          "objects": 92,
+          "geometries": 39,
+          "textures": 3,
+          "calls": 121
+        }
+      }
+    ],
+    "progress_isolation": "PASS",
+    "motion": {
+      "G": "PASS",
+      "regeneration": "PASS",
+      "fall": "PASS",
+      "reduced": "PASS"
+    },
+    "legacy_motion": {
+      "blocked": "PASS",
+      "impact": "PASS",
+      "fall": "PASS"
+    },
+    "mirror_focus": "PASS",
+    "white_world_visual_checks": [
+      {
+        "level": 10,
+        "status": "PASS",
+        "world": "day",
+        "body_remains": "night",
+        "screenshot": "output/playwright/v2-10-white.png",
+        "scope": "对应地面与分隔，夜侧电路不跨世界"
+      },
+      {
+        "level": 12,
+        "status": "PASS",
+        "world": "day",
+        "body_remains": "night",
+        "screenshot": "output/playwright/v2-12-white.png",
+        "scope": "对应地面与分隔，夜侧电路不跨世界"
+      }
+    ]
+  },
+  "performance": {
+    "environment": "同Mac、Chrome、1280x800、同画质，基线旧G5/候选旧G5/候选新13各三轮；未过滤长帧",
+    "measurements": {
+      "baseline": [
+        {
+          "frames": 114,
+          "cpuP95": 1.2999999970197678,
+          "frameP95": 17.099999994039536,
+          "resources": {
+            "night": {
+              "objects": 575,
+              "geometries": 41,
+              "textures": 3,
+              "calls": 1022
+            }
+          }
+        },
+        {
+          "frames": 114,
+          "cpuP95": 1.3999999910593033,
+          "frameP95": 17.5,
+          "resources": {
+            "night": {
+              "objects": 575,
+              "geometries": 41,
+              "textures": 3,
+              "calls": 1022
+            }
+          }
+        },
+        {
+          "frames": 115,
+          "cpuP95": 1.3999999910593033,
+          "frameP95": 17.5,
+          "resources": {
+            "night": {
+              "objects": 575,
+              "geometries": 41,
+              "textures": 3,
+              "calls": 1022
+            }
+          }
+        }
+      ],
+      "old": [
+        {
+          "frames": 116,
+          "cpuP95": 1.5,
+          "frameP95": 17.399999991059303,
+          "resources": {
+            "night": {
+              "objects": 575,
+              "geometries": 41,
+              "textures": 3,
+              "calls": 1022
+            }
+          }
+        },
+        {
+          "frames": 116,
+          "cpuP95": 1.5,
+          "frameP95": 17.400000005960464,
+          "resources": {
+            "night": {
+              "objects": 575,
+              "geometries": 41,
+              "textures": 3,
+              "calls": 1022
+            }
+          }
+        },
+        {
+          "frames": 117,
+          "cpuP95": 1.5,
+          "frameP95": 17.5,
+          "resources": {
+            "night": {
+              "objects": 575,
+              "geometries": 41,
+              "textures": 3,
+              "calls": 1022
+            }
+          }
+        }
+      ],
+      "new": [
+        {
+          "frames": 117,
+          "cpuP95": 0.7000000029802322,
+          "frameP95": 17.599999994039536,
+          "resources": {
+            "night": {
+              "objects": 191,
+              "geometries": 38,
+              "textures": 3,
+              "calls": 271
+            }
+          }
+        },
+        {
+          "frames": 116,
+          "cpuP95": 0.7000000029802322,
+          "frameP95": 17.900000005960464,
+          "resources": {
+            "night": {
+              "objects": 191,
+              "geometries": 38,
+              "textures": 3,
+              "calls": 271
+            }
+          }
+        },
+        {
+          "frames": 117,
+          "cpuP95": 0.7000000029802322,
+          "frameP95": 18,
+          "resources": {
+            "night": {
+              "objects": 191,
+              "geometries": 38,
+              "textures": 3,
+              "calls": 271
+            }
+          }
+        }
+      ],
+      "oldRatio": 0.9942857146263122,
+      "newRatio": 1.022857143197741,
+      "status": "PASS"
+    },
+    "limits": {
+      "old_ratio": 1.1,
+      "new_ratio": 1.2
+    },
+    "g_feedback_first_visible_ms": 2.0999999940395355,
+    "scope": "P95实际帧间隔与CPU渲染耗时；非原生Metal或真实手机结果"
+  },
+  "feedback_and_repairs": [
+    {
+      "finding": "02/04用户最初报告不完全箱位通关，随后更正并明确箱子指夜白对应真实A",
+      "result": "保留规则；实际UI缺一靶时不通关，出口旁补齐后判胜；两项回归通过"
+    },
+    {
+      "finding": "08/09只有轨靶开门，没有逻辑门",
+      "result": "设计、配置、场景、提示及路线改为持续压板b与轨靶接真实AND；四输入与实际通关通过"
+    },
+    {
+      "finding": "10白侧空场景，同类12也为空",
+      "result": "补齐对应地面和薄墙；实际白侧截图检查通过，电路仍在夜侧"
+    },
+    {
+      "finding": "虚影复用模型在重生成时从旧位滑过墙",
+      "result": "按present生命周期在出生坐标出现，实际可见帧始终x=5"
+    },
+    {
+      "finding": "实测发现同帧RAF时间戳早于输入，负elapsed误清碰撞",
+      "result": "展示层将已激活动作的elapsed下界钳为0；帧采样与旧动效回归通过"
+    },
+    {
+      "finding": "初次浏览器动效测试受偏好生效时机与采样起点影响",
+      "result": "等待偏好控件状态、在输入前建立采样；不替换时钟或降低标准"
+    },
+    {
+      "finding": "初始第11参考回放多推一次、未知schema入口校验不足",
+      "result": "修正回放步骤并拒绝未知schema；没有改地图放宽通关条件"
+    }
+  ],
+  "unexecuted": [
+    "3—5位独立新玩家理解、乐趣、难度与时长测试",
+    "全状态搜索和连续物理验证",
+    "Godot完整关卡迁移、原生Metal或真实手机验收",
+    "2.0远程发布、生产部署与发布回退演练"
+  ],
+  "artifacts": {
+    "raw": "output/playwright/（Git忽略）",
+    "build": "dist/index.html、web/generated/app.js（Git忽略）",
+    "raw_sha256": {
+      "output/playwright/live-results.json": "5a6a8bbcc431c2edddf358305e9e2b2754ff3751ccad28859104b10dd92d8ded",
+      "output/playwright/mixed-results.json": "555574a8c738e1cbe8b0ac27f518af4db9eaad817fc9d679382cf8dbfcfe17dd"
+    },
+    "design_models": "历史设计模型保留原哈希，不继承到新增08/09 AND版本"
+  }
+}

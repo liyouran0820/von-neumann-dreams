@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { doorOpen } from './engine.js';
+import { doorOpen, bridgeActive } from './engine.js';
+import { entitySpec, entityAt } from './entities.js';
 import { scienceResult } from './science.js';
 import { stopImpactPose, voidFallPose, VOID_FALL_MS } from './motion.js';
 
@@ -41,9 +42,13 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  }
  function applyImpact(v,now){
   if(!v.crateVisual)return false;
-  const pose=stopImpactPose(v.impact?now-v.impact.startedAt:-1,v.impact?.direction,reduced);
-  v.crateVisual.position.x=pose.x;v.crateVisual.rotation.z=pose.rotation;v.crateVisual.scale.set(pose.scaleX,pose.scaleY,1);
-  v.impactDecoration.position.set(v.impact?.direction==='left'?-.32:.32,.4,0);
+  const vertical=['up','down'].includes(v.impact?.direction),direction=v.impact?.direction==='up'?'left':v.impact?.direction==='down'?'right':v.impact?.direction;
+  // RAF timestamps may precede an input received later in that same frame.
+  // Keep a newly started impact alive until its first elapsed frame.
+  const pose=stopImpactPose(v.impact?Math.max(0,now-v.impact.startedAt):-1,direction,reduced);
+  v.crateVisual.position.set(vertical?0:pose.x,0,vertical?pose.x:0);v.crateVisual.rotation.set(vertical?-pose.rotation:0,0,vertical?0:pose.rotation);v.crateVisual.scale.set(vertical?1:pose.scaleX,pose.scaleY,vertical?pose.scaleX:1);
+  v.impactDecoration.rotation.y=vertical?Math.PI/2:0;
+  v.impactDecoration.position.set(vertical?0:direction==='left'?-.32:.32,.4,vertical?(direction==='left'?-.32:.32):0);
   v.impactDecoration.scale.setScalar(pose.spread);v.impactDecoration.visible=pose.active;
   for(const m of ownMaterials(v.impactDecoration))m.opacity=pose.flash;
   for(const spark of v.impactDecoration.children.slice(1))spark.visible=!reduced;
@@ -136,6 +141,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  }
  function build(v){
  clean(v.root);v.pickables=[];v.dynamic=[];v.anchors=[];v.bridges=[];v.doors=[];v.targets=[];v.player=null;v.fall=null;v.crate=null;v.crateVisual=null;v.impact=null;v.impactDecoration=null;
+ v.newEntities=[];v.newSupports=[];v.newPlates=[];
  const p=PALETTE[v.world],rows=level.grids[v.world],W=rows[0].length,H=rows.length;v.root.position.set(-(W-1)/2,0,-(H-1)/2);
  const marker=v.world==='day'?0xa67c29:GOLD;
  const stone=mat(p.stone),edge=mat(p.edge),wall=mat(p.wall),pit=mat(p.pit),glass=mat(v.world==='day'?0x9dc8cd:0x719db7,{transparent:true,opacity:.4,roughness:.24,depthWrite:false}),gold=mat(marker,{emissive:marker,emissiveIntensity:.12}),track=mat(v.world==='day'?0xc3cdd0:0x303e55);
@@ -143,6 +149,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  const ground=new THREE.Mesh(new THREE.PlaneGeometry(160,160),new THREE.ShadowMaterial({color:v.world==='day'?0x34484e:0x061629,opacity:v.world==='day'?.18:.3}));ground.rotation.x=-Math.PI/2;ground.position.set((W-1)/2,-1.65,(H-1)/2);ground.receiveShadow=true;v.root.add(ground);
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
   const t=rows[y][x],b=level.bridges.find(b=>inside(x,y,b)),chasm=t==='~'||'bc'.includes(t)||(t==='E'&&level.id==='G5');
+  if(level.schemaVersion===2&&t===' ')continue;
   if(chasm){box(v.root,x,-1.52,y,.998,.12,.998,pit,.005);}else{
    const floor=box(v.root,x,-.29,y,.996,.58,.996,stone,.014);floor.userData.pick={kind:'cell',x,y};v.pickables.push(floor);
    // One continuous dark lower course gives the diorama its substantial edge.
@@ -151,7 +158,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   if(t==='#'){
    const outer=x===0||y===0||x===W-1||y===H-1;
    // Boundary walls use narrow parapets instead of obscuring the entire edge cell.
-   const w=outer&&(x===0||x===W-1)?.2:.96,d=outer&&(y===0||y===H-1)?.2:.96,h=outer?.55:1.04;
+   const w=level.schemaVersion===2?.15:outer&&(x===0||x===W-1)?.2:.96,d=outer&&(y===0||y===H-1)?.2:.96,h=outer?.55:1.04;
    const mesh=box(v.root,x,h/2,y,w,h,d,wall,.035);mesh.userData.pick={kind:'cell',x,y};v.pickables.push(mesh);
    if(outer&&((x===0||x===W-1)&&(y===0||y===H-1)))box(v.root,x,.37,y,.3,.74,.3,stone,.025);
   }
@@ -177,10 +184,10 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  if(v.world==='night'){
   const cells=level.exit,midY=cells.reduce((a,c)=>a+c[1],0)/cells.length,x=cells[0][0],depth=cells.length>1?2:.85;const goldLight=mat(GOLD,{emissive:GOLD,emissiveIntensity:.4});for(const z of [midY-depth/2,midY+depth/2]){box(v.root,x,.45,z,.07,.9,.07,wall,.015);box(v.root,x,.47,z,.026,.8,.026,goldLight,.004);}const lintel=box(v.root,x,.94,midY,.035,.025,depth,goldLight,.004);lintel.castShadow=false;v.anchors.push({kind:'exit',cell:[x,midY],height:.2});
  }
- buildScience(v);v.player=character(v);
+ if(level.schemaVersion===2)buildEntities(v);else buildScience(v);v.player=character(v);
  const extent=Math.max(W,H);Object.assign(v.sun.shadow.camera,{left:-extent,right:extent,top:extent,bottom:-extent,near:1,far:60});v.sun.shadow.camera.updateProjectionMatrix();
  }
- function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),...(a.label?{label:a.label}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2};});}
+ function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});for(const e of v.newEntities||[]){if(!e.spec.ghost&&e.spec.group)result.push({kind:'object',id:e.spec.group,cell:[e.g.position.x,e.g.position.z],height:e.spec.height+.1});else if(e.g.visible&&(e.spec.ghost||e.spec.kind==='weight'))result.push({kind:'readout',id:'entity-'+e.id,label:e.spec.ghost?e.spec.group+'影':e.id,cell:[e.g.position.x,e.g.position.z],height:e.spec.height+.1});}return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),...(a.label?{label:a.label}:{}),...(a.signal?{signal:a.signal}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2};});}
  function draw(){if(disposed||!level||document.hidden)return;for(const v of scenes){if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
  function frame(now){
   raf=0;if(disposed||document.hidden)return;
@@ -189,14 +196,16 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
    for(const a of v.dynamic){a.obj.position.set(THREE.MathUtils.lerp(a.from.x,a.to.x??a.from.x,e),THREE.MathUtils.lerp(a.from.y,a.to.y??a.from.y,e),THREE.MathUtils.lerp(a.from.z,a.to.z??a.from.z,e));if(a.to.opacity!==undefined)opacity(a.obj,THREE.MathUtils.lerp(a.from.opacity,a.to.opacity,e));}
    if(t>=1)v.dynamic=[];else if(v.dynamic.length)running=true;
    if(applyImpact(v,now))running=true;
+   for(const entity of v.newEntities||[]){if(applyImpact(entity,now))running=true;if(entity.fall!==null){const pose=voidFallPose(now-entity.fall,reduced);entity.g.position.y=pose.y;opacity(entity.g,pose.opacity);if(pose.active)running=true;}}
    if(applyFall(v,now))running=true;
   }
   draw();if(running)raf=requestAnimationFrame(frame);
  }
  function update(next,{type,direction,instant=false}={}){
   if(!level||disposed)return;state=next;if(raf){cancelAnimationFrame(raf);raf=0;}
+  const bodyFalling=state.failed&&(level.schemaVersion!==2||state.fallen.includes('body'));
   for(const v of scenes){v.dynamic=[];const body=state.body;
-   if(!state.failed){v.fall=null;resetPlayer(v);v.player.visible=body.world===v.world;patch(v,v.player,{x:body.x,y:0,z:body.y});}
+   if(!bodyFalling){v.fall=null;resetPlayer(v);v.player.visible=body.world===v.world;patch(v,v.player,{x:body.x,y:0,z:body.y});}
    else if(!lastFailed&&body.world===v.world){v.fall={startedAt:performance.now(),x:body.x,z:body.y,finished:false};applyFall(v,performance.now());}
    else if(!v.fall)v.player.visible=false;
    if(v.crate){v.crate.userData.pick.x=state.boxes[v.world];
@@ -210,17 +219,96 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
     else patch(v,v.crate,{x:state.boxes[v.world],y:0,z:level.track.y});
    }
    for(const target of v.targets)for(const m of ownMaterials(target)){m.emissiveIntensity=state.boxes[v.world]===level.track.targets[v.world]?1:.08;}
-   for(const d of v.doors){const occupied=!!level.science&&body.world===v.world&&body.x===d.position.x&&body.y===d.position.z;const open=doorOpen(level,state,v.world,d.position.x,d.position.z)||occupied;patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}
-   updateScience(v);
+   for(const d of v.doors){const occupied=(!!level.science&&body.world===v.world&&body.x===d.position.x&&body.y===d.position.z)||(level.schemaVersion===2&&((e)=>e&&!e.ghost)(entityAt(level,state,v.world,d.position.x,d.position.z)));const open=doorOpen(level,state,v.world,d.position.x,d.position.z)||occupied;patch(v,d,{y:open?1.35:0,opacity:open?.13:1});}
+   if(level.schemaVersion===2)updateEntities(v,type,direction);else updateScience(v);
    for(const b of v.bridges){const active=state.mapping===b.id;patch(v,b.g,{y:active?0:-.22,opacity:active?1:0});b.preview.visible=state.preview?.id===b.id&&!active;b.stripes.visible=active&&!!state.preview&&state.preview.id!==b.id;}
    for(const o of v.pickables)if(o.userData.bridgeId)o.visible=state.mapping===o.userData.bridgeId;
   }
-  lastFailed=state.failed;
-  animationStart=performance.now();if(instant||reduced||type==='undo'||type==='recover'){animationStart-=200;frame(performance.now());}else if(type==='push'&&scenes.some(v=>v.impact))frame(performance.now());else raf=requestAnimationFrame(frame);
+  lastFailed=bodyFalling;
+  animationStart=performance.now();if(instant||reduced||type==='undo'||type==='recover'){animationStart-=200;frame(performance.now());}else if(scenes.some(v=>v.impact||(v.newEntities||[]).some(e=>e.impact)))frame(performance.now());else raf=requestAnimationFrame(frame);
+ }
+ function buildEntities(v){
+  const initialSignals=scienceResult(level,state).signals;
+  v.instruments=[];v.beams=new THREE.Group();v.root.add(v.beams);v.scienceSignature='';
+  const ids=[...level.entities.filter(e=>e.world===v.world).map(e=>e.id),...Object.values(level.groups).filter(g=>g.ghostId&&g.target===v.world).map(g=>g.ghostId)];
+  const trackMaterial=mat(PALETTE[v.world].edge);
+  for(const id of ids){
+   const spec=entitySpec(level,id),g=new THREE.Group(),visual=new THREE.Group();g.add(visual);
+   const source=state.entities[id]||state.entities[level.groups[spec.group]?.source]||spec.cell;g.position.set(source[0],0,source[1]);
+   if(spec.kind==='fixed'&&!spec.ghost&&level.grids[v.world][source[1]][source[0]]===' ')box(v.root,source[0],-.13,source[1],.98,.26,.98,mat(PALETTE[v.world].stone));
+   const material=mat(spec.ghost?0x65bcd3:spec.kind==='weight'?0xb5aa8b:0x9ba9ad,{emissive:spec.ghost?0x267b99:0,emissiveIntensity:spec.ghost?.3:0});
+   if(spec.kind==='screen'){box(visual,0,.14,0,.58,.28,.45,material);box(visual,0,1.05,0,.78,1.7,.16,material,.03);}
+   else {box(visual,0,.3,0,.56,.6,.56,material,.035);box(visual,-.288,.3,0,.02,.4,.075,mat(GOLD),.004);}
+   if(!spec.ghost&&spec.group){g.userData.pick={kind:'object',id:spec.group};v.pickables.push(g);}
+   g.visible=!!state.entities[id];g.userData.entityId=id;v.root.add(g);const decoration=impactDecoration(v,g);
+   let preview=null;if(spec.ghost){preview=new THREE.LineSegments(new THREE.EdgesGeometry(geo(.78,spec.height,.6)),new THREE.LineDashedMaterial({color:CYAN,dashSize:.12,gapSize:.08,transparent:true,opacity:.8}));preview.computeLineDistances();preview.visible=false;v.root.add(preview);}
+   v.newEntities.push({id,spec,g,preview,present:!!state.entities[id],crateVisual:visual,impactDecoration:decoration,impact:null,fall:null});
+   if(spec.rail){
+    for(const [x,y] of spec.rail){
+     if(!level.grids[v.world][y][x].trim()){box(v.root,x,-.13,y,.97,.26,.97,mat(PALETTE[v.world].stone));}
+     for(const z of [-.27,.27])box(v.root,x,.035,y+z,.97,.024,.02,trackMaterial,.004);
+     if(!spec.nearPush){for(const z of [-.4,.4]){const rail=box(v.root,x,.3,y+z,.99,.6,.025,mat(CYAN,{transparent:true,opacity:.25,depthWrite:false}),.004);rail.userData.glass=true;rail.castShadow=false;}}
+    }
+    const cells=spec.rail,ys=cells[0][1];
+    for(const end of [-1,1])for(const [x] of cells)if(!cells.some(p=>p[0]===x+end)){box(v.root,x+end*.43,.16,ys,.075,.32,.7,trackMaterial,.008);}
+   }
+  }
+  for(const group of Object.values(level.groups).filter(g=>g.kind==='bridge')){
+   const cells=group.cells,x=cells.map(p=>p[0]),y=cells.map(p=>p[1]),b={id:group.id,x:[Math.min(...x),Math.max(...x)],y:[Math.min(...y),Math.max(...y)]};
+   if(group.world===v.world||group.target===v.world){
+    const ghost=group.target===v.world,g=bridgeGroup(v,b,ghost),preview=ghost?previewBridge(v,b):null;
+    opacity(g,bridgeActive(level,state,group.id)&&(!ghost||state.mapping===group.id)?1:0);v.newSupports.push({g,group,ghost,preview});
+    if(!ghost)v.anchors.push({kind:'object',id:group.id,cell:[(b.x[0]+b.x[1])/2,(b.y[0]+b.y[1])/2],height:.1});
+    else for(const [cx,cy] of cells){const pickSurface=new THREE.Mesh(new THREE.PlaneGeometry(.99,.99),new THREE.MeshBasicMaterial({visible:false}));pickSurface.rotation.x=-Math.PI/2;pickSurface.position.set(cx,.02,cy);pickSurface.userData.pick={kind:'cell',x:cx,y:cy};pickSurface.userData.v2Bridge=group.id;v.root.add(pickSurface);v.pickables.push(pickSurface);}
+   }
+  }
+  for(const deck of level.decks.filter(h=>h.world===v.world)){
+   for(const [x,y] of deck.cells){const g=bridgeGroup(v,{id:deck.id,x:[x,x],y:[y,y]},true);opacity(g,initialSignals[deck.signal]?1:0);v.newSupports.push({g,deck});}
+   v.anchors.push({kind:'readout',id:'deck-'+deck.id,label:deck.label+' · '+deck.signal,signal:deck.signal,cell:[deck.cells.reduce((a,c)=>a+c[0],0)/deck.cells.length,deck.cells.reduce((a,c)=>a+c[1],0)/deck.cells.length],height:.08});
+  }
+  for(const c of level.science.circuits)for(const input of c.inputs){
+   const world=input.world||entitySpec(level,input.entity)?.world||c.world;if(world!==v.world||input.type==='sensor')continue;
+   for(const [x,y] of input.cells||[input.cell]){const lens=mat(GOLD,{emissive:GOLD,emissiveIntensity:.1});box(v.root,x,.014,y,.7,.028,.7,lens,.04);ring(v.root,x,.035,y,.28,CYAN);v.newPlates.push({input:input.id,lens});v.anchors.push({kind:'readout',id:'input-'+input.id,label:input.id,cell:[x,y],height:.05});}
+  }
+  for(const goal of level.requirements.filter(g=>g.type==='position'&&entitySpec(level,g.entity)?.world===v.world)){
+   const existing=level.science.circuits.some(c=>c.inputs.some(i=>i.entity===goal.entity&&i.cell?.[0]===goal.cell[0]&&i.cell?.[1]===goal.cell[1]));if(existing)continue;
+   const [x,y]=goal.cell,lens=mat(GOLD,{emissive:GOLD,emissiveIntensity:.1});box(v.root,x,.014,y,.7,.028,.7,lens,.04);ring(v.root,x,.035,y,.28,CYAN);
+   v.newPlates.push({entity:goal.entity,cell:goal.cell,lens});v.anchors.push({kind:'readout',id:'goal-'+goal.entity,label:v.world==='night'?'夜靶':'白靶',cell:goal.cell,height:.05});
+  }
+  for(const d of level.doors.filter(d=>d.world===v.world))v.anchors.push({kind:'readout',id:d.id,label:d.label,cell:d.cells[0],height:1.2});
+  const optical=level.science.optics[v.world];if(optical){
+   for(const [x,y] of optical.absorbers||[])box(v.root,x,1.6,y,.55,.45,.08,mat(PALETTE[v.world].edge));
+   for(const e of optical.emitters){box(v.root,...[e.cell[0],1.6,e.cell[1]],.3,.25,.3,mat(GOLD));v.anchors.push({kind:'readout',id:e.id,label:'光源',cell:e.cell,height:1.8});}
+   for(const m of optical.mirrors){const face=new THREE.Group();face.position.set(m.cell[0],1.6,m.cell[1]);box(face,0,0,0,.65,.55,.05,mat(0xbadbe2,{roughness:.16,metalness:.5}));v.root.add(face);if(m.rotatable){face.userData.pick={kind:'mirror',id:m.id};v.pickables.push(face);}v.instruments.push({kind:'mirror',id:m.id,face});v.anchors.push({kind:m.rotatable?'mirror':'readout',id:m.id,label:'固定镜',cell:m.cell,height:1.8});}
+   for(const sensor of optical.sensors){const lens=mat(CYAN,{emissive:CYAN,emissiveIntensity:.1});box(v.root,sensor.cell[0],1.6,sensor.cell[1],.24,.35,.24,lens,.05);v.instruments.push({kind:'sensor',id:sensor.id,lens});v.anchors.push({kind:'sensor',id:sensor.id,label:sensor.id,cell:sensor.cell,height:1.82});}
+  }
+ }
+ function updateEntities(v,type,direction){
+  const result=scienceResult(level,state);
+  for(const e of v.newEntities){
+   if(e.preview){const group=level.groups[e.spec.group],source=state.entities[group.source];e.preview.visible=state.preview?.id===group.id&&state.mapping!==group.id;if(source)e.preview.position.set(source[0],e.spec.height/2,source[1]);}
+   const cell=state.entities[e.id];if(!cell){e.present=false;e.g.visible=false;e.impact=null;e.fall=null;continue;}
+   if(!e.present){e.g.position.set(cell[0],0,cell[1]);e.present=true;}
+   if(!state.fallen.includes(e.id)){e.fall=null;opacity(e.g,1);patch(v,e.g,{x:cell[0],y:0,z:cell[1]});}
+   else if(e.fall===null)e.fall=performance.now();
+   if(type==='undo'||type==='recover')e.impact=null;
+   else if(type==='push'||type==='move'){
+    const f=state.feedback?.[e.id],d=Array.isArray(direction)?direction[0]<0?'left':direction[0]>0?'right':direction[1]<0?'up':'down':direction;
+    e.impact=f?.blocked?{startedAt:performance.now(),direction:d}:null;
+    if(e.impact)e.g.position.set(cell[0],0,cell[1]);
+   }
+   if(e.spec.group)e.g.userData.pick&&(e.g.userData.pick.x=cell[0],e.g.userData.pick.y=cell[1]);
+  }
+  for(const b of v.newSupports){const active=b.deck?result.signals[b.deck.signal]:bridgeActive(level,state,b.group.id)&&(!b.ghost||state.mapping===b.group.id);patch(v,b.g,{y:active?0:-.35,opacity:active?1:0});if(b.preview)b.preview.visible=state.preview?.id===b.group.id&&!active;}
+  for(const p of v.newPlates){const on=p.entity?state.entities[p.entity]?.[0]===p.cell[0]&&state.entities[p.entity]?.[1]===p.cell[1]:result.signals[p.input];p.lens.emissiveIntensity=on?.75:.05;}
+  for(const o of v.pickables)if(o.userData.v2Bridge)o.visible=state.mapping===o.userData.v2Bridge&&bridgeActive(level,state,o.userData.v2Bridge);
+  const optics=result.opticsByWorld[v.world],signature=JSON.stringify([state.science, optics]);if(signature===v.scienceSignature)return;v.scienceSignature=signature;clean(v.beams);
+  for(const item of v.instruments){if(item.kind==='mirror')item.face.rotation.y=state.science.mirrors[item.id]==='/'?Math.PI/4:-Math.PI/4;else{const on=optics.hits.includes(item.id);item.lens.color.setHex(on?0x55c6c0:0x6b7883);item.lens.emissiveIntensity=on?.7:.05;}}
+  for(const line of optics.segments){beam(v.beams,line.from,line.to,0x99723d,.035,1.6);beam(v.beams,line.from,line.to,0xffd278,.017,1.6);}
  }
  function resize(){if(disposed)return;for(const v of scenes){const r=v.host.getBoundingClientRect();v.width=Math.max(1,r.width);v.height=Math.max(1,r.height);v.renderer.setSize(v.width,v.height,false);}if(!level)return;
   // Fit the same complete map envelope in both views, never the current objects.
-  const W=level.grids.day[0].length,H=level.grids.day.length,camera=scenes[0].camera;camera.updateMatrixWorld();let maxX=0,maxY=0;for(const x of [-W/2,W/2])for(const z of [-H/2,H/2])for(const y of [-1.65,1.7]){const p=new THREE.Vector3(x,y,z).applyMatrix4(camera.matrixWorldInverse);maxX=Math.max(maxX,Math.abs(p.x));maxY=Math.max(maxY,Math.abs(p.y));}
+  const W=level.grids.day[0].length,H=level.grids.day.length,camera=scenes[0].camera;camera.updateMatrixWorld();let maxX=0,maxY=0;for(const x of [-W/2,W/2])for(const z of [-H/2,H/2])for(const y of [-1.65,level.schemaVersion===2?2.25:1.7]){const p=new THREE.Vector3(x,y,z).applyMatrix4(camera.matrixWorldInverse);maxX=Math.max(maxX,Math.abs(p.x));maxY=Math.max(maxY,Math.abs(p.y));}
   const padding=level.academy?36:180;
   const needed=Math.max(...scenes.map(v=>Math.max(maxY*1.1/(Math.max(.5,(v.height-padding)/v.height)),maxX*1.1/(v.width/v.height))));
   for(const v of scenes){const h=needed/zoomFactor,a=v.width/v.height;v.camera.left=-h*a;v.camera.right=h*a;v.camera.top=h;v.camera.bottom=-h;v.camera.updateProjectionMatrix();}draw();

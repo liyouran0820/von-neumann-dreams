@@ -6,7 +6,7 @@
 
 - 全程使用中文沟通，默认环境为 Apple Silicon Mac。
 - 接手时先阅读 `PROJECT_INTRODUCTION.md`、本文件、`README.md`、`log.md` 和相关设计文档，以当前文件与 Git 状态为准。
-- 当前已进入可玩原型阶段；已实现范围与验证结果以 `docs/NATIVE_DEMO_STATUS.md`、验收登记、源码和检查记录为准；旧版本由历史文档与 Git 保留。
+- 当前已进入可玩原型阶段；已实现范围与验证结果以 `docs/V2_DEMO_STATUS.md`、`docs/NATIVE_DEMO_STATUS.md`、验收登记、源码和检查记录为准；旧版本由历史文档与 Git 保留。
 - 区分来源内容、合并建议、已实现功能和验证结果。概念笔记中的示例不作为已批准的功能规格或已验证的数据。
 - 保持来源可追溯，不修改用户 Downloads 或 Desktop 中的原始设计笔记；来源快照记录路径与校验值，开发指令以用户要求为准。
 - 规范维护 Git，大体积构建产物、安装包、本地配置和临时验证文件加入 `.gitignore`。
@@ -25,6 +25,7 @@
 | `docs/NIGHT_WHITE_DEMO.md` | 历史网页五关范围与检查 | 明确历史版本，不能转标原生通过 |
 | `docs/LOGIC_GATES_CURRICULUM.md` | 当前五关逻辑课程、知识与玩法边界及验证 | 与实际配置一致；不转标原生或真人验收 |
 | `docs/ACADEMY_LOGIC_OPTICS.md` | 历史逻辑光学试验及回溯 | 保留已知缺陷与被替代的范围 |
+| `docs/V2_DEMO_STATUS.md` | 十三关网页候选、运行、反馈修复及工程验证 | 关联实际源码与证据，区分工程、独立试玩、原生和发布 |
 | `docs/NATIVE_DEMO_STATUS.md` | 当前原生阶段、运行和验证范围 | 关联实际被测提交与证据，不把未执行项算通过 |
 | `docs/acceptance/` | 阶段预期、状态和证据摘要 | 只有PASS计入完成，保留失败与修复历史 |
 | `docs/requirements_gap_analysis.md` | 新要求与现场差距 | 随实际证据更新可复用、迁移和外部条件 |
