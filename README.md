@@ -6,11 +6,13 @@
 
 ## 午夜学院 · 夜白映射
 
+`von-neumann-dreams/` 是完整项目根目录，运行和修改均在此目录内进行。新维护者先读[工程维护入口](docs/MAINTENANCE.md)，了解模块职责、存储兼容和检查边界。
+
 Godot原生迁移另按用户的开发计划 v1.2 记录，环境为 **Godot 4.7.2 / Forward+ / Metal / macOS arm64**。P00 原生启动、测试运行器与干净导出已通过；P01状态与几何模块已保存，81项模块检查通过。原生五关玩法、完整视觉和真人验收尚未完成。
 
 默认网页按五关学习 **AND → OR → NOT → XOR → NAND与组合**。光门保留为玩法，镜面改变感应器的0/1输入；第二关器材穿模已修复，第四关采用异或联动双门，第三关保持单光门。具体规则、验证和回溯方法见[逻辑门课程](docs/LOGIC_GATES_CURRICULUM.md)。原生进度仍以[原生状态](docs/NATIVE_DEMO_STATUS.md)为准，网页结果不转标原生通过。
 
-2.0关卡更新按[开发计划v2.0](开发计划v2.0.md)在现有网页上增量实施：保留原版本关卡与进度，新增独立十三关，复用系统、脚本和资源，新UI保持现有设计语言。十三关已接入网页候选，使用`?version=v2`或选馆菜单进入；默认旧五关、历史入口与存档保留。98项自动检查和35条实际浏览器通关路线通过，独立玩家试玩仍待执行，详见[2.0网页状态](docs/V2_DEMO_STATUS.md)。
+2.0关卡更新按[开发计划v2.0](开发计划v2.0.md)在现有网页上增量实施：保留原版本关卡与进度，新增独立十三关，复用系统、脚本和资源，新UI保持现有设计语言。十三关已接入网页候选，使用`?version=v2`或选馆菜单进入；默认旧五关、历史入口与存档保留。本轮维护后108项自动检查和十三关参考路线通过；既有35条实际浏览器通关路线的记录与独立玩家试玩边界见[2.0网页状态](docs/V2_DEMO_STATUS.md)。
 
 ## 功能实现状态
 
@@ -46,6 +48,7 @@ Godot原生迁移另按用户的开发计划 v1.2 记录，环境为 **Godot 4.7
 | [web/academy-levels.js](web/academy-levels.js) | 默认旧五关逻辑课程配置 |
 | [web/levels-v2.js](web/levels-v2.js) | 独立十三关实体、接线、地图、目标与提示 |
 | [web/level-catalog.js](web/level-catalog.js) | 关卡目录与独立存储 |
+| [web/notebook.js](web/notebook.js) | 新旧札记校验、内存记录和兼容持久化 |
 | [web/level-validation.js](web/level-validation.js) | 新格式、引用、光学与跨世界接线校验 |
 | [web/science.js](web/science.js) | 逻辑电路与光学规则 |
 | [web/course-ui.js](web/course-ui.js) | 课程电路面板与实验札记 |
@@ -81,14 +84,12 @@ python3 tools/verify.py --stage P00 --engine "$DEMO_GODOT_BIN" --window-probe --
 ```bash
 npm ci
 npm run dev
-npm test
-npm run verify:v2
-npm run build
+npm run check
 ```
 
 单文件上传2.0：运行`npm run build -- --default-version=v2`，上传生成的`dist/index.html`，打开文件或服务器根地址即可进入十三关。普通`npm run build`保持默认旧五关；导出文件仍可从菜单切换旧关，显式版本查询参数优先。
 
-Node.js 20+；Three.js 与 esbuild 版本锁定，无运行时 CDN。构建输出保持 Git 忽略。该网页呈现版本未完成全关视觉验收；详见 [网页试验记录](docs/WEB_DIORAMA_WIP.md)。
+Node.js 20+ 和 npm；Three.js 与 esbuild 版本锁定，无运行时 CDN。`npm run check` 依次执行自动测试、旧五关路线、十三关路线和构建，失败即停止；细分入口见[工程维护入口](docs/MAINTENANCE.md)。构建输出保持 Git 忽略。视觉与验收边界见对应版本的状态文档。
 
 ## 需求与文档
 

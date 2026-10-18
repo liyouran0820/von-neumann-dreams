@@ -176,7 +176,7 @@ function handlePick(pick) {
   })();
 }
 function load(i) {
-  walking++; if(i<0||i>=LEVELS.length)return; focusedMirror=null;focusedSource=0;index = i; level = LEVELS[i]; state = Game.createState(level); hint = 0; lastAction = '';
+  walking++; if(!Number.isInteger(i)||i<0||i>=LEVELS.length)return; focusedMirror=null;focusedSource=0;index = i; level = LEVELS[i]; state = Game.createState(level); hint = 0; lastAction = '';
   const collapsed=level.schemaVersion===2&&matchMedia('(max-width:720px)').matches&&level.science.circuits.reduce((n,c)=>n+c.nodes.length,0)>1;document.body.classList.toggle('course-collapsed',collapsed);$('course-collapse').setAttribute('aria-expanded',String(!collapsed));$('course-collapse').textContent=collapsed?'展开':'收起';
   message = level.schemaVersion===2?'':level.track ? '先点实验箱，查看两侧的映射。' : '比较两侧的桥，点真实桥查看预览。';
   $('hint-text').hidden = true; $('hint-text').textContent = ''; $('hint').textContent = '给我一点提示';

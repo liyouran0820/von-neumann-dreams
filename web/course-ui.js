@@ -1,11 +1,9 @@
 import { scienceResult } from './science.js';
+import { createNotebook } from './notebook.js';
 const $ = id => document.getElementById(id);
-let NOTES_KEY = new URLSearchParams(location.search).get('version') === 'optics' ? 'night-white-academy-v1-notes' : 'night-white-logic-gates-v1-notes';
 let welcomeKey='academy-welcomed';
-let notes = {};
+let notebook;
 let welcomed = false;
-try { welcomed = sessionStorage.getItem('academy-welcomed') === 'yes'; } catch { /* optional storage */ }
-try { const saved = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}'); if (saved && typeof saved === 'object') notes = saved; } catch { /* optional storage */ }
 const bit = value => value ? '1' : '0';
 const color = value => value ? '#71ddd0' : '#71818c';
 function wire(d, on) { return `<path d="${d}" fill="none" stroke="${color(on)}" stroke-width="3" stroke-linecap="round"/>`; }
@@ -103,12 +101,8 @@ export function renderCourse(level, state, index) {
   const rules={and:'两路都为 1，输出才为 1。',or:'至少一路为 1，输出就是 1。',not:'输入与输出相反：1 → 0，0 → 1。',xor:'两路不同输出 1；相同输出 0。',nand:'第二门两端都接 C，再取反一次。'};
   $('science-angle').textContent=config.doors?'两个开关共同控制两道门。':config.lessonGate?rules[config.lessonGate]:(result.optics.bounces.length?'入射 45° = 反射 45° · 虚线为法线':'让光线经过镜面，观察入射与反射。');
   const key = config.inputs.map(i => bit(result.signals[i.id])).join('');
-  if (!notes[level.id] || typeof notes[level.id] !== 'object') notes[level.id] = {};
   const record={gate:result.lessonOutput,door:result.output,...(config.doors?{front:result.doors.front}:{})};
-  if (JSON.stringify(notes[level.id][key]) !== JSON.stringify(record)) {
-    notes[level.id][key] = record;
-    try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch { /* optional storage */ }
-  }
+  notebook.observe(level.id, key, record);
 }
 
 export function showNotebook(level) {
@@ -118,21 +112,21 @@ export function showNotebook(level) {
   $('notebook-results').hidden = !config;
   if (config) {
     if(level.schemaVersion===2){showV2Notebook(level);$('notebook-dialog').showModal();return;}
-    const ids = config.inputs.map(i => i.id), records = notes[level.id] || {};
+    const ids = config.inputs.map(i => i.id);
     const rows = Array.from({length:2 ** ids.length}, (_,i) => i.toString(2).padStart(ids.length,'0'));
     const combined=config.lessonGate==='nand', paired=!!config.doors;
-    $('notebook-table').innerHTML = `<thead><tr>${ids.map(id=>'<th>'+id+'</th>').join('')}${combined?'<th>与非 C</th>':''}${paired?'<th>前门 ¬Y</th>':''}<th>${paired?'后门 Y':'输出 Y'}</th></tr></thead><tbody>${rows.map(key=>{const seen=Object.hasOwn(records,key),entry=records[key];const record=typeof entry==='boolean'?{gate:entry,door:entry}:entry;return `<tr class="${seen?'observed':''}">${[...key].map(value=>'<td>'+value+'</td>').join('')}${combined?'<td>'+(seen?bit(record.gate):'—')+'</td>':''}${paired?'<td>'+(seen&&typeof record.front==='boolean'?bit(record.front):'—')+'</td>':''}<td>${seen?bit(record.door):'—'}</td></tr>`;}).join('')}</tbody>`;
+    $('notebook-table').innerHTML = `<thead><tr>${ids.map(id=>'<th>'+id+'</th>').join('')}${combined?'<th>与非 C</th>':''}${paired?'<th>前门 ¬Y</th>':''}<th>${paired?'后门 Y':'输出 Y'}</th></tr></thead><tbody>${rows.map(key=>{const record=notebook.observation(level.id,key),seen=!!record;return `<tr class="${seen?'observed':''}">${[...key].map(value=>'<td>'+value+'</td>').join('')}${combined?'<td>'+(seen?bit(record.gate):'—')+'</td>':''}${paired?'<td>'+(seen&&typeof record.front==='boolean'?bit(record.front):'—')+'</td>':''}<td>${seen?bit(record.door):'—'}</td></tr>`;}).join('')}</tbody>`;
   }
   $('notebook-dialog').showModal();
 }
 export function resetCourseNotes() {
-  notes = {}; welcomed = false;
-  try { if(NOTES_KEY)localStorage.removeItem(NOTES_KEY); sessionStorage.removeItem(welcomeKey); } catch { /* optional storage */ }
+  notebook.clear(); welcomed = false;
+  try { sessionStorage.removeItem(welcomeKey); } catch { /* optional storage */ }
 }
 export function dismissWelcome() { welcomed = true; try { sessionStorage.setItem(welcomeKey,'yes'); } catch { /* optional storage */ } $('welcome').hidden = true; }
 export function setCourseCatalog(catalog){
- NOTES_KEY=catalog.notesKey;welcomeKey=catalog.welcomeKey;notes={};welcomed=false;
- try{welcomed=sessionStorage.getItem(welcomeKey)==='yes';const value=JSON.parse(localStorage.getItem(NOTES_KEY)||'{}');if(value&&typeof value==='object')notes=catalog.id==='v2'?(value.format===1&&value.catalog==='v2'?value.levels||{}:{}):value;}catch{/* optional storage */}
+ notebook=createNotebook(catalog);welcomeKey=catalog.welcomeKey;welcomed=false;
+ try{welcomed=sessionStorage.getItem(welcomeKey)==='yes';}catch{/* optional storage */}
  $('welcome').querySelector('p').textContent=catalog.id==='v2'?'十三项试炼，继续探索夜白之间。':'欢迎，新生。完成五项入学试炼，抵达天文台。';
 }
 function renderV2Course(level,state){
@@ -152,13 +146,12 @@ function renderV2Course(level,state){
  $('science-output').classList.toggle('on',result.output);$('science-observe').hidden=true;$('science-mirror').hidden=true;$('science-angle').hidden=true;
  const mirrors=(config.optics[state.view]?.mirrors||[]).filter(m=>m.rotatable);
  $('science-switches').innerHTML=mirrors.map(m=>`<button data-mirror="${m.id}"${state.failed||state.won?' disabled':''} aria-label="转动${m.id}镜面">${m.id} · ${state.science.mirrors[m.id]}</button>`).join('');
- notes[level.id]||={};for(const c of config.circuits){const r=result.circuits.find(r=>r.id===c.id),key=c.inputs.map(i=>bit(r.signals[i.id])).join('');notes[level.id][c.id]||={};notes[level.id][c.id][key]=r.signals;}
- try{localStorage.setItem(NOTES_KEY,JSON.stringify({format:1,catalog:'v2',levels:notes}));}catch{/* optional storage */}
+ for(const c of config.circuits){const r=result.circuits.find(r=>r.id===c.id),key=c.inputs.map(i=>bit(r.signals[i.id])).join('');notebook.observe(level.id,key,r.signals,c.id);}
 }
 function showV2Notebook(level){
  $('notebook-table').innerHTML=level.science.circuits.map(c=>{
-  const records=notes[level.id]?.[c.id]||{},ids=c.inputs.map(i=>i.id),outputs=c.nodes.map(n=>n.id),rows=Array.from({length:2**ids.length},(_,i)=>i.toString(2).padStart(ids.length,'0'));
-  return `<tbody><tr><th colspan="${ids.length+outputs.length}">${c.id}</th></tr><tr>${[...ids,...outputs].map(id=>'<th>'+id+'</th>').join('')}</tr>${rows.map(key=>'<tr>'+[...key].map(v=>'<td>'+v+'</td>').join('')+outputs.map(id=>'<td>'+(records[key]?bit(records[key][id]):'—')+'</td>').join('')+'</tr>').join('')}</tbody>`;
+  const ids=c.inputs.map(i=>i.id),outputs=c.nodes.map(n=>n.id),rows=Array.from({length:2**ids.length},(_,i)=>i.toString(2).padStart(ids.length,'0'));
+  return `<tbody><tr><th colspan="${ids.length+outputs.length}">${c.id}</th></tr><tr>${[...ids,...outputs].map(id=>'<th>'+id+'</th>').join('')}</tr>${rows.map(key=>{const record=notebook.observation(level.id,key,c.id);return '<tr>'+[...key].map(v=>'<td>'+v+'</td>').join('')+outputs.map(id=>'<td>'+(record?bit(record[id]):'—')+'</td>').join('')+'</tr>';}).join('')}</tbody>`;
  }).join('');
 }
 new ResizeObserver(() => {

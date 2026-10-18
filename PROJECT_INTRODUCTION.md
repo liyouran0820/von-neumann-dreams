@@ -1,6 +1,6 @@
 # 项目介绍
 
-本文件负责项目背景、目标、来源与总体范围。续写更新当前状态；具体规则写入 `docs/FINAL_GAME_PLAN.md`，实现与验证进入 `docs/NIGHT_WHITE_DEMO.md`，经过写入 `log.md`。
+本文件负责项目背景、目标、来源与总体范围。具体规则写入对应设计稿，当前实现与验证从 `README.md` 导航；工程约定见 [维护入口](docs/MAINTENANCE.md)，历史经过写入 `log.md`。`docs/NIGHT_WHITE_DEMO.md` 仅记录历史五关版本。
 
 ## 当前开发计划与实现进度
 
