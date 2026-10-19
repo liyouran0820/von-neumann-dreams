@@ -1,0 +1,409 @@
+{
+  "date": "2026-10-19",
+  "baseline": "8a62051",
+  "surfaceCommit": "cb61ae3",
+  "scope": "web visual presentation only",
+  "overall": "PARTIAL",
+  "checks": {
+    "M01": "PASS",
+    "M02": "PASS",
+    "M03": "PASS",
+    "M04": "PASS",
+    "M05": "PASS",
+    "M06": "PARTIAL"
+  },
+  "automated": {
+    "tests": 108,
+    "pass": 108,
+    "fail": 0,
+    "legacyReferenceRoutes": 5,
+    "v2ReferenceRoutes": 13,
+    "normalBuild": "PASS",
+    "v2Build": "PASS"
+  },
+  "browser": {
+    "routeCount": 28,
+    "inputCount": 528,
+    "responsive": [
+      {
+        "case": "switch-on",
+        "bubbles": [
+          {
+            "height": 44,
+            "id": "B",
+            "width": 44,
+            "x": 608.078125,
+            "y": 294.1171875
+          }
+        ],
+        "height": 800,
+        "scrollWidth": 1280,
+        "width": 1280
+      },
+      {
+        "case": "switch-on",
+        "bubbles": [
+          {
+            "height": 44,
+            "id": "B",
+            "width": 44,
+            "x": 97.234375,
+            "y": 360.0859375
+          }
+        ],
+        "height": 844,
+        "scrollWidth": 390,
+        "width": 390
+      },
+      {
+        "case": "switch-on",
+        "bubbles": [
+          {
+            "height": 44,
+            "id": "B",
+            "width": 44,
+            "x": 80.140625,
+            "y": 293.5234375
+          }
+        ],
+        "height": 740,
+        "scrollWidth": 320,
+        "width": 320
+      },
+      {
+        "case": "two-mirrors",
+        "bubbles": [
+          {
+            "height": 44,
+            "id": "M1",
+            "width": 44,
+            "x": 599.828125,
+            "y": 250.0078125
+          },
+          {
+            "height": 44,
+            "id": "M2",
+            "width": 44,
+            "x": 662.96875,
+            "y": 224.4375
+          }
+        ],
+        "height": 800,
+        "scrollWidth": 1280,
+        "width": 1280,
+        "overlap": false
+      },
+      {
+        "case": "two-mirrors",
+        "bubbles": [
+          {
+            "height": 44,
+            "id": "M1",
+            "width": 44,
+            "x": 85.1015625,
+            "y": 373.1875
+          },
+          {
+            "height": 44,
+            "id": "M2",
+            "width": 44,
+            "x": 137.1015625,
+            "y": 357.8984375
+          }
+        ],
+        "height": 844,
+        "scrollWidth": 390,
+        "width": 390,
+        "overlap": false
+      },
+      {
+        "case": "two-mirrors",
+        "bubbles": [
+          {
+            "height": 44,
+            "id": "M1",
+            "width": 44,
+            "x": 70.1875,
+            "y": 311.4765625
+          },
+          {
+            "height": 44,
+            "id": "M2",
+            "width": 44,
+            "x": 122.1875,
+            "y": 298.9375
+          }
+        ],
+        "height": 740,
+        "scrollWidth": 320,
+        "width": 320,
+        "overlap": false
+      }
+    ],
+    "bubbleStates": [
+      {
+        "case": "v2-12-reflecting",
+        "bubbles": [
+          {
+            "background": "rgba(62, 102, 98, 0.52)",
+            "height": 44,
+            "id": "M1",
+            "kind": "mirror",
+            "on": true,
+            "pressed": null,
+            "shadow": "rgba(255, 240, 184, 0.44) 0px 0px 10px 0px, rgba(123, 218, 207, 0.46) 0px 0px 24px 0px, rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          },
+          {
+            "background": "rgba(62, 102, 98, 0.52)",
+            "height": 44,
+            "id": "M2",
+            "kind": "mirror",
+            "on": true,
+            "pressed": null,
+            "shadow": "rgba(255, 240, 184, 0.44) 0px 0px 10px 0px, rgba(123, 218, 207, 0.46) 0px 0px 24px 0px, rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          }
+        ]
+      },
+      {
+        "case": "v2-12-after-rotate",
+        "bubbles": [
+          {
+            "background": "rgba(62, 102, 98, 0.52)",
+            "height": 44,
+            "id": "M1",
+            "kind": "mirror",
+            "on": true,
+            "pressed": null,
+            "shadow": "rgba(255, 240, 184, 0.44) 0px 0px 10px 0px, rgba(123, 218, 207, 0.46) 0px 0px 24px 0px, rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          },
+          {
+            "background": "rgba(62, 102, 98, 0.52)",
+            "height": 44,
+            "id": "M2",
+            "kind": "mirror",
+            "on": true,
+            "pressed": null,
+            "shadow": "rgba(255, 240, 184, 0.44) 0px 0px 10px 0px, rgba(123, 218, 207, 0.46) 0px 0px 24px 0px, rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          }
+        ]
+      },
+      {
+        "case": "switch-off",
+        "bubbles": [
+          {
+            "background": "rgba(42, 64, 69, 0.48)",
+            "height": 44,
+            "id": "B",
+            "kind": "switch",
+            "on": false,
+            "pressed": "false",
+            "shadow": "rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          }
+        ]
+      },
+      {
+        "case": "switch-on",
+        "bubbles": [
+          {
+            "background": "rgba(62, 102, 98, 0.52)",
+            "height": 44,
+            "id": "B",
+            "kind": "switch",
+            "on": true,
+            "pressed": "true",
+            "shadow": "rgba(255, 240, 184, 0.44) 0px 0px 10px 0px, rgba(123, 218, 207, 0.46) 0px 0px 24px 0px, rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          }
+        ]
+      },
+      {
+        "case": "switch-off-again",
+        "bubbles": [
+          {
+            "background": "rgba(65, 88, 91, 0.56)",
+            "height": 44,
+            "id": "B",
+            "kind": "switch",
+            "on": false,
+            "pressed": "false",
+            "shadow": "rgba(212, 193, 128, 0.2) 0px 0px 0px 2px",
+            "width": 44
+          }
+        ]
+      },
+      {
+        "case": "switch-undo-on",
+        "bubbles": [
+          {
+            "background": "rgba(62, 102, 98, 0.52)",
+            "height": 44,
+            "id": "B",
+            "kind": "switch",
+            "on": true,
+            "pressed": "true",
+            "shadow": "rgba(255, 240, 184, 0.44) 0px 0px 10px 0px, rgba(123, 218, 207, 0.46) 0px 0px 24px 0px, rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          }
+        ]
+      },
+      {
+        "case": "fixture-mirror-blocked",
+        "bubbles": [
+          {
+            "background": "rgba(42, 64, 69, 0.48)",
+            "height": 44,
+            "id": "M",
+            "kind": "mirror",
+            "on": false,
+            "pressed": null,
+            "shadow": "rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          }
+        ]
+      },
+      {
+        "case": "fixture-mirror-lit",
+        "bubbles": [
+          {
+            "background": "rgba(62, 102, 98, 0.52)",
+            "height": 44,
+            "id": "M",
+            "kind": "mirror",
+            "on": true,
+            "pressed": null,
+            "shadow": "rgba(255, 240, 184, 0.44) 0px 0px 10px 0px, rgba(123, 218, 207, 0.46) 0px 0px 24px 0px, rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          }
+        ]
+      },
+      {
+        "case": "fixture-mirror-undo-blocked",
+        "bubbles": [
+          {
+            "background": "rgba(42, 64, 69, 0.48)",
+            "height": 44,
+            "id": "M",
+            "kind": "mirror",
+            "on": false,
+            "pressed": null,
+            "shadow": "rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          }
+        ]
+      }
+    ],
+    "motion": [
+      {
+        "case": "#verify-single",
+        "status": "PASS"
+      },
+      {
+        "case": "#verify-impact",
+        "status": "PASS"
+      },
+      {
+        "case": "#verify-fall",
+        "status": "PASS"
+      }
+    ],
+    "resourcesFirst": {
+      "cycle": 0,
+      "night": {
+        "geometries": 36,
+        "textures": 9,
+        "calls": 227
+      },
+      "day": {
+        "geometries": 12,
+        "textures": 6,
+        "calls": 51
+      }
+    },
+    "resourcesLast": {
+      "cycle": 10,
+      "night": {
+        "geometries": 36,
+        "textures": 9,
+        "calls": 227
+      },
+      "day": {
+        "geometries": 12,
+        "textures": 6,
+        "calls": 51
+      }
+    },
+    "switchesAfterWarmup": 20,
+    "scriptErrors": 0,
+    "entries": [
+      {
+        "entry": "default-inline",
+        "chapter": "入学试炼 1 / 5",
+        "errors": []
+      },
+      {
+        "entry": "v2-inline",
+        "chapter": "2.0试炼 1 / 13"
+      },
+      {
+        "entry": "v2-render-and-select",
+        "bubbles": [
+          {
+            "background": "rgba(62, 102, 98, 0.52)",
+            "height": 44,
+            "id": "M",
+            "kind": "mirror",
+            "on": true,
+            "pressed": null,
+            "shadow": "rgba(255, 240, 184, 0.44) 0px 0px 10px 0px, rgba(123, 218, 207, 0.46) 0px 0px 24px 0px, rgba(22, 39, 44, 0.19) 0px 3px 8px 0px",
+            "width": 44
+          }
+        ],
+        "readouts": [
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "color": "rgb(255, 255, 255)",
+            "stroke": "",
+            "text": "光源"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "color": "rgb(255, 255, 255)",
+            "stroke": "",
+            "text": "L 0"
+          }
+        ],
+        "errors": []
+      },
+      {
+        "entry": "floating-text-style",
+        "paintOrder": "stroke",
+        "stroke": "3px",
+        "strokeColor": "rgb(23, 33, 39)"
+      }
+    ]
+  },
+  "unexecuted": [
+    {
+      "case": "direct file:// web/index.html and inline export",
+      "reason": "Browser URL policy forbids file protocol and bypasses",
+      "status": "NOT_RUN"
+    }
+  ],
+  "sourceSha256": {
+    "web/app.js": "817918f53e05de1431b92e3f2c90fb8e3e55603886812b6703b9ddca0459ba21",
+    "web/renderer.js": "301e687c827134e762918c1f344ea9b7cf5614bf4b2d4d9ed9420f4ec085a2a4",
+    "web/style.css": "4c3d4f34e048c891bd4b7c1041d69cee7a823c8977f9d642df7e3b723275b9bd",
+    "web/surface-markings.js": "9283a845d7ab5aa7da31e6872be52be329e23398e9efd441bdb7f76c5e4935c1"
+  },
+  "evidenceDirectory": "artifacts/markings-2026-10-19",
+  "notes": [
+    "Only UI controls and real keyboard input drove the 28 shipped routes.",
+    "A separately named optical fixture covers blocked incident light; it is not part of the shipped game.",
+    "HTTP and static build evidence do not count as file:// execution."
+  ]
+}

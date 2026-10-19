@@ -5,4 +5,6 @@ await mkdir(generated, { recursive: true });
 await build({ entryPoints: [new URL('./markings-probe.js', import.meta.url).pathname], bundle: true, format: 'iife', outfile: new URL('markings-probe.js', generated).pathname });
 const html = (await readFile(new URL('../../web/index.html', import.meta.url), 'utf8')).replace('src="./generated/app.js"', 'src="./markings-probe.js"').replace('href="./style.css"', 'href="../style.css"');
 await writeFile(new URL('markings-probe.html', generated), html);
+await build({ entryPoints: [new URL('./markings-light-fixture.js', import.meta.url).pathname], bundle: true, format: 'iife', target: 'es2022', outfile: new URL('markings-light-fixture.js', generated).pathname });
+await writeFile(new URL('markings-light-fixture.html', generated), html.replace('src="./markings-probe.js"', 'src="./markings-light-fixture.js"'));
 console.log('Read-only scene probe: /generated/markings-probe.html');
