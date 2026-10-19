@@ -4,6 +4,7 @@ import { doorOpen, bridgeActive } from './engine.js';
 import { entitySpec, entityAt } from './entities.js';
 import { scienceResult } from './science.js';
 import { stopImpactPose, voidFallPose, VOID_FALL_MS } from './motion.js';
+import { createSurfaceMarkings } from './surface-markings.js';
 
 // Logical coordinates map directly to X/Z; the walkable surface is Y=0.
 // White stone stays neutral under soft light; cooler edges separate walls and paths.
@@ -12,7 +13,7 @@ const CYAN=0x7bddf4,GOLD=0xf2cd61;
 const inside=(x,y,b)=>x>=b.x[0]&&x<=b.x[1]&&y>=b.y[0]&&y<=b.y[1];
 export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=()=>{},onError=()=>{}}){
  let level=null,state=null,activeWorld='night',reduced=false,zoomFactor=1,raf=0,animationStart=0,disposed=false,lastFailed=false;
- const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2(),scenes=[],geometries=new Map();
+ const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2(),scenes=[],geometries=new Map(),markings=createSurfaceMarkings();
  const geo=(x,y,z,r=.025)=>{const k=[x,y,z,r].join(':');if(!geometries.has(k))geometries.set(k,new RoundedBoxGeometry(x,y,z,2,Math.min(r,x/3,y/3,z/3)));return geometries.get(k);};
  const mat=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.87,metalness:0,...extra});
  function box(parent,x,y,z,w,h,d,material,r=.025){const m=new THREE.Mesh(geo(w,h,d,r),material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
@@ -33,7 +34,22 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  }
  }catch(error){for(const v of scenes)v.renderer.dispose();onError(error);throw error;}
  function patch(v,obj,to){const from={x:obj.position.x,y:obj.position.y,z:obj.position.z,opacity:obj.userData.opacity??1};v.dynamic.push({obj,from,to});}
- function opacity(group,value){group.userData.opacity=value;group.visible=value>.002;group.traverse(o=>{if(o.material){o.material.transparent=value<.999||o.userData.glass===true;o.material.opacity=value*(o.userData.baseOpacity??1);}});}
+ function opacity(group,value){group.userData.opacity=value;group.visible=value>.002;group.traverse(o=>{if(o.material){o.material.transparent=value<.999||o.userData.glass===true||!!o.userData.surfaceMark;o.material.opacity=value*(o.userData.baseOpacity??1);}});}
+ function crateMark(parent,label,{ghost=false,screen=false,height=.6}={}){
+  const finish=ghost?'ghost':'stone';
+  markings.stamp(parent,label,{position:[0,screen?1.05:height/2,screen?.082:.282],width:screen?.5:.44,height:screen?.5:.44,face:'front',finish});
+  if(!screen)markings.stamp(parent,label,{position:[0,height+.002,0],width:.44,finish});
+ }
+ function recessedPlate(v,x,z,label,material,size=.7){
+  const g=new THREE.Group(),rim=.08,well=size-2*rim;g.position.set(x,0,z);
+  box(g,0,.017,0,size,.034,size,material,.012);
+  for(const sign of [-1,1]){
+   box(g,0,.047,sign*(size-rim)/2,size,.06,rim,material,.01);
+   box(g,sign*(size-rim)/2,.047,0,rim,.06,well,material,.01);
+  }
+  markings.stamp(g,label,{position:[0,.035,0],width:well*.78,finish:'gold'});
+  g.userData.recess={label,size,well,rim};v.root.add(g);return g;
+ }
  function impactDecoration(v,parent){
   const g=new THREE.Group(),material=new THREE.MeshBasicMaterial({color:v.world==='day'?0x996611:GOLD,transparent:true,opacity:0,depthWrite:false,depthTest:false});
   const halo=new THREE.Mesh(new THREE.TorusGeometry(.28,.026,6,32),material);halo.rotation.y=Math.PI/2;halo.renderOrder=10;g.add(halo);
@@ -77,7 +93,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   if(!pose.active)v.fall.finished=true;
   return pose.active;
  }
- function bridgeGroup(v,b,ghost){const g=new THREE.Group(),p=PALETTE[v.world],w=b.x[1]-b.x[0]+1,d=b.y[1]-b.y[0]+1;g.position.set((b.x[0]+b.x[1])/2,0,(b.y[0]+b.y[1])/2);const surface=mat(ghost?0x65bcd3:p.stone,ghost?{emissive:0x267b99,emissiveIntensity:.35}:{});box(g,0,-.13,0,w-.035,.26,d-.035,surface,.035);const edge=mat(ghost?CYAN:p.edge,{emissive:ghost?CYAN:0,emissiveIntensity:ghost?.3:0});for(const z of [-d/2+.035,d/2-.035])box(g,0,.012,z,w-.06,.025,.025,edge,.006);if(!ghost)g.userData.pick={kind:'object',id:b.id,x:Math.round((b.x[0]+b.x[1])/2),y:Math.round((b.y[0]+b.y[1])/2)};v.root.add(g);if(!ghost)v.pickables.push(g);return g;}
+ function bridgeGroup(v,b,ghost){const g=new THREE.Group(),p=PALETTE[v.world],w=b.x[1]-b.x[0]+1,d=b.y[1]-b.y[0]+1;g.position.set((b.x[0]+b.x[1])/2,0,(b.y[0]+b.y[1])/2);const surface=mat(ghost?0x65bcd3:p.stone,ghost?{emissive:0x267b99,emissiveIntensity:.35}:{});box(g,0,-.13,0,w-.035,.26,d-.035,surface,.035);const edge=mat(ghost?CYAN:p.edge,{emissive:ghost?CYAN:0,emissiveIntensity:ghost?.3:0});for(const z of [-d/2+.035,d/2-.035])box(g,0,.012,z,w-.06,.025,.025,edge,.006);if(b.label!==false)markings.stamp(g,b.label||b.id,{position:[0,.002,0],width:Math.min(.72,w-.2),height:Math.min(.58,d-.2),finish:ghost?'ghost':'stone'});if(!ghost)g.userData.pick={kind:'object',id:b.id,x:Math.round((b.x[0]+b.x[1])/2),y:Math.round((b.y[0]+b.y[1])/2)};v.root.add(g);if(!ghost)v.pickables.push(g);return g;}
  function previewBridge(v,b){const g=new THREE.Group(),color=new THREE.LineDashedMaterial({color:CYAN,dashSize:.13,gapSize:.1,transparent:true,opacity:.8});const x1=b.x[0]-.47,x2=b.x[1]+.47,z1=b.y[0]-.47,z2=b.y[1]+.47;const points=[new THREE.Vector3(x1,.035,z1),new THREE.Vector3(x2,.035,z1),new THREE.Vector3(x2,.035,z2),new THREE.Vector3(x1,.035,z2),new THREE.Vector3(x1,.035,z1)];const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),color);line.computeLineDistances();g.add(line);v.root.add(g);g.visible=false;return g;}
  function beam(parent,from,to,color,radius=.023,height=.65){
   const a=new THREE.Vector3(from[0],height,from[1]),b=new THREE.Vector3(to[0],height,to[1]);
@@ -172,8 +188,8 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
    v.anchors.push({kind:'portal',id:'P'+t,cell:[x,y],height:.25});
   }
  }
- if(level.track){const x=state.boxes[v.world],y=level.track.y;const g=new THREE.Group(),visual=new THREE.Group();g.position.set(x,0,y);g.add(visual);const crate=mat(v.world==='day'?0xb5aa8b:0x9ba9ad);box(visual,0,.31,0,.56,.62,.56,crate,.035);box(visual,-.288,.3,0,.02,.4,.075,gold,.004);g.userData.pick={kind:'object',id:'A',x,y};v.root.add(g);v.pickables.push(g);v.crate=g;v.crateVisual=visual;v.impactDecoration=impactDecoration(v,g);
-  const tx=level.track.targets[v.world];if(tx!==undefined){const target=new THREE.Group();target.position.set(tx,.04,y);for(const z of [-.36,.36])box(target,0,0,z,.76,.025,.035,gold,.006);for(const xx of [-.36,.36])box(target,xx,0,0,.035,.025,.76,gold,.006);v.root.add(target);v.targets.push(target);}
+ if(level.track){const x=state.boxes[v.world],y=level.track.y;const g=new THREE.Group(),visual=new THREE.Group();g.position.set(x,0,y);g.add(visual);const crate=mat(v.world==='day'?0xb5aa8b:0x9ba9ad);box(visual,0,.31,0,.56,.62,.56,crate,.035);box(visual,-.288,.3,0,.02,.4,.075,gold,.004);crateMark(visual,'A',{height:.62});g.userData.pick={kind:'object',id:'A',x,y};v.root.add(g);v.pickables.push(g);v.crate=g;v.crateVisual=visual;v.impactDecoration=impactDecoration(v,g);
+  const tx=level.track.targets[v.world];if(tx!==undefined){const input=level.science?.inputs.find(i=>i.type==='plate'&&(i.world||level.science.world)===v.world&&i.x===tx);const target=recessedPlate(v,tx,y,input?.id||'A',gold,.76);v.targets.push(target);}
  }
  for(const b of level.bridges){if(b.world===v.world){bridgeGroup(v,b,false);v.anchors.push({kind:'object',id:b.id,cell:[(b.x[0]+b.x[1])/2,(b.y[0]+b.y[1])/2],height:.05});}else{
   const g=bridgeGroup(v,b,true),preview=previewBridge(v,b),stripes=new THREE.Group();stripes.position.copy(g.position);
@@ -187,7 +203,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  if(level.schemaVersion===2)buildEntities(v);else buildScience(v);v.player=character(v);
  const extent=Math.max(W,H);Object.assign(v.sun.shadow.camera,{left:-extent,right:extent,top:extent,bottom:-extent,near:1,far:60});v.sun.shadow.camera.updateProjectionMatrix();
  }
- function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});for(const e of v.newEntities||[]){if(!e.spec.ghost&&e.spec.group)result.push({kind:'object',id:e.spec.group,cell:[e.g.position.x,e.g.position.z],height:e.spec.height+.1});else if(e.g.visible&&(e.spec.ghost||e.spec.kind==='weight'))result.push({kind:'readout',id:'entity-'+e.id,label:e.spec.ghost?e.spec.group+'影':e.id,cell:[e.g.position.x,e.g.position.z],height:e.spec.height+.1});}return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),...(a.label?{label:a.label}:{}),...(a.signal?{signal:a.signal}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2};});}
+ function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});for(const e of v.newEntities||[]){if(!e.spec.ghost&&e.spec.group)result.push({kind:'object',id:e.spec.group,cell:[e.g.position.x,e.g.position.z],height:e.spec.height+.1});}return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),...(a.label?{label:a.label}:{}),...(a.signal?{signal:a.signal}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2};});}
  function draw(){if(disposed||!level||document.hidden)return;for(const v of scenes){if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
  function frame(now){
   raf=0;if(disposed||document.hidden)return;
@@ -239,6 +255,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
    const material=mat(spec.ghost?0x65bcd3:spec.kind==='weight'?0xb5aa8b:0x9ba9ad,{emissive:spec.ghost?0x267b99:0,emissiveIntensity:spec.ghost?.3:0});
    if(spec.kind==='screen'){box(visual,0,.14,0,.58,.28,.45,material);box(visual,0,1.05,0,.78,1.7,.16,material,.03);}
    else {box(visual,0,.3,0,.56,.6,.56,material,.035);box(visual,-.288,.3,0,.02,.4,.075,mat(GOLD),.004);}
+   crateMark(visual,spec.group||spec.id,{ghost:spec.ghost,screen:spec.kind==='screen'});
    if(!spec.ghost&&spec.group){g.userData.pick={kind:'object',id:spec.group};v.pickables.push(g);}
    g.visible=!!state.entities[id];g.userData.entityId=id;v.root.add(g);const decoration=impactDecoration(v,g);
    let preview=null;if(spec.ghost){preview=new THREE.LineSegments(new THREE.EdgesGeometry(geo(.78,spec.height,.6)),new THREE.LineDashedMaterial({color:CYAN,dashSize:.12,gapSize:.08,transparent:true,opacity:.8}));preview.computeLineDistances();preview.visible=false;v.root.add(preview);}
@@ -263,17 +280,16 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
    }
   }
   for(const deck of level.decks.filter(h=>h.world===v.world)){
-   for(const [x,y] of deck.cells){const g=bridgeGroup(v,{id:deck.id,x:[x,x],y:[y,y]},true);opacity(g,initialSignals[deck.signal]?1:0);v.newSupports.push({g,deck});}
-   v.anchors.push({kind:'readout',id:'deck-'+deck.id,label:deck.label+' · '+deck.signal,signal:deck.signal,cell:[deck.cells.reduce((a,c)=>a+c[0],0)/deck.cells.length,deck.cells.reduce((a,c)=>a+c[1],0)/deck.cells.length],height:.08});
+   for(const [i,[x,y]] of deck.cells.entries()){const g=bridgeGroup(v,{id:deck.id,label:i===Math.floor(deck.cells.length/2)?deck.signal:false,x:[x,x],y:[y,y]},true);opacity(g,initialSignals[deck.signal]?1:0);v.newSupports.push({g,deck});}
   }
   for(const c of level.science.circuits)for(const input of c.inputs){
    const world=input.world||entitySpec(level,input.entity)?.world||c.world;if(world!==v.world||input.type==='sensor')continue;
-   for(const [x,y] of input.cells||[input.cell]){const lens=mat(GOLD,{emissive:GOLD,emissiveIntensity:.1});box(v.root,x,.014,y,.7,.028,.7,lens,.04);ring(v.root,x,.035,y,.28,CYAN);v.newPlates.push({input:input.id,lens});v.anchors.push({kind:'readout',id:'input-'+input.id,label:input.id,cell:[x,y],height:.05});}
+   for(const [x,y] of input.cells||[input.cell]){const lens=mat(GOLD,{emissive:GOLD,emissiveIntensity:.1});recessedPlate(v,x,y,input.id,lens);v.newPlates.push({input:input.id,lens});}
   }
   for(const goal of level.requirements.filter(g=>g.type==='position'&&entitySpec(level,g.entity)?.world===v.world)){
    const existing=level.science.circuits.some(c=>c.inputs.some(i=>i.entity===goal.entity&&i.cell?.[0]===goal.cell[0]&&i.cell?.[1]===goal.cell[1]));if(existing)continue;
-   const [x,y]=goal.cell,lens=mat(GOLD,{emissive:GOLD,emissiveIntensity:.1});box(v.root,x,.014,y,.7,.028,.7,lens,.04);ring(v.root,x,.035,y,.28,CYAN);
-   v.newPlates.push({entity:goal.entity,cell:goal.cell,lens});v.anchors.push({kind:'readout',id:'goal-'+goal.entity,label:v.world==='night'?'夜靶':'白靶',cell:goal.cell,height:.05});
+   const [x,y]=goal.cell,lens=mat(GOLD,{emissive:GOLD,emissiveIntensity:.1});recessedPlate(v,x,y,entitySpec(level,goal.entity).group||goal.entity,lens);
+   v.newPlates.push({entity:goal.entity,cell:goal.cell,lens});
   }
   for(const d of level.doors.filter(d=>d.world===v.world))v.anchors.push({kind:'readout',id:d.id,label:d.label,cell:d.cells[0],height:1.2});
   const optical=level.science.optics[v.world];if(optical){
@@ -315,5 +331,5 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  }
  const observer=new ResizeObserver(resize);for(const v of scenes)observer.observe(v.host);
  function visibility(){if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=0;}else if(state)update(state,{instant:true});}document.addEventListener('visibilitychange',visibility);
- return {setLevel(next,nextState){level=next;state=nextState;lastFailed=false;zoomFactor=1;for(const v of scenes)build(v);resize();update(nextState,{instant:true});},update,resize,setActiveWorld(world){activeWorld=world;draw();},zoom(delta){zoomFactor=Math.max(.7,Math.min(1.65,zoomFactor+delta));resize();},setReducedMotion(value){reduced=!!value;if(reduced&&state)update(state,{instant:true});},dispose(){disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();document.removeEventListener('visibilitychange',visibility);for(const v of scenes){v.host.removeEventListener('click',v.click);clean(v.root);v.renderer.dispose();v.renderer.domElement.remove();}for(const g of geometries.values())g.dispose();}};
+ return {setLevel(next,nextState){level=next;state=nextState;lastFailed=false;zoomFactor=1;for(const v of scenes)build(v);resize();update(nextState,{instant:true});},update,resize,setActiveWorld(world){activeWorld=world;draw();},zoom(delta){zoomFactor=Math.max(.7,Math.min(1.65,zoomFactor+delta));resize();},setReducedMotion(value){reduced=!!value;if(reduced&&state)update(state,{instant:true});},dispose(){disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();document.removeEventListener('visibilitychange',visibility);for(const v of scenes){v.host.removeEventListener('click',v.click);clean(v.root);v.renderer.dispose();v.renderer.domElement.remove();}for(const g of geometries.values())g.dispose();markings.dispose();}};
 }
