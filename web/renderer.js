@@ -38,7 +38,6 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  function crateMark(parent,label,{ghost=false,screen=false,height=.6}={}){
   const finish=ghost?'ghost':'stone';
   markings.stamp(parent,label,{position:[0,screen?1.05:height/2,screen?.082:.282],width:screen?.5:.44,height:screen?.5:.44,face:'front',finish});
-  if(!screen)markings.stamp(parent,label,{position:[0,height+.002,0],width:.44,finish});
  }
  function recessedPlate(v,x,z,label,material,size=.7){
   const g=new THREE.Group(),rim=.08,well=size-2*rim;g.position.set(x,0,z);
