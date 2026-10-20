@@ -1,10 +1,10 @@
 // Read-only observation of the real app. The probe never substitutes game state,
 // commands, time or rendering; its button publishes the observed scene to the DOM.
 import * as THREE from 'three';
-const scenes = {}, renderers = {};
-THREE.Scene.prototype.onBeforeRender = function(renderer) {
+const scenes = {}, renderers = {}, cameras = {};
+THREE.Scene.prototype.onBeforeRender = function(renderer, scene, camera) {
   const world = renderer.domElement.parentElement.id.startsWith('day') ? 'day' : 'night';
-  scenes[world] = this; renderers[world] = renderer;
+  scenes[world] = this; renderers[world] = renderer; cameras[world] = camera;
 };
 function visible(object) { for (let p = object; p; p = p.parent) if (!p.visible) return false; return true; }
 function snapshot() {
@@ -19,7 +19,7 @@ function snapshot() {
       if (object.userData.surfaceMark) marks.push({ ...object.userData.surfaceMark, position: object.position.toArray(), worldPosition: object.getWorldPosition(new THREE.Vector3()).toArray(), visible: visible(object), transparent: object.material.transparent, opacity: object.material.opacity });
       if (object.userData.recess) recesses.push({ ...object.userData.recess, position: object.position.toArray(), parts: object.children.filter(c => !c.userData.surfaceMark).map(c => ({ position: c.position.toArray(), width: c.geometry.parameters.width, depth: c.geometry.parameters.depth })), mark: object.children.find(c => c.userData.surfaceMark)?.position.toArray() });
     });
-    result[world] = { marks, recesses, labels, resources: { ...renderers[world].info.memory, calls: renderers[world].info.render.calls } };
+    result[world] = { marks, recesses, labels, camera: { left: cameras[world].left, right: cameras[world].right, top: cameras[world].top, bottom: cameras[world].bottom }, resources: { ...renderers[world].info.memory, calls: renderers[world].info.render.calls } };
   }
   return result;
 }
