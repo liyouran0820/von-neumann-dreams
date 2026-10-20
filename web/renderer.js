@@ -3,7 +3,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { doorOpen, bridgeActive } from './engine.js';
 import { entitySpec, entityAt } from './entities.js';
 import { scienceResult } from './science.js';
-import { stopImpactPose, voidFallPose, VOID_FALL_MS, mirrorTurnPose } from './motion.js';
+import { stopImpactPose, voidFallPose, VOID_FALL_MS, mirrorTurnPose, SCENE_TRANSITION_MS } from './motion.js';
 import { createSurfaceMarkings } from './surface-markings.js';
 import { createWorldLabels } from './world-labels.js';
 
@@ -220,7 +220,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  function draw(){if(disposed||!level||document.hidden)return;const science=scienceResult(level,state);for(const v of scenes){v.labels.sync(v.anchors,science,v.instruments);if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
  function frame(now){
   raf=0;if(disposed||document.hidden)return;
-  const t=reduced?1:Math.min(1,(now-animationStart)/190),e=1-Math.pow(1-t,3);let running=false;
+  const t=reduced?1:Math.min(1,(now-animationStart)/SCENE_TRANSITION_MS),e=1-Math.pow(1-t,3);let running=false;
   for(const v of scenes){
    for(const item of v.instruments||[])if(applyMirrorTurn(item,now))running=true;
    for(const a of v.dynamic){a.obj.position.set(THREE.MathUtils.lerp(a.from.x,a.to.x??a.from.x,e),THREE.MathUtils.lerp(a.from.y,a.to.y??a.from.y,e),THREE.MathUtils.lerp(a.from.z,a.to.z??a.from.z,e));if(a.to.opacity!==undefined)opacity(a.obj,THREE.MathUtils.lerp(a.from.opacity,a.to.opacity,e));}

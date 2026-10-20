@@ -1,10 +1,11 @@
 // Presentation only: these poses never change logical coordinates or history.
 export const STOP_IMPACT_MS = 360;
 export const VOID_FALL_MS = 900;
-export const MIRROR_TURN_MS = 320;
+export const SCENE_TRANSITION_MS = 190;
+export const MIRROR_TURN_MS = SCENE_TRANSITION_MS;
 const clamp = value => Math.max(0, Math.min(1, value));
 export function mirrorTurnPose(elapsed, from, to, reduced=false) {
- const t=reduced?1:clamp(elapsed/MIRROR_TURN_MS),e=t*t*(3-2*t);
+ const t=reduced?1:clamp(elapsed/MIRROR_TURN_MS),e=1-Math.pow(1-t,3);
  return {active:!reduced&&from!==to&&elapsed>=0&&elapsed<MIRROR_TURN_MS,angle:from+(to-from)*e};
 }
 // Follow the panel's turn with a fixed offset. Both endpoints and the full arc
