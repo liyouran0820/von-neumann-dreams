@@ -1,6 +1,6 @@
 # von-neumann-dreams 🧠☕
 
-本文件负责项目入口、文档导航与运行方式。续写保持当前状态准确；完整规则进入设计方案，检查进入 Demo 文档，变更进入 `log.md`。
+本文件负责项目入口、文档导航与运行方式。完整规则进入设计方案；重要决策与状态进入 `log.md`，验收记录按回归风险维护，具体边界见 [AGENTS.md](AGENTS.md)。
 
 > 仓库名冯·诺依曼的梦😁，队员成分不明、身份不明，最终以比赛结束时的发量和穿搭为准（bushi
 
@@ -102,7 +102,7 @@ Node.js 20+ 和 npm；Three.js 与 esbuild 版本锁定，无运行时 CDN。`np
 - [requirements_gap_analysis.md](docs/requirements_gap_analysis.md)：可复用、需补齐、需迁移和外部条件。
 - [acceptance_baseline.md](docs/acceptance_baseline.md)：冻结参数、证据格式与状态语义。
 - [PROJECT_INTRODUCTION.md](PROJECT_INTRODUCTION.md)：背景、历史和当前范围。
-- [AGENTS.md](AGENTS.md)：协作与文档边界；[log.md](log.md)：实际变更和检查。
+- [AGENTS.md](AGENTS.md)：协作、提交与文档边界；[log.md](log.md)：重要决策、问题原因与项目状态。
 - [AI_USAGE.md](AI_USAGE.md)：团队核心创意来源、Codex 使用范围及人工与 AI 分工。
 - [ai-logs/](ai-logs/README.md)：团队提供的 5 张 AI 对话截图、开发过程摘要及原文件校验清单。
 - [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)：已用依赖与素材许可。
