@@ -28,4 +28,11 @@ panel.style.cssText = 'position:fixed;right:0;bottom:0;z-index:100;max-width:340
 panel.innerHTML = '<summary>场景验收观察</summary><button type="button">记录当前模型</button><pre></pre>';
 panel.querySelector('button').onclick = () => panel.querySelector('pre').textContent = JSON.stringify(snapshot());
 document.body.append(panel);
+const interactions = [], interactionLog = document.createElement('output');
+interactionLog.id = 'markings-interactions'; interactionLog.hidden = true; document.body.append(interactionLog);
+document.addEventListener('click', event => {
+  const button = event.target.closest('.instrument-hotspot'); if (!button) return;
+  interactions.push({ id: button.dataset.object, width: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth, rect: button.getBoundingClientRect().toJSON() });
+  interactionLog.textContent = JSON.stringify(interactions);
+}, true);
 import('../../web/app.js');

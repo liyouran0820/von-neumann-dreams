@@ -1,6 +1,7 @@
 import * as THREE from 'three';
+import { mirrorBubbleYaw } from './motion.js';
 
-// X/Y planes stand on the X/Z floor. Never copy the camera's quaternion.
+// Vertical planes stand on the X/Z floor. Never copy the camera's quaternion.
 const FONT = 'Arial, "PingFang SC", sans-serif';
 function trackedText(ctx, text, y, size, weight, spacing, center) {
   ctx.font = `${weight} ${size}px ${FONT}`;
@@ -56,7 +57,7 @@ export function createWorldLabels(view) {
     for (const texture of textures.values()) texture.dispose();
     items.clear(); textures.clear();
   }
-  function sync(anchors, science) {
+  function sync(anchors, science, instruments = []) {
     const optics = science?.opticsByWorld?.[view.world] || science?.optics;
     const placed = [];
     for (const anchor of anchors) {
@@ -92,8 +93,9 @@ export function createWorldLabels(view) {
         item.signature = signature;
       }
       mesh.position.set(anchor.cell[0], anchor.height + (bubble ? .8 : .24), anchor.cell[1]);
+      if (anchor.kind === 'mirror') mesh.rotation.y = mirrorBubbleYaw(instruments.find(item => item.kind === 'mirror' && item.id === anchor.id).face.rotation.y);
       if (bubble) {
-        const corners = [-.6, .6].flatMap(x => [-.6, .6].map(y => project(mesh.position.clone().add(new THREE.Vector3(x, y, 0)))));
+        const corners = [-.6, .6].flatMap(x => [-.6, .6].map(y => project(mesh.position.clone().add(new THREE.Vector3(x, y, 0).applyQuaternion(mesh.quaternion)))));
         const width = Math.max(44, Math.max(...corners.map(p => p.x)) - Math.min(...corners.map(p => p.x)));
         const height = Math.max(44, Math.max(...corners.map(p => p.y)) - Math.min(...corners.map(p => p.y)));
         const center = project(mesh.position), clampX = x => Math.max(width / 2 + 2, Math.min(view.width - width / 2 - 2, x)), clampY = y => Math.max(height / 2 + 2, Math.min(view.height - height / 2 - 2, y));

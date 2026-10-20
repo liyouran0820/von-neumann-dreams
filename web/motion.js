@@ -1,7 +1,15 @@
 // Presentation only: these poses never change logical coordinates or history.
 export const STOP_IMPACT_MS = 360;
 export const VOID_FALL_MS = 900;
+export const MIRROR_TURN_MS = 320;
 const clamp = value => Math.max(0, Math.min(1, value));
+export function mirrorTurnPose(elapsed, from, to, reduced=false) {
+ const t=reduced?1:clamp(elapsed/MIRROR_TURN_MS),e=t*t*(3-2*t);
+ return {active:!reduced&&from!==to&&elapsed>=0&&elapsed<MIRROR_TURN_MS,angle:from+(to-from)*e};
+}
+// Follow the panel's turn with a fixed offset. Both endpoints and the full arc
+// face the isometric camera (-18,27,28), with upright, unmirrored texture UVs.
+export const mirrorBubbleYaw = panelYaw => panelYaw-Math.PI/4;
 function keyframe(t, points) {
  for (let i=1;i<points.length;i++) {
   const [end,b]=points[i], [start,a]=points[i-1];

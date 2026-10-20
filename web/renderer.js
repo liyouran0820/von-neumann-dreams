@@ -3,7 +3,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { doorOpen, bridgeActive } from './engine.js';
 import { entitySpec, entityAt } from './entities.js';
 import { scienceResult } from './science.js';
-import { stopImpactPose, voidFallPose, VOID_FALL_MS } from './motion.js';
+import { stopImpactPose, voidFallPose, VOID_FALL_MS, mirrorTurnPose } from './motion.js';
 import { createSurfaceMarkings } from './surface-markings.js';
 import { createWorldLabels } from './world-labels.js';
 
@@ -136,13 +136,26 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   }
   v.beams=new THREE.Group();v.root.add(v.beams);
  }
+ function applyMirrorTurn(item,now){
+  if(!item.turn)return false;
+  const pose=mirrorTurnPose(Math.max(0,now-item.turn.startedAt),item.turn.from,item.turn.to,reduced);
+  item.face.rotation.y=pose.angle;if(!pose.active)item.turn=null;return pose.active;
+ }
+ function turnMirror(item){
+  const target=state.science.mirrors[item.id]==='/'?Math.PI/4:-Math.PI/4,now=performance.now();
+  if(item.mirrorTarget===undefined){item.mirrorTarget=target;item.face.rotation.y=target;return;}
+  applyMirrorTurn(item,now);
+  if(item.mirrorTarget===target)return;
+  item.mirrorTarget=target;item.turn={from:item.face.rotation.y,to:target,startedAt:now};
+  if(reduced)applyMirrorTurn(item,now);
+ }
  function updateScience(v){
   if(!v.beams)return;
   const result=scienceResult(level,state),signature=JSON.stringify([state.science,result.signals]);
   if(signature===v.scienceSignature)return;v.scienceSignature=signature;clean(v.beams);
   for(const item of v.instruments){
    if(item.kind==='mirror'){
-    const slash=state.science.mirrors[item.id]==='/';item.face.rotation.y=slash?Math.PI/4:-Math.PI/4;
+    const slash=state.science.mirrors[item.id]==='/';turnMirror(item);
     if(!level.science.lessonGate){
      const [x,z]=item.cell,sign=slash?1:-1;
      const points=[new THREE.Vector3(x-.7,.66,z-.7*sign),new THREE.Vector3(x+.7,.66,z+.7*sign)];
@@ -204,11 +217,12 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  const extent=Math.max(W,H);Object.assign(v.sun.shadow.camera,{left:-extent,right:extent,top:extent,bottom:-extent,near:1,far:60});v.sun.shadow.camera.updateProjectionMatrix();
  }
  function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});for(const e of v.newEntities||[]){if(!e.spec.ghost&&e.spec.group)result.push({kind:'object',id:e.spec.group,cell:[e.g.position.x,e.g.position.z],height:e.spec.height+.1});}return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),...(a.label?{label:a.label}:{}),...(a.signal?{signal:a.signal}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2,...(v.labels.target(a)?{worldTarget:v.labels.target(a)}:{})};});}
- function draw(){if(disposed||!level||document.hidden)return;const science=scienceResult(level,state);for(const v of scenes){v.labels.sync(v.anchors,science);if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
+ function draw(){if(disposed||!level||document.hidden)return;const science=scienceResult(level,state);for(const v of scenes){v.labels.sync(v.anchors,science,v.instruments);if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
  function frame(now){
   raf=0;if(disposed||document.hidden)return;
   const t=reduced?1:Math.min(1,(now-animationStart)/190),e=1-Math.pow(1-t,3);let running=false;
   for(const v of scenes){
+   for(const item of v.instruments||[])if(applyMirrorTurn(item,now))running=true;
    for(const a of v.dynamic){a.obj.position.set(THREE.MathUtils.lerp(a.from.x,a.to.x??a.from.x,e),THREE.MathUtils.lerp(a.from.y,a.to.y??a.from.y,e),THREE.MathUtils.lerp(a.from.z,a.to.z??a.from.z,e));if(a.to.opacity!==undefined)opacity(a.obj,THREE.MathUtils.lerp(a.from.opacity,a.to.opacity,e));}
    if(t>=1)v.dynamic=[];else if(v.dynamic.length)running=true;
    if(applyImpact(v,now))running=true;
@@ -319,7 +333,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   for(const p of v.newPlates){const on=p.entity?state.entities[p.entity]?.[0]===p.cell[0]&&state.entities[p.entity]?.[1]===p.cell[1]:result.signals[p.input];p.lens.emissiveIntensity=on?.75:.05;}
   for(const o of v.pickables)if(o.userData.v2Bridge)o.visible=state.mapping===o.userData.v2Bridge&&bridgeActive(level,state,o.userData.v2Bridge);
   const optics=result.opticsByWorld[v.world],signature=JSON.stringify([state.science, optics]);if(signature===v.scienceSignature)return;v.scienceSignature=signature;clean(v.beams);
-  for(const item of v.instruments){if(item.kind==='mirror')item.face.rotation.y=state.science.mirrors[item.id]==='/'?Math.PI/4:-Math.PI/4;else{const on=optics.hits.includes(item.id);item.lens.color.setHex(on?0x55c6c0:0x6b7883);item.lens.emissiveIntensity=on?.7:.05;}}
+  for(const item of v.instruments){if(item.kind==='mirror')turnMirror(item);else{const on=optics.hits.includes(item.id);item.lens.color.setHex(on?0x55c6c0:0x6b7883);item.lens.emissiveIntensity=on?.7:.05;}}
   for(const line of optics.segments){beam(v.beams,line.from,line.to,0x99723d,.035,1.6);beam(v.beams,line.from,line.to,0xffd278,.017,1.6);}
  }
  function resize(){if(disposed)return;for(const v of scenes){const r=v.host.getBoundingClientRect();v.width=Math.max(1,r.width);v.height=Math.max(1,r.height);v.renderer.setSize(v.width,v.height,false);}if(!level)return;
