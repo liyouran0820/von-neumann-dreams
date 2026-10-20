@@ -12,13 +12,13 @@ function trackedText(ctx, text, y, size, weight, spacing, center) {
 }
 function textCanvas(text) {
   const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
-  ctx.font = `500 64px ${FONT}`;
+  ctx.font = `600 64px ${FONT}`;
   canvas.width = Math.ceil([...text].reduce((sum, c) => sum + ctx.measureText(c).width, 0) + Math.max(0, [...text].length - 1) * 5.12 + 32);
   canvas.height = 96;
-  ctx.font = `500 64px ${FONT}`;
+  ctx.font = `600 64px ${FONT}`;
   const metrics = ctx.measureText(text);
   ctx.fillStyle = '#f0f4f3';
-  trackedText(ctx, text, 48 + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2, 64, 500, 5.12, canvas.width / 2);
+  trackedText(ctx, text, 48 + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2, 64, 600, 5.12, canvas.width / 2);
   return canvas;
 }
 function bubbleCanvas(id, kind, on) {
