@@ -30,7 +30,7 @@ function icon(name, rotation = 0) {
   return `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:rotate(${rotation}deg)">${ICONS[name].map(d => `<path d="${d}"/>`).join('')}</svg>`;
 }
 function renderAnchors(world, anchors) {
-  const root = $(world + '-hotspots'), remaining = new Set(), bubblePositions = [];
+  const root = $(world + '-hotspots'), remaining = new Set();
   const science = Game.scienceResult(level, state), optics = science?.opticsByWorld?.[world] || science?.optics;
   for (const anchor of anchors) {
     const key = anchor.kind + ':' + (anchor.id || anchor.cell.join(',')); remaining.add(key);
@@ -46,24 +46,13 @@ function renderAnchors(world, anchors) {
       root.append(button);
     }
     button.dataset.x = Math.round(anchor.cell[0]); button.dataset.y = Math.round(anchor.cell[1]);
-    const offset = anchor.kind === 'mirror' || anchor.kind === 'switch' ? [24,-27] : ['sensor','readout'].includes(anchor.kind) ? [0,19] : [0,0];
-    let x = anchor.x + offset[0], y = anchor.y + offset[1];
-    if (['mirror','switch'].includes(anchor.kind) && root.clientWidth >= 48 && root.clientHeight >= 48) {
-      x = Math.max(24, Math.min(root.clientWidth - 24, x)); y = Math.max(24, Math.min(root.clientHeight - 24, y));
-      // Keep the full original hit area when nearby bubbles converge on a small screen.
-      for (const placed of bubblePositions) if (Math.abs(x - placed.x) < 52 && Math.abs(y - placed.y) < 52) {
-        if (placed.x + 52 <= root.clientWidth - 24) x = placed.x + 52;
-        else if (placed.x - 52 >= 24) x = placed.x - 52;
-        else y = Math.max(24, placed.y - 52);
-      }
-      bubblePositions.push({ x, y });
-    }
-    button.style.left = x + 'px'; button.style.top = y + 'px';
+    const target = anchor.worldTarget;
+    button.style.left = (target?.x ?? anchor.x) + 'px'; button.style.top = (target?.y ?? anchor.y) + 'px';
+    if (target) { button.style.width = target.width + 'px'; button.style.height = target.height + 'px'; }
     if (['mirror','switch'].includes(anchor.kind)) {
       const on = anchor.kind === 'switch' ? !!science?.signals[anchor.id] : !!optics?.bounces.some(bounce => bounce.id === anchor.id);
       button.classList.add('instrument-hotspot'); button.classList.toggle('on', on);
       if (anchor.kind === 'switch') button.setAttribute('aria-pressed', String(on));
-      button.innerHTML = `<b>${anchor.id}</b><small>${anchor.kind === 'mirror' ? '转动' : '开关'}</small>`;
     }
     if (anchor.kind === 'readout') button.textContent = anchor.label;
     if(anchor.signal)button.textContent=anchor.label+' '+(science.signals[anchor.signal]?'1':'0');

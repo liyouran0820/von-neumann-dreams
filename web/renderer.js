@@ -5,6 +5,7 @@ import { entitySpec, entityAt } from './entities.js';
 import { scienceResult } from './science.js';
 import { stopImpactPose, voidFallPose, VOID_FALL_MS } from './motion.js';
 import { createSurfaceMarkings } from './surface-markings.js';
+import { createWorldLabels } from './world-labels.js';
 
 // Logical coordinates map directly to X/Z; the walkable surface is Y=0.
 // White stone stays neutral under soft light; cooler edges separate walls and paths.
@@ -30,7 +31,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   const sun=new THREE.DirectionalLight(world==='day'?0xfffdf8:0xc7deff,world==='day'?1.7:1.5);sun.position.set(-8,18,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0003;sun.shadow.normalBias=.035;sun.shadow.radius=3;scene.add(sun);scene.add(sun.target);
   const bounce=new THREE.DirectionalLight(world==='day'?0xe7eff3:0x4a76bd,.35);bounce.position.set(10,6,-8);scene.add(bounce);
   const root=new THREE.Group();scene.add(root);const v={world,host,scene,renderer,camera,sun,root,pickables:[],dynamic:[],anchors:[],width:1,height:1,materials:[],player:null,crate:null,bridges:[],doors:[],targets:[],lastBody:null};
-  v.click=e=>pick(v,e);host.addEventListener('click',v.click);scenes.push(v);
+  v.labels=createWorldLabels(v);v.click=e=>pick(v,e);host.addEventListener('click',v.click);scenes.push(v);
  }
  }catch(error){for(const v of scenes)v.renderer.dispose();onError(error);throw error;}
  function patch(v,obj,to){const from={x:obj.position.x,y:obj.position.y,z:obj.position.z,opacity:obj.userData.opacity??1};v.dynamic.push({obj,from,to});}
@@ -155,7 +156,7 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
   for(const line of result.optics.segments){beam(v.beams,line.from,line.to,0x99723d,.044);beam(v.beams,line.from,line.to,0xffd278,.022,.657);}
  }
  function build(v){
- clean(v.root);v.pickables=[];v.dynamic=[];v.anchors=[];v.bridges=[];v.doors=[];v.targets=[];v.player=null;v.fall=null;v.crate=null;v.crateVisual=null;v.impact=null;v.impactDecoration=null;
+ v.labels.reset();clean(v.root);v.pickables=[];v.dynamic=[];v.anchors=[];v.bridges=[];v.doors=[];v.targets=[];v.player=null;v.fall=null;v.crate=null;v.crateVisual=null;v.impact=null;v.impactDecoration=null;
  v.newEntities=[];v.newSupports=[];v.newPlates=[];
  const p=PALETTE[v.world],rows=level.grids[v.world],W=rows[0].length,H=rows.length;v.root.position.set(-(W-1)/2,0,-(H-1)/2);
  const marker=v.world==='day'?0xa67c29:GOLD;
@@ -202,8 +203,8 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  if(level.schemaVersion===2)buildEntities(v);else buildScience(v);v.player=character(v);
  const extent=Math.max(W,H);Object.assign(v.sun.shadow.camera,{left:-extent,right:extent,top:extent,bottom:-extent,near:1,far:60});v.sun.shadow.camera.updateProjectionMatrix();
  }
- function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});for(const e of v.newEntities||[]){if(!e.spec.ghost&&e.spec.group)result.push({kind:'object',id:e.spec.group,cell:[e.g.position.x,e.g.position.z],height:e.spec.height+.1});}return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),...(a.label?{label:a.label}:{}),...(a.signal?{signal:a.signal}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2};});}
- function draw(){if(disposed||!level||document.hidden)return;for(const v of scenes){if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
+ function anchors(v){const result=v.anchors.map(a=>({...a}));if(v.crate)result.push({kind:'object',id:'A',cell:[v.crate.position.x,level.track.y],height:.67});for(const e of v.newEntities||[]){if(!e.spec.ghost&&e.spec.group)result.push({kind:'object',id:e.spec.group,cell:[e.g.position.x,e.g.position.z],height:e.spec.height+.1});}return result.map(a=>{const p=new THREE.Vector3(a.cell[0],a.height,a.cell[1]);v.root.localToWorld(p);p.project(v.camera);return {kind:a.kind,...(a.id?{id:a.id}:{}),...(a.label?{label:a.label}:{}),...(a.signal?{signal:a.signal}:{}),cell:a.cell,x:(p.x+1)*v.width/2,y:(1-p.y)*v.height/2,...(v.labels.target(a)?{worldTarget:v.labels.target(a)}:{})};});}
+ function draw(){if(disposed||!level||document.hidden)return;const science=scienceResult(level,state);for(const v of scenes){v.labels.sync(v.anchors,science);if(v.world===activeWorld)v.renderer.render(v.scene,v.camera);onProject(v.world,anchors(v));}}
  function frame(now){
   raf=0;if(disposed||document.hidden)return;
   const t=reduced?1:Math.min(1,(now-animationStart)/190),e=1-Math.pow(1-t,3);let running=false;
@@ -330,5 +331,5 @@ export function createDiorama({dayElement,nightElement,onPick=()=>{},onProject=(
  }
  const observer=new ResizeObserver(resize);for(const v of scenes)observer.observe(v.host);
  function visibility(){if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=0;}else if(state)update(state,{instant:true});}document.addEventListener('visibilitychange',visibility);
- return {setLevel(next,nextState){level=next;state=nextState;lastFailed=false;zoomFactor=1;for(const v of scenes)build(v);resize();update(nextState,{instant:true});},update,resize,setActiveWorld(world){activeWorld=world;draw();},zoom(delta){zoomFactor=Math.max(.7,Math.min(1.65,zoomFactor+delta));resize();},setReducedMotion(value){reduced=!!value;if(reduced&&state)update(state,{instant:true});},dispose(){disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();document.removeEventListener('visibilitychange',visibility);for(const v of scenes){v.host.removeEventListener('click',v.click);clean(v.root);v.renderer.dispose();v.renderer.domElement.remove();}for(const g of geometries.values())g.dispose();markings.dispose();}};
+ return {setLevel(next,nextState){level=next;state=nextState;lastFailed=false;zoomFactor=1;for(const v of scenes)build(v);resize();update(nextState,{instant:true});},update,resize,setActiveWorld(world){activeWorld=world;draw();},zoom(delta){zoomFactor=Math.max(.7,Math.min(1.65,zoomFactor+delta));resize();},setReducedMotion(value){reduced=!!value;if(reduced&&state)update(state,{instant:true});},dispose(){disposed=true;if(raf)cancelAnimationFrame(raf);observer.disconnect();document.removeEventListener('visibilitychange',visibility);for(const v of scenes){v.host.removeEventListener('click',v.click);v.labels.dispose();clean(v.root);v.renderer.dispose();v.renderer.domElement.remove();}for(const g of geometries.values())g.dispose();markings.dispose();}};
 }
