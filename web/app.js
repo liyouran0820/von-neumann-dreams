@@ -139,7 +139,7 @@ function readableMessage(type, before, accepted) {
   if(level.schemaVersion===2&&['push','move'].includes(type)&&accepted&&state.feedback)return Object.values(state.feedback).map(f=>worldName(f.world)+'侧'+(f.blocked?'受阻，推力已作用':'物体移动一格')).join(' · ');
   if (type === 'push') return accepted ? ['night', 'day'].map(world => worldName(world)+'侧'+(state.feedback?.[world]?.blocked?'受阻，推力已作用':'移动一格')).join(' · ') : state.message;
   if (type === 'mirror' || type === 'switch') return accepted ? (type === 'mirror' ? '镜面已转动，观察光输入与逻辑输出。' : '开关已改变，沿线路观察输出。') : '先用空格切到实验器材所在世界。';
-  if (type === 'activate') return state.preview ? state.message : '映射已生效。';
+  if (type === 'activate') return accepted ? '映射已生效。' : state.message;
   if (type === 'unlink') return before.mapping === 'A' ? '联系已解除，真实箱子的位置留下了。' : '联系已解除，虚影消失。';
   if (type === 'view') return state.view === state.body.world ? '现在可以移动身体。' : '观察另一侧，身体仍在' + worldName(state.body.world) + '世界。';
   if (type === 'move') return accepted ? '' : state.view !== state.body.world ? '按空格回到身体所在的世界，再走路。' : state.message || '这边暂时走不通。';
